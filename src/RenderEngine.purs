@@ -1,0 +1,89 @@
+module RenderEngine where
+--
+-- type RenderEngine =
+--   {
+--   scene :: Scene.Scene,
+--   camera :: Camera.PerspectiveCamera,
+--   renderer :: Renderer.WebGLRenderer,
+--   programRef :: Ref Program,
+--   programState :: Ref RenderState
+--   }
+--
+-- type RenderState =
+--   {
+--   texture :: String
+--   geometry :: (String,String)
+--   light :: Hexadecimal
+--   }
+--
+-- defRenderState :: RenderState
+-- defRenderState = defRenderState {
+--   texture = "textures/04.mov",
+--   geometry = ("obj/exp.mtl","obj/exp.obj"),
+--   light = 0xffff,
+--   }
+--
+--
+-- launchRenderEngine :: Effect RenderEngine
+-- launchRenderEngine = do
+--   scene <- Scene.create
+--   camera <- Camera.createPerspective 75 (16/9) 0.1 1000 --maybe later on it can receive a Window parameter so I can do innerWidth
+--   renderer <- Renderer.createWebGL
+--   Renderer.setSize renderer 500 800
+--   Renderer.appendToDomByID renderer "canvas"
+--   Object3D.setPosition camera 0 0 6
+--   programRef <- new ?
+--   programState <- defRenderState
+--   let re = {scene, camera, renderer, programRef, programState}
+--   requestAnimationFrame $ animate re
+--   pure re
+--
+--
+-- type Texture =
+--   {
+--   ?
+--   }
+--
+-- type Geometry =
+--   {
+--   ?
+--   }
+--
+-- type Light =
+--   {
+--   ?
+--   }
+--
+-- addTexture :: RenderEngine -> Texture -> ?
+-- addTexture = do
+--   video <-
+--
+--   videoTexture
+--
+--
+--   geometry <- Geometry.createBox 1.0 1.0 1.0
+--   material <- Material.createMeshBasic { color: "red" }
+--   mesh <- Object3D.createMesh geometry material
+--   Scene.addObject re.scene mesh
+--   pure { mesh }
+--
+-- const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+-- const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+-- const cube = new THREE.Mesh( geometry, material );
+-- scene.add( cube );
+--
+-- addGeometry :: RenderEngine -> Geometry -> ?
+-- addGeometry re g= do
+--   mtlLoader
+--   objLoader
+--
+--
+--
+--
+--
+--
+--
+--
+--
+-- addLight :: RenderEngine -> Light -> ?
+-- addLight = do

@@ -1,0 +1,252 @@
+module Parser where
+--
+-- import Prelude
+-- import Data.Identity
+-- import Data.List
+-- import Data.List.NonEmpty
+-- import Data.Either (Either)
+-- import Data.Number
+-- import Data.Int
+-- import Prim.Boolean
+-- import Text.Parsing.Parser
+-- import Text.Parsing.Parser.Language (emptyDef)
+-- import Text.Parsing.Parser.Token (GenLanguageDef(..),LanguageDef,unGenLanguageDef,TokenParser,GenTokenParser,makeTokenParser)
+-- import Text.Parsing.Parser.Combinators
+--
+-- import AST
+--
+-- ------------
+--
+-- parseProgram :: String -> Either ParseError Statement
+-- parseProgram x = runParser x statement
+--
+-- type P a = ParserT String Identity a
+--
+-- --runParser "transmission on" transmission
+-- statement :: P Statement
+-- statement = try $ choice [
+--   assignment,
+--   Transmission <$> transmission
+--   ]
+--
+-- transmission :: P Transmission
+-- transmission = try $ choice [
+--   transmissionOnOff,
+--   litTransmission
+--   ]
+--
+-- ----------
+-- -- spago repl
+-- -- import AST
+-- -- import Parser
+-- -- import Text.Parsing.Parser
+-- -- runParser "var = channel \"url\"" assignment
+--
+-- -- someName = chanel "url"
+-- assignment :: P Statement
+-- assignment = do
+--   i <- identifier
+--   reservedOp "="
+--   c <- channel
+--   pure $ Assignment i c
+--
+-- channel :: P Channel
+-- channel = do
+--   (reserved "channel" <|> reserved "chanel" <|> reserved "chianel")
+--   s <- stringLiteral
+--   pure $ Channel s
+--   --data Channel = Channel String | ChannelReference String
+--
+-- ----------
+--
+-- -- tranmission
+-- litTransmission :: P Transmission
+-- litTransmission = do
+--   (reserved "transmission" <|> reserved "transmision" <|> reserved "transmisssion")
+--   pure $ LiteralTransmission false
+--
+-- -- transmission on / off
+-- transmissionOnOff :: P Transmission
+-- transmissionOnOff = do
+--   (reserved "transmission" <|> reserved "transmision" <|> reserved "transmisssion")
+--   b <- onOff
+--   pure $ LiteralTransmission b
+--
+-- onOff :: P Boolean
+-- onOff = try $ choice [
+--   (reserved "on" <|> reserved "onn" <|> reserved "onnn")  $> true,
+--   (reserved "off" <|> reserved "of" <|> reserved "offf") $> false
+-- ]
+--
+-- ----------
+--
+-- parametro :: P Number
+-- parametro = try $ choice [
+--   negativeInt,
+--   toNumber <$> integer,
+--   negativeFloat,
+--   float
+--   ]
+--
+-- negativeFloat :: P Number
+-- negativeFloat = do
+--   x <- symbol "-"
+--   f <- float
+--   pure $ (-1.0) * f
+--
+-- negativeInt :: P Number
+-- negativeInt = do
+--   x <- symbol "-"
+--   f <- (toNumber <$> integer)
+--   pure $ (-1.0) * f
+--
+-- ------------
+--
+--
+-- tokenParser :: GenTokenParser String Identity
+-- tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
+--   reservedNames = ["transmission", "on", "off", "channel"],
+--   reservedOpNames = ["=", "\"", "\""]
+--   }
+--
+-- -- spago repl
+-- -- import AST
+-- -- import Parser
+-- -- import Text.Parsing.Parser
+-- -- parseProgram "some program"
+--
+--
+--
+-- -- transmission on ico
+-- --
+-- -- one = channel "/mivideo.mov";
+-- -- transmission on ico switchear one
+-- --
+-- -- one = channel "/mivideo.mov";
+-- -- two = channel "/mivideo2.mov";
+-- -- transmission on switchear two rodar (360)
+-- -- transmission on ico switchear one
+-- --
+-- --
+-- --
+-- -- data monitor = monitor {
+-- --   status    ::  Rational,                         -- on/off animated opacity
+-- --   geometry  ::  (Text,Text),                      -- ("mtl", "obj")
+-- --   texture   ::  Text,                             -- "url"
+-- --   wrapping  ::  wrappingMode
+-- --   size      ::  Rational                          -- proportionally: h,w,l
+-- --   position  ::  (Rational, Rational, Rational),   -- (x,y,z)
+-- --   rotation  ::  (Rational, Rational, Rational)    -- (x,y,z)
+-- --   }
+--
+-- -----------
+--
+-- -- methodWithOneParameter :: String -> (Transmission -> Number -> Transmission) -> P (Transmission)
+-- -- methodWithOneParameter methodName constructor = try $ do
+-- --   t <- transmissionOnOff
+-- --   reserved methodName
+-- --   p1 <- parametro
+-- --   pure $ constructor t p1
+-- --
+-- -- methodWithTwoParameters :: String -> (Transmission -> Number -> Number -> Transmission) -> P (Transmission)
+-- -- methodWithTwoParameters methodName constructor = try $ do
+-- --   t <- transmissionOnOff
+-- --   reserved methodName
+-- --   p1 <- parametro
+-- --   p2 <- parametro
+-- --   pure $ constructor t p1 p2
+-- --
+-- -- methodWithThreeParameters :: String -> (Transmission -> Number -> Number -> Number -> Transmission) -> P (Transmission)
+-- -- methodWithThreeParameters methodName constructor = try $ do
+-- --   t <- transmissionOnOff
+-- --   reserved methodName
+-- --   p1 <- parametro
+-- --   p2 <- parametro
+-- --   p3 <- parametro
+-- --   pure $ constructor t p1 p2 p3
+--
+-- -------------------------
+--
+-- angles :: forall a. P a -> P a
+-- angles = tokenParser.angles
+--
+-- braces :: forall a. P a -> P a
+-- braces = tokenParser.braces
+--
+-- brackets :: forall a. P a -> P a
+-- brackets = tokenParser.brackets
+--
+-- charLiteral :: P Char
+-- charLiteral = tokenParser.charLiteral
+--
+-- colon :: P String
+-- colon = tokenParser.colon
+--
+-- comma :: P String
+-- comma = tokenParser.comma
+--
+-- commaSep :: forall a. P a -> P (List a)
+-- commaSep = tokenParser.commaSep
+--
+-- commaSep1 :: forall a. P a -> P (NonEmptyList a)
+-- commaSep1 = tokenParser.commaSep1
+--
+-- decimal :: P Int
+-- decimal = tokenParser.decimal
+--
+-- dot :: P String
+-- dot = tokenParser.dot
+--
+-- float :: P Number
+-- float = tokenParser.float
+--
+-- hexadecimal :: P Int
+-- hexadecimal = tokenParser.hexadecimal
+--
+-- identifier :: P String
+-- identifier = tokenParser.identifier
+--
+-- integer :: P Int
+-- integer = tokenParser.integer
+--
+-- lexeme :: forall a. P a -> P a
+-- lexeme = tokenParser.lexeme
+--
+-- natural :: P Int
+-- natural = tokenParser.natural
+--
+-- naturalOrFloat :: P (Either Int Number)
+-- naturalOrFloat = tokenParser.naturalOrFloat
+--
+-- octal :: P Int
+-- octal = tokenParser.octal
+--
+-- operator :: P String
+-- operator = tokenParser.operator
+--
+-- parens :: forall a. P a -> P a
+-- parens = tokenParser.parens
+--
+-- reserved :: String -> P Unit
+-- reserved = tokenParser.reserved
+--
+-- reservedOp :: String -> P Unit
+-- reservedOp = tokenParser.reservedOp
+--
+-- semi :: P String
+-- semi = tokenParser.semi
+--
+-- semiSep :: forall a. P a -> P (List a)
+-- semiSep = tokenParser.semiSep
+--
+-- semiSep1 :: forall a. P a -> P (NonEmptyList a)
+-- semiSep1 = tokenParser.semiSep1
+--
+-- stringLiteral :: P String
+-- stringLiteral = tokenParser.stringLiteral
+--
+-- symbol :: String -> P String
+-- symbol = tokenParser.symbol
+--
+-- whiteSpace :: P Unit
+-- whiteSpace = tokenParser.whiteSpace
