@@ -13,13 +13,13 @@ to generate this file without the comments in this block.
 { name = "my-project"
 , dependencies =
   [ "console"
-  , "easy-ffi"
   , "effect"
   , "parsing"
   , "prelude"
   , "psci-support"
   , "purescript-three"
   , "refs"
+  , "purescript-threejs"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
