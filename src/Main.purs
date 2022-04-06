@@ -28,20 +28,34 @@ main = do
   Renderer.setSize renderer 1250.0 720.0
   Renderer.appendToDomByID renderer "canvas"
   Object3D.setPosition camera 0.0 0.0 5.0
-  video <- TJS.createVideoID "video"
-  TJS.print video
-  texture <- TJS.textureLoader "src/textures/cellos.jpg"
-  TJS.wrapS texture TJS.mirroredRepeatWrapping
-  TJS.wrapT texture TJS.mirroredRepeatWrapping
-  TJS.setRepeatOfAnything texture 2.0 2.0
-  TJS.print texture
-  material <- Material.createMeshBasic {map: texture} --{color: 0x00ff00}
-  TJS.print material
+
+  -- video <- TJS.getElementById "video2"
+  -- TJS.print video
+  -- videoTexture <- TJS.videoTexture video
+  -- TJS.print videoTexture
+
+  video <- TJS.createElement "video"
+  TJS.srcOfElement video "src/textures/leo.mov"
+  TJS.loop video true
+  TJS.muted video false
+  TJS.autoplay video true
+
+  videoTexture <- TJS.videoTexture video
+  TJS.playVideo video -- press "p"
+
+  imgTexture <- TJS.textureLoader "src/textures/cellos.jpg"
+  -- TJS.wrapS imgTexture TJS.mirroredRepeatWrapping
+  -- TJS.wrapT imgTexture TJS.mirroredRepeatWrapping
+  -- TJS.setRepeatOfAnything imgTexture 2.0 2.0
+  TJS.print imgTexture
+
+  material <- Material.createMeshBasic {map: videoTexture} --{color: 0x00ff00}
+  -- TJS.print material
   geometry <- Geometry.createBox 2.0 2.0 2.0
   mesh <- Object3D.createMesh geometry material
   Scene.addObject scene mesh
   Object3D.setRotationEuler mesh 1.5 0.5 0.5
-  TJS.print scene
+  -- TJS.print scene
   let re = {scene, camera, renderer}
   TJS.requestAnimationFrame $ animate re
   pure re
