@@ -35,15 +35,17 @@ main = do
   -- TJS.print videoTexture
 
   video <- TJS.createElement "video"
-  TJS.srcOfElement video "src/textures/leo.mov"
+  TJS.srcOfElement video "textures/leo.mov"
+  TJS.preloadAnything video
   TJS.loop video true
-  TJS.muted video false
+  TJS.muted video true
+  -- TJS.volume video 0.0
   TJS.autoplay video true
+  TJS.play video
 
   videoTexture <- TJS.videoTexture video
-  TJS.playVideo video -- press "p"
 
-  imgTexture <- TJS.textureLoader "src/textures/cellos.jpg"
+  imgTexture <- TJS.textureLoader "textures/cellos.jpg"
   -- TJS.wrapS imgTexture TJS.mirroredRepeatWrapping
   -- TJS.wrapT imgTexture TJS.mirroredRepeatWrapping
   -- TJS.setRepeatOfAnything imgTexture 2.0 2.0
