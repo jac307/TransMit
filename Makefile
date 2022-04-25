@@ -11,3 +11,9 @@ clean:
 
 three.min.js:
 	curl -L -o three.min.js https://raw.githubusercontent.com/mrdoob/three.js/dev/build/three.min.js
+
+MTLLoader.js:
+	curl -L -o MTLLoader.js https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/loaders/MTLLoader.js
+
+OBJLoader.js:
+	curl -L -o OBJLoader.js https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/loaders/OBJLoader.js
