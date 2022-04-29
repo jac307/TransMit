@@ -1,7 +1,7 @@
 
 build:
-	cd src && spago bundle-app
-	cd src && cp -f index.js ../index.js
+	spago bundle-app
+	# cd src && cp -f index.js ../index.js
 
 serve:
 	python -m SimpleHTTPServer 8000

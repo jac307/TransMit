@@ -1,6 +1,6 @@
 module Main where
 
-import Prelude (Unit, bind, discard, pure, ($), (/))
+import Prelude (Unit, unit, bind, discard, pure, ($), (/))
 import Effect (Effect)
 
 import ThreeJS as TJS
@@ -18,6 +18,7 @@ type RenderEngine =
   scene :: Scene.Scene,
   camera :: Camera.PerspectiveCamera,
   renderer :: Renderer.Renderer
+  -- object :: Ref (Maybe TJS.OBJ),
   }
 
 main :: Effect RenderEngine
@@ -46,8 +47,7 @@ main = do
   -- TJS.wrapT vText TJS.repeatWrapping
 
   -- creating and adding Geometry to Scene
-  TJS.loadOBJ "3dObjects/cubo.obj" $ \object -> do
-    TJS.addAnythingToScene scene object
+  addingOBJtoScene scene "3dObjects/cubo.obj"
 
   --creating Lights
   lights <- TJS.hemisphereLight 0xffffbb 0x080820 1
@@ -56,6 +56,14 @@ main = do
   let re = {scene, camera, renderer}
   TJS.requestAnimationFrame $ animate re
   pure re
+
+
+addingOBJtoScene :: Scene.Scene -> String -> Effect Unit
+addingOBJtoScene sc urlObj = do
+  TJS.loadOBJ urlObj $ \object -> do
+    TJS.addAnythingToScene sc object
+    pure unit
+
 
 
 -- main :: Effect RenderEngine
