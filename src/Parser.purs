@@ -1,5 +1,5 @@
 module Parser where
---
+
 -- import Prelude
 -- import Data.Identity
 -- import Data.List
@@ -8,6 +8,7 @@ module Parser where
 -- import Data.Number
 -- import Data.Int
 -- import Prim.Boolean
+-- import Parsing
 -- import Text.Parsing.Parser
 -- import Text.Parsing.Parser.Language (emptyDef)
 -- import Text.Parsing.Parser.Token (GenLanguageDef(..),LanguageDef,unGenLanguageDef,TokenParser,GenTokenParser,makeTokenParser)

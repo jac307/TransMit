@@ -1,13 +1,135 @@
 module RenderEngine where
+
+import Prelude (Unit, bind, discard, pure, ($), (/))
+import Effect (Effect)
+--import Effect.Class.Console
+--import Effect.Ref (Ref, new, read, write)
+--import Data.Maybe
+--import Data.Semigroup ((<>))
+--import Data.Show
+--import Web.HTML.HTMLCanvasElement as HTML
+
+import ThreeJS as TJS
+
+type RenderEngine =
+  {
+  scene :: TJS.Scene,
+  camera :: TJS.PerspectiveCamera,
+  renderer :: TJS.Renderer--,
+  --object :: Ref (Maybe TJS.OBJ)
+  }
+
+launch :: Effect RenderEngine
+launch = do
+  scene <- TJS.newScene
+  camera <- TJS.newPerspectiveCamera 75.0 (16.0/9.0) 0.1 100.0
+  TJS.setPositionOfAnything camera 0.0 0.0 5.0
+
+  renderer <- TJS.newWebGLRenderer {antialias: true}
+  TJS.setSize renderer 1250.0 720.0 false
+  TJS.domElement renderer
+
+  -- creating and adding Geometry to Scene
+  geometry <- TJS.newBoxGeometry 1.0 1.0 1.0
+  TJS.printAnything geometry
+
+  material <- TJS.meshBasicMaterial {color: 0x00ff00}
+  TJS.printAnything material
+
+  cube <- TJS.newMesh geometry material
+  TJS.addAnythingToScene scene cube
+
+  lights <- TJS.newHemisphereLight 0xffffbb 0x080820 1.0
+  TJS.addAnythingToScene scene lights
+  --TJS.addAnythingToScene scene lights
+
+  let re = {scene, camera, renderer}
+  TJS.requestAnimationFrame $ animate re
+  pure re
+
+-- object <- new Nothing
+-- addingOBJtoScene scene "3dObjects/cubo.obj" object
+
+
+-- addingOBJtoScene :: TJS.Scene -> String -> Effect Unit
+-- addingOBJtoScene sc urlObj = do
+--   TJS.loadOBJ urlObj $ \object -> do
+--     TJS.addAnythingToScene sc object
+--     pure unit
+
+-- addingOBJtoScene :: TJS.Scene -> String -> Ref (Maybe TJS.OBJ) -> Effect Unit
+-- addingOBJtoScene sc urlObj r = do
+--   TJS.loadOBJ urlObj $ \o -> do
+--     TJS.addAnythingToScene sc o
+--     write (Just o) r
+--     --loadMaterial materialUrl $ \m -> do
+--       -- stuff to add material to object?
+--       -- stuff to store material in a ref or something?
+--     pure unit
+
+
+animate :: RenderEngine -> Effect Unit
+animate re = do
+  TJS.render re.renderer re.scene re.camera
+  TJS.requestAnimationFrame $ animate re
+
+
+-- animate :: RenderEngine -> Effect Unit
+-- animate re = do
 --
--- type RenderEngine =
---   {
---   scene :: Scene.Scene,
---   camera :: Camera.PerspectiveCamera,
---   renderer :: Renderer.WebGLRenderer,
---   programRef :: Ref Program,
---   programState :: Ref RenderState
---   }
+--   o <- read re.object
+--   case o of
+--     Just o' -> do
+--       p <- TJS.getPositionOfAnything o'
+--       log $ show p
+--     Nothing -> log "nothing"
+--
+--   TJS.render re.renderer re.scene re.camera
+--   TJS.requestAnimationFrame $ animate re
+
+
+  -- video <- TJS.getElementById "video2"
+  -- TJS.print video
+  -- videoTexture <- TJS.videoTexture video
+  -- TJS.print videoTexture
+
+  -- video <- TJS.createElement "video"
+  -- TJS.srcOfElement video "textures/leo.mov"
+  -- TJS.preloadAnything video
+  -- TJS.loop video true
+  -- TJS.muted video true
+  -- -- TJS.volume video 0.0
+  -- TJS.autoplay video true
+  -- TJS.play video
+
+  -- videoTexture <- TJS.videoTexture video
+
+  -- imgTexture <- TJS.textureLoader "textures/cellos.jpg"
+  -- TJS.wrapS imgTexture TJS.mirroredRepeatWrapping
+  -- TJS.wrapT imgTexture TJS.mirroredRepeatWrapping
+  -- TJS.setRepeatOfAnything imgTexture 2.0 2.0
+  -- TJS.print imgTexture
+
+  -- material <- Material.createMeshBasic {map: imgTexture} --{color: 0x00ff00}
+  -- TJS.print material
+
+  -- object <- new Nothing
+  -- -- creating and adding Geometry to Scene
+  -- addingOBJtoScene scene "3dObjects/cubo.obj" object
+  --
+  -- let re = {scene, camera, renderer, object}
+  --
+  -- TJS.requestAnimationFrame $ animate re
+  -- pure re
+
+
+
+
+
+-- OLD
+
+
+
 --
 -- type RenderState =
 --   {
