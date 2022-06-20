@@ -1,7 +1,7 @@
 
 build:
-	spago bundle-app
-	# cd src && cp -f index.js ../index.js
+	cd src && spago bundle-module
+	npx webpack
 
 serve:
 	python -m SimpleHTTPServer 8000

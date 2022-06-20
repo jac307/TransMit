@@ -6,12 +6,28 @@
  <link rel="shortcut icon" href="#">
 </head>
 
-<body>
+<body onLoad="window.doLaunch()">
 
   <script src="three.min.js"></script>
   <!-- <script src="MTLLoader.js"></script> -->
   <!-- <script src="OBJLoader.js"></script> -->
-  <script src="./index.js"></script>
+  <!-- <script src="./index.js"></script> -->
+
+  <!-- <script src="./transMit.js"></script> -->
+  <script type="module">
+
+  import * as TransMit from "./index.js";
+  //console.log(TransMit);
+
+  window.doLaunch = function () {
+    console.log("doLaunch");
+    var cvs = document.getElementById('canvas');
+    window.lm = TransMit.launch(cvs)();
+  }
+
+  </script>
+
+  <div id="canvasDiv"><canvas id="canvas"></canvas></div>
 
 </body>
 

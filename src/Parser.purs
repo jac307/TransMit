@@ -17,8 +17,8 @@ import Parsing.Combinators
 import AST
 
 
-parseProgram :: String -> Either ParseError Statement
-parseProgram x = runParser x statement
+parseProgram :: String -> Either ParseError AST
+parseProgram x = runParser x ast
 
 type P a = ParserT String Identity a
 

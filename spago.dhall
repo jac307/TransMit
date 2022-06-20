@@ -1,4 +1,4 @@
-{ name = "my-project"
+{ name = "TransMit"
 , dependencies =
   [ "console"
   , "effect"

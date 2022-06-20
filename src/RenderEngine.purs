@@ -1,31 +1,40 @@
-module RenderEngine where
+module RenderEngine
+(
+RenderEngine(..),
+launch
+) where
 
-import Prelude (Unit, bind, discard, pure, ($), (/))
+import Prelude --(Unit, bind, discard, pure, ($), (/))
 import Effect (Effect)
---import Effect.Class.Console
---import Effect.Ref (Ref, new, read, write)
+import Effect.Class.Console (log)
+import Effect.Ref (Ref, new, read, write)
 --import Data.Maybe
 --import Data.Semigroup ((<>))
 --import Data.Show
---import Web.HTML.HTMLCanvasElement as HTML
+import Web.HTML.HTMLCanvasElement as HTML
 
 import ThreeJS as TJS
+
+import AST
+--import Parser
 
 type RenderEngine =
   {
   scene :: TJS.Scene,
   camera :: TJS.PerspectiveCamera,
-  renderer :: TJS.Renderer--,
+  renderer :: TJS.Renderer,
+  program :: Ref AST
   --object :: Ref (Maybe TJS.OBJ)
   }
 
-launch :: Effect RenderEngine
-launch = do
+launch :: HTML.HTMLCanvasElement -> Effect RenderEngine
+launch cvs = do
+  log "launch now with ineffective program"
   scene <- TJS.newScene
   camera <- TJS.newPerspectiveCamera 75.0 (16.0/9.0) 0.1 100.0
   TJS.setPositionOfAnything camera 0.0 0.0 5.0
 
-  renderer <- TJS.newWebGLRenderer {antialias: true}
+  renderer <- TJS.newWebGLRenderer {antialias: true, canvas: cvs}
   TJS.setSize renderer 1250.0 720.0 false
   TJS.domElement renderer
 
@@ -43,7 +52,10 @@ launch = do
   TJS.addAnythingToScene scene lights
   --TJS.addAnythingToScene scene lights
 
-  let re = {scene, camera, renderer}
+  program <- new 0.0
+
+
+  let re = {scene, camera, renderer, program}
   TJS.requestAnimationFrame $ animate re
   pure re
 
@@ -70,6 +82,8 @@ launch = do
 
 animate :: RenderEngine -> Effect Unit
 animate re = do
+  p <- read re.program
+  log (show p)
   TJS.render re.renderer re.scene re.camera
   TJS.requestAnimationFrame $ animate re
 

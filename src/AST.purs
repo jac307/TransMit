@@ -5,6 +5,12 @@ import Data.Number
 import Prim.Boolean
 
 
+type AST = Number
+
+defaultProgram :: AST
+defaultProgram = 0.0
+
+
 data Statement =
   Assignment String Channel |
   Transmission Transmission
