@@ -108,14 +108,6 @@ tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
   reservedOpNames = ["=", "\"", "\""]
   }
 
--- spago repl
--- import AST
--- import Parser
--- import Text.Parsing.Parser
--- parseProgram "some program"
-
-
-
 -- transmission on ico
 --
 -- one = channel "/mivideo.mov";
@@ -126,17 +118,7 @@ tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
 -- transmission on switchear two rodar (360)
 -- transmission on ico switchear one
 --
---
---
--- data monitor = monitor {
---   status    ::  Rational,                         -- on/off animated opacity
---   geometry  ::  (Text,Text),                      -- ("mtl", "obj")
---   texture   ::  Text,                             -- "url"
---   wrapping  ::  wrappingMode
---   size      ::  Rational                          -- proportionally: h,w,l
---   position  ::  (Rational, Rational, Rational),   -- (x,y,z)
---   rotation  ::  (Rational, Rational, Rational)    -- (x,y,z)
---   }
+
 
 -----------
 

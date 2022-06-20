@@ -35,3 +35,14 @@ data Channel =
 instance showChannel :: Show Channel where
   show (Channel s) = show s
   show (ChannelReference s) = show s
+
+
+-- type monitor = monitor {
+--   status    ::  Rational,                         -- on/off animated opacity
+--   geometry  ::  (Text,Text),                      -- ("mtl", "obj")
+--   texture   ::  Text,                             -- "url"
+--   wrapping  ::  wrappingMode
+--   size      ::  Rational                          -- proportionally: h,w,l
+--   position  ::  (Rational, Rational, Rational),   -- (x,y,z)
+--   rotation  ::  (Rational, Rational, Rational)    -- (x,y,z)
+--   }
