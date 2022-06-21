@@ -11,6 +11,7 @@
   , "parsing"
   , "prelude"
   , "psci-support"
+  , "ordered-collections"
   , "purescript-threejs"
   , "refs"
   , "strings"

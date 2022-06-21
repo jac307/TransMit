@@ -25,9 +25,34 @@
     window.lm = TransMit.launch(cvs)();
   }
 
+  window.doEval = function () {
+    console.log("doEval");
+    var t = document.getElementById("editorArea").value;
+    window.lm = TransMit.launch(t)();
+  }
+
+  window.addEventListener('keydown', function (e) {
+    e = e || window.event;
+    if(e.shiftKey && e.key=="Enter") {
+      e.preventDefault();
+      window.doEval();
+    }
+  });
+
   </script>
 
   <div id="canvasDiv"><canvas id="canvas"></canvas></div>
+
+  <div class="editorAndStatus">
+    <div class="editor">
+      <textarea class="editorArea" id="editorArea">
+        0.5
+      </textarea>
+    </div>
+    <div class="status">
+      <span id="errors"></span>
+    </div>
+  </div>
 
 </body>
 

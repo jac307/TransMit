@@ -4,7 +4,8 @@ import Prelude
 import Data.Identity
 import Data.List
 import Data.List.NonEmpty
-import Data.Either (Either)
+import Data.Map
+import Data.Either
 import Data.Number
 import Data.Int
 import Prim.Boolean
@@ -12,22 +13,40 @@ import Parsing
 import Parsing.Language (emptyDef)
 import Parsing.Token (GenLanguageDef(..),LanguageDef,unGenLanguageDef,TokenParser,GenTokenParser,makeTokenParser)
 import Parsing.Combinators
+import Parsing.String (eof)
 --import Parsing.Parser
 
 import AST
 
 
-parseProgram :: String -> Either ParseError AST
-parseProgram x = runParser x ast
+parseProgram :: String -> Either String AST
+parseProgram x = case (runParser x ast) of
+  Left err -> Left $ showParseError err
+  Right prog -> Right prog
+
+showParseError :: ParseError -> String
+showParseError (ParseError e (Position p)) = show p.line <> ":" <> show p.column <> " " <> e
 
 type P a = ParserT String Identity a
 
+ast :: P AST
+ast = parametro
+
+-- program :: P Program
+-- program = do
+--   whiteSpace
+--   xs <- semiSep statement
+--   eof
+--   pure $ fromFoldableWithIndex xs
+
 --runParser "transmission on" transmission
-statement :: P Statement
-statement = try $ choice [
-  assignment,
-  Transmission <$> transmission
-  ]
+-- statement :: P AST
+-- statement = ast
+  --
+  -- try $ choice [
+  -- assignment,
+  -- Transmission <$> transmission
+  -- ]
 
 transmission :: P Transmission
 transmission = try $ choice [

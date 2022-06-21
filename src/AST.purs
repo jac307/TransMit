@@ -3,6 +3,7 @@ module AST where
 import Prelude
 import Data.Number
 import Prim.Boolean
+import Data.Map
 
 
 type AST = Number

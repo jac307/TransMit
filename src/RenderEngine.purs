@@ -1,14 +1,16 @@
 module RenderEngine
 (
 RenderEngine(..),
-launch
+launch,
+evaluate
 ) where
 
 import Prelude --(Unit, bind, discard, pure, ($), (/))
 import Effect (Effect)
 import Effect.Class.Console (log)
 import Effect.Ref (Ref, new, read, write)
---import Data.Maybe
+import Data.Maybe
+import Data.Either
 --import Data.Semigroup ((<>))
 --import Data.Show
 import Web.HTML.HTMLCanvasElement as HTML
@@ -16,7 +18,7 @@ import Web.HTML.HTMLCanvasElement as HTML
 import ThreeJS as TJS
 
 import AST
---import Parser
+import Parser
 
 type RenderEngine =
   {
@@ -86,6 +88,14 @@ animate re = do
   log (show p)
   TJS.render re.renderer re.scene re.camera
   TJS.requestAnimationFrame $ animate re
+
+evaluate :: RenderEngine -> String -> Effect (Maybe String)
+evaluate re s = do
+  case parseProgram s of
+    Right p -> do
+      write p re.program
+      pure Nothing
+    Left err -> pure $ Just err
 
 
 -- animate :: RenderEngine -> Effect Unit
