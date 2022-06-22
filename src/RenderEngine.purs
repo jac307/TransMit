@@ -2,6 +2,7 @@ module RenderEngine
 (
 RenderEngine(..),
 launch,
+animate,
 evaluate
 ) where
 
@@ -14,6 +15,7 @@ import Data.Either
 --import Data.Semigroup ((<>))
 --import Data.Show
 import Web.HTML.HTMLCanvasElement as HTML
+import Parsing
 
 import ThreeJS as TJS
 
@@ -54,11 +56,11 @@ launch cvs = do
   TJS.addAnythingToScene scene lights
   --TJS.addAnythingToScene scene lights
 
-  program <- new 0.0
+  program <- new 10.0
 
 
   let re = {scene, camera, renderer, program}
-  TJS.requestAnimationFrame $ animate re
+  -- TJS.requestAnimationFrame $ animate re
   pure re
 
 -- object <- new Nothing
@@ -85,15 +87,17 @@ launch cvs = do
 animate :: RenderEngine -> Effect Unit
 animate re = do
   p <- read re.program
-  log (show p)
+  log $ "animate parser: " <> (show p)
   TJS.render re.renderer re.scene re.camera
-  TJS.requestAnimationFrame $ animate re
+
 
 evaluate :: RenderEngine -> String -> Effect (Maybe String)
 evaluate re s = do
   case parseProgram s of
     Right p -> do
       write p re.program
+      -- log $ "parser on renderEngine evaluate function: " <> (show p)
+      -- log $ "string on renderEngine evaluate function: " <> (show s)
       pure Nothing
     Left err -> pure $ Just err
 

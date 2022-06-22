@@ -18,7 +18,6 @@ import Parsing.String (eof)
 
 import AST
 
-
 parseProgram :: String -> Either String AST
 parseProgram x = case (runParser x ast) of
   Left err -> Left $ showParseError err

@@ -4,6 +4,7 @@ import Prelude
 import Effect (Effect)
 import Data.Maybe
 import Web.HTML.HTMLCanvasElement as HTML
+import Effect.Class.Console (log)
 
 import RenderEngine as RE
 import AST
@@ -18,3 +19,6 @@ evaluate re s = do
   case p of
     Just error -> pure $ { success: false, error }
     Nothing -> pure $ { success: true, error: "" }
+
+animate :: RE.RenderEngine -> Effect Unit
+animate = RE.animate

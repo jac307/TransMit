@@ -24769,7 +24769,7 @@ var parseProgram = function(x) {
     return new Right(v.value0);
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 23, column 18 - line 25, column 27): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 22, column 18 - line 24, column 27): " + [v.constructor.name]);
 };
 
 // output/ThreeJS/foreign.js
@@ -24784,7 +24784,6 @@ var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
 var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
 var printAnything = (thing) => () => console.log(thing);
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
-var requestAnimationFrame = (callback) => () => window.requestAnimationFrame(callback);
 var newBoxGeometry = (w) => (h) => (d) => () => new THREE.BoxGeometry(w, h, d);
 var meshBasicMaterial = (params) => () => new THREE.MeshBasicMaterial(params);
 var clampToEdgeWrapping = THREE.ClampToEdgeWrapping;
@@ -24794,31 +24793,6 @@ var nearestFilter = THREE.NearestFilter;
 var linearFilter = THREE.LinearFilter;
 
 // output/RenderEngine/index.js
-var evaluate = function(re) {
-  return function(s) {
-    var v = parseProgram(s);
-    if (v instanceof Right) {
-      return function __do() {
-        write(v.value0)(re.program)();
-        return Nothing.value;
-      };
-    }
-    ;
-    if (v instanceof Left) {
-      return pure(applicativeEffect)(new Just(v.value0));
-    }
-    ;
-    throw new Error("Failed pattern match at RenderEngine (line 94, column 3 - line 98, column 32): " + [v.constructor.name]);
-  };
-};
-var animate = function(re) {
-  return function __do() {
-    var p = read(re.program)();
-    log2(monadEffectEffect)(show(showNumber)(p))();
-    render(re.renderer)(re.scene)(re.camera)();
-    return requestAnimationFrame(animate(re))();
-  };
-};
 var launch = function(cvs) {
   return function __do() {
     log2(monadEffectEffect)("launch now with ineffective program")();
@@ -24841,15 +24815,38 @@ var launch = function(cvs) {
     addAnythingToScene(scene)(cube)();
     var lights = newHemisphereLight(16777147)(526368)(1)();
     addAnythingToScene(scene)(lights)();
-    var program = $$new(0)();
+    var program = $$new(10)();
     var re = {
       scene,
       camera,
       renderer,
       program
     };
-    requestAnimationFrame(animate(re))();
     return re;
+  };
+};
+var evaluate = function(re) {
+  return function(s) {
+    var v = parseProgram(s);
+    if (v instanceof Right) {
+      return function __do() {
+        write(v.value0)(re.program)();
+        return Nothing.value;
+      };
+    }
+    ;
+    if (v instanceof Left) {
+      return pure(applicativeEffect)(new Just(v.value0));
+    }
+    ;
+    throw new Error("Failed pattern match at RenderEngine (line 96, column 3 - line 102, column 32): " + [v.constructor.name]);
+  };
+};
+var animate = function(re) {
+  return function __do() {
+    var p = read(re.program)();
+    log2(monadEffectEffect)("animate parser: " + show(showNumber)(p))();
+    return render(re.renderer)(re.scene)(re.camera)();
   };
 };
 
@@ -24873,11 +24870,13 @@ var evaluate2 = function(re) {
         };
       }
       ;
-      throw new Error("Failed pattern match at Main (line 18, column 3 - line 20, column 51): " + [p.constructor.name]);
+      throw new Error("Failed pattern match at Main (line 19, column 3 - line 21, column 51): " + [p.constructor.name]);
     };
   };
 };
+var animate2 = animate;
 export {
+  animate2 as animate,
   evaluate2 as evaluate,
   launch2 as launch
 };
