@@ -27,6 +27,7 @@ type RenderEngine =
   scene :: TJS.Scene,
   camera :: TJS.PerspectiveCamera,
   renderer :: TJS.Renderer,
+  cube :: TJS.Mesh,
   program :: Ref AST
   --object :: Ref (Maybe TJS.OBJ)
   }
@@ -56,10 +57,10 @@ launch cvs = do
   TJS.addAnythingToScene scene lights
   --TJS.addAnythingToScene scene lights
 
-  program <- new 10.0
+  program <- new 0.5
 
 
-  let re = {scene, camera, renderer, program}
+  let re = {scene, camera, renderer, cube, program}
   -- TJS.requestAnimationFrame $ animate re
   pure re
 
@@ -88,6 +89,7 @@ animate :: RenderEngine -> Effect Unit
 animate re = do
   p <- read re.program
   log $ "animate parser: " <> (show p)
+  -- TJS.setPositionOfAnything cube 0.0 1.0 0.0
   TJS.render re.renderer re.scene re.camera
 
 

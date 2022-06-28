@@ -24359,7 +24359,7 @@ var makeTokenParser = function(v) {
     });
     return withErrorMessage(go)("operator");
   }();
-  var number = function(base) {
+  var number2 = function(base) {
     return function(baseDigit) {
       var folder = function(v1) {
         return function(v2) {
@@ -24381,7 +24381,7 @@ var makeTokenParser = function(v) {
       });
     };
   };
-  var octal = applySecond(applyParserT)(oneOf2(["o", "O"]))(number(8)(octDigit));
+  var octal = applySecond(applyParserT)(oneOf2(["o", "O"]))(number2(8)(octDigit));
   var lexeme = function(p) {
     return applyFirst(applyParserT)(p)(whiteSpace$prime(v));
   };
@@ -24391,13 +24391,13 @@ var makeTokenParser = function(v) {
     });
     return lexeme($$try(go));
   };
-  var symbol2 = function(name2) {
+  var symbol = function(name2) {
     return voidLeft(functorParserT)(lexeme(string(name2)))(name2);
   };
   var parens = function(p) {
-    return between(symbol2("("))(symbol2(")"))(p);
+    return between(symbol("("))(symbol(")"))(p);
   };
-  var semi = symbol2(";");
+  var semi = symbol(";");
   var semiSep = function(p) {
     return sepBy(p)(semi);
   };
@@ -24437,7 +24437,7 @@ var makeTokenParser = function(v) {
     });
     return lexeme($$try(go));
   }();
-  var hexadecimal2 = applySecond(applyParserT)(oneOf2(["x", "X"]))(number(16)(hexDigit));
+  var hexadecimal2 = applySecond(applyParserT)(oneOf2(["x", "X"]))(number2(16)(hexDigit));
   var fraction = function() {
     var op = function(v1) {
       return function(v2) {
@@ -24463,8 +24463,8 @@ var makeTokenParser = function(v) {
   var escapeGap = withErrorMessage(applySecond(applyParserT)(some2(alternativeParserT)(lazyParserT)(space))($$char("\\")))("end of string gap");
   var escapeEmpty = $$char("&");
   var escMap = zip(["a", "b", "f", "n", "r", "t", "v", "\\", '"', "'"])(["\x07", "\b", "\f", "\n", "\r", "	", "\v", "\\", '"', "'"]);
-  var dot = symbol2(".");
-  var decimal = number(10)(digit);
+  var dot = symbol(".");
+  var decimal = number2(10)(digit);
   var exponent$prime = function() {
     var power = function(e) {
       if (e < 0) {
@@ -24516,15 +24516,15 @@ var makeTokenParser = function(v) {
   });
   var integer2 = withErrorMessage(lexeme($$int))("integer");
   var natural = withErrorMessage(lexeme(nat))("natural");
-  var comma = symbol2(",");
+  var comma = symbol(",");
   var commaSep = function(p) {
     return sepBy(p)(comma);
   };
   var commaSep1 = function(p) {
     return sepBy1(p)(comma);
   };
-  var colon = symbol2(":");
-  var charNum = bind(bindParserT)(alt(altParserT)(decimal)(alt(altParserT)(applySecond(applyParserT)($$char("o"))(number(8)(octDigit)))(applySecond(applyParserT)($$char("x"))(number(16)(hexDigit)))))(function(code) {
+  var colon = symbol(":");
+  var charNum = bind(bindParserT)(alt(altParserT)(decimal)(alt(altParserT)(applySecond(applyParserT)($$char("o"))(number2(8)(octDigit)))(applySecond(applyParserT)($$char("x"))(number2(16)(hexDigit)))))(function(code) {
     var $71 = code > 1114111;
     if ($71) {
       return fail("invalid escape sequence");
@@ -24618,10 +24618,10 @@ var makeTokenParser = function(v) {
     return lexeme($$try(go));
   };
   var brackets = function(p) {
-    return between(symbol2("["))(symbol2("]"))(p);
+    return between(symbol("["))(symbol("]"))(p);
   };
   var braces = function(p) {
-    return between(symbol2("{"))(symbol2("}"))(p);
+    return between(symbol("{"))(symbol("}"))(p);
   };
   var ascii3codes = ["NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB", "CAN", "SUB", "ESC", "DEL"];
   var ascii3 = ["\0", "", "", "", "", "", "", "\x07", "", "", "", "", "", "", "", "", "", "", "\x1B", "\x7F"];
@@ -24665,7 +24665,7 @@ var makeTokenParser = function(v) {
     return lexeme(withErrorMessage(go)("literal string"));
   }();
   var angles = function(p) {
-    return between(symbol2("<"))(symbol2(">"))(p);
+    return between(symbol("<"))(symbol(">"))(p);
   };
   return {
     identifier,
@@ -24681,7 +24681,7 @@ var makeTokenParser = function(v) {
     decimal,
     hexadecimal: hexadecimal2,
     octal,
-    symbol: symbol2,
+    symbol,
     lexeme,
     whiteSpace: whiteSpace$prime(v),
     parens,
@@ -24734,9 +24734,6 @@ var tokenParser = /* @__PURE__ */ makeTokenParser(/* @__PURE__ */ function() {
     caseSensitive: v.caseSensitive
   };
 }());
-var symbol = /* @__PURE__ */ function() {
-  return tokenParser.symbol;
-}();
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
 };
@@ -24746,19 +24743,14 @@ var reservedOp = /* @__PURE__ */ function() {
 var integer = /* @__PURE__ */ function() {
   return tokenParser.integer;
 }();
-var negativeInt = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ symbol("-"))(function(x) {
-  return bind(bindParserT)(map(functorParserT)(toNumber)(integer))(function(f) {
-    return pure(applicativeParserT)(-1 * f);
-  });
-});
 var $$float = /* @__PURE__ */ function() {
   return tokenParser["float"];
 }();
 var negativeFloat = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reservedOp("-"))(function() {
   return map(functorParserT)(mul(semiringNumber)(-1))($$float);
 });
-var parametro = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(negativeInt), /* @__PURE__ */ $$try(negativeFloat), /* @__PURE__ */ map(functorParserT)(toNumber)(integer), $$float]));
-var ast = parametro;
+var number = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(negativeFloat), /* @__PURE__ */ $$try($$float), /* @__PURE__ */ map(functorParserT)(toNumber)(integer)]);
+var ast = number;
 var parseProgram = function(x) {
   var v = runParser(x)(ast);
   if (v instanceof Left) {
@@ -24815,7 +24807,8 @@ var launch = function(cvs) {
     addAnythingToScene(scene)(cube)();
     var lights = newHemisphereLight(16777147)(526368)(1)();
     addAnythingToScene(scene)(lights)();
-    var program = $$new(10)();
+    var program = $$new(0.5)();
+    setPositionOfAnything(cube)(0)(1)(0)();
     var re = {
       scene,
       camera,
@@ -24839,7 +24832,7 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 96, column 3 - line 102, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 98, column 3 - line 104, column 32): " + [v.constructor.name]);
   };
 };
 var animate = function(re) {

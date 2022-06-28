@@ -9,8 +9,12 @@ import Data.Map
 type AST = Number
 
 defaultProgram :: AST
-defaultProgram = 0.0
+defaultProgram = 0.5
 
+-- type Program = Map Int Statement
+--
+-- defaultProgram' :: Program
+-- defaultProgram' = empty
 
 data Statement =
   Assignment String Channel |

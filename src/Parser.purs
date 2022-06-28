@@ -29,7 +29,7 @@ showParseError (ParseError e (Position p)) = show p.line <> ":" <> show p.column
 type P a = ParserT String Identity a
 
 ast :: P AST
-ast = parametro
+ast = number
 
 -- program :: P Program
 -- program = do
@@ -38,14 +38,11 @@ ast = parametro
 --   eof
 --   pure $ fromFoldableWithIndex xs
 
---runParser "transmission on" transmission
--- statement :: P AST
--- statement = ast
-  --
-  -- try $ choice [
-  -- assignment,
-  -- Transmission <$> transmission
-  -- ]
+statement :: P Statement
+statement = choice [
+  assignment,
+  Transmission <$> transmission
+]
 
 transmission :: P Transmission
 transmission = try $ choice [
@@ -96,36 +93,6 @@ onOff = try $ choice [
   (reserved "off" <|> reserved "of" <|> reserved "offf") $> false
 ]
 
-----------
-
-parametro :: P Number
-parametro = try $ choice [
-  try negativeInt,
-  try negativeFloat,
-  toNumber <$> integer,
-  float
-  ]
-
-negativeFloat :: P Number
-negativeFloat = do
-  reservedOp "-"
-  ((*) (-1.0)) <$> float
-
-negativeInt :: P Number
-negativeInt = do
-  x <- symbol "-"
-  f <- (toNumber <$> integer)
-  pure $ (-1.0) * f
-
-------------
-
-
-tokenParser :: GenTokenParser String Identity
-tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
-  reservedNames = ["transmission", "on", "off", "channel"],
-  reservedOpNames = ["=", "\"", "\""]
-  }
-
 -- transmission on ico
 --
 -- one = channel "/mivideo.mov";
@@ -163,6 +130,29 @@ tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
 --   p2 <- parametro
 --   p3 <- parametro
 --   pure $ constructor t p1 p2 p3
+
+----------
+
+number :: P Number
+number = choice [
+  try negativeFloat,
+  try float,
+  toNumber <$> integer
+  ]
+
+negativeFloat :: P Number
+negativeFloat = do
+  reservedOp "-"
+  ((*) (-1.0)) <$> float
+
+------------
+
+
+tokenParser :: GenTokenParser String Identity
+tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
+  reservedNames = ["transmission", "on", "off", "channel"],
+  reservedOpNames = ["=", "\"", "\""]
+  }
 
 ---------------------
 
