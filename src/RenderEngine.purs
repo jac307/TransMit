@@ -27,7 +27,8 @@ type RenderEngine =
   scene :: TJS.Scene,
   camera :: TJS.PerspectiveCamera,
   renderer :: TJS.Renderer,
-  cube :: TJS.Mesh,
+  -- cube :: TJS.Mesh,
+  -- material :: TJS.Material
   program :: Ref AST
   --object :: Ref (Maybe TJS.OBJ)
   }
@@ -41,26 +42,25 @@ launch cvs = do
 
   renderer <- TJS.newWebGLRenderer {antialias: true, canvas: cvs}
   TJS.setSize renderer 1250.0 720.0 false
-  TJS.domElement renderer
 
   -- creating and adding Geometry to Scene
-  geometry <- TJS.newBoxGeometry 1.0 1.0 1.0
-  TJS.printAnything geometry
-
-  material <- TJS.meshBasicMaterial {color: 0x00ff00}
-  TJS.printAnything material
-
-  cube <- TJS.newMesh geometry material
-  TJS.addAnythingToScene scene cube
+  -- geometry <- TJS.newBoxGeometry 1.0 1.0 1.0
+  -- TJS.printAnything geometry
+  --
+  -- material <- TJS.meshBasicMaterial {color: 0x00ff00}
+  -- TJS.printAnything material
+  --
+  -- cube <- TJS.newMesh geometry material
+  -- TJS.addAnythingToScene scene cube
 
   lights <- TJS.newHemisphereLight 0xffffbb 0x080820 1.0
   TJS.addAnythingToScene scene lights
   --TJS.addAnythingToScene scene lights
 
-  program <- new 0.5
+  program <- new defaultProgram
 
 
-  let re = {scene, camera, renderer, cube, program}
+  let re = {scene, camera, renderer, program}
   -- TJS.requestAnimationFrame $ animate re
   pure re
 
@@ -85,12 +85,41 @@ launch cvs = do
 --     pure unit
 
 
+-- animate :: RenderEngine -> Effect Unit
+-- animate re = do
+--   p <- read re.program
+--   log $ "animate parser: " <> (show p)
+--
+--   TJS.render re.renderer re.scene re.camera
+
 animate :: RenderEngine -> Effect Unit
 animate re = do
   p <- read re.program
   log $ "animate parser: " <> (show p)
-  -- TJS.setPositionOfAnything cube 0.0 1.0 0.0
-  TJS.render re.renderer re.scene re.camera
+
+  case p of
+
+    Just prog -> do
+      if (show p) == "(Just Transmission LitTransmission true)"
+        then do
+        geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
+        material <- TJS.meshBasicMaterial {color: 0x00ff00}
+        cube <- TJS.newMesh geometry material
+        TJS.addAnythingToScene re.scene cube
+        TJS.render re.renderer re.scene re.camera
+        else do
+          geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
+          material <- TJS.meshBasicMaterial {color: 0xffffff}
+          cube <- TJS.newMesh geometry material
+          TJS.addAnythingToScene re.scene cube
+          TJS.render re.renderer re.scene re.camera
+
+    Nothing -> do
+      geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
+      material <- TJS.meshBasicMaterial {color: "rgb(0%, 0%, 0%)"}
+      cube <- TJS.newMesh geometry material
+      TJS.addAnythingToScene re.scene cube
+      TJS.render re.renderer re.scene re.camera
 
 
 evaluate :: RenderEngine -> String -> Effect (Maybe String)

@@ -9,6 +9,7 @@ import Data.Either
 import Data.Number
 import Data.Int
 import Prim.Boolean
+import Data.Maybe
 import Parsing
 import Parsing.Language (emptyDef)
 import Parsing.Token (GenLanguageDef(..),LanguageDef,unGenLanguageDef,TokenParser,GenTokenParser,makeTokenParser)
@@ -29,7 +30,25 @@ showParseError (ParseError e (Position p)) = show p.line <> ":" <> show p.column
 type P a = ParserT String Identity a
 
 ast :: P AST
-ast = number
+ast = do
+  whiteSpace
+  x <- choice [
+    justAStatement,
+    justWhiteSpace
+    ]
+  eof
+  pure x
+
+justAStatement :: P AST
+justAStatement = do
+  s <- statement
+  pure $ Just s
+
+justWhiteSpace :: P AST
+justWhiteSpace = do
+  lookAhead eof
+  pure $ Nothing
+
 
 -- program :: P Program
 -- program = do
@@ -40,13 +59,13 @@ ast = number
 
 statement :: P Statement
 statement = choice [
-  assignment,
+  try $ assignment,
   Transmission <$> transmission
 ]
 
 transmission :: P Transmission
-transmission = try $ choice [
-  transmissionOnOff,
+transmission = choice [
+  try $ transmissionOnOff,
   litTransmission
   ]
 

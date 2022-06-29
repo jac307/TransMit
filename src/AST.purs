@@ -4,12 +4,16 @@ import Prelude
 import Data.Number
 import Prim.Boolean
 import Data.Map
+import Data.Maybe
 
 
-type AST = Number
+type AST = Maybe Statement
 
 defaultProgram :: AST
-defaultProgram = 0.5
+defaultProgram = Nothing
+
+-- Transmission on --- cube with green
+-- Transmission off -- cube with color white
 
 -- type Program = Map Int Statement
 --

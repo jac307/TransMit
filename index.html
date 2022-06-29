@@ -23,6 +23,7 @@
     console.log("doLaunch");
     var cvs = document.getElementById('canvas');
     window.tm = TransMit.launch(cvs)();
+    TransMit.evaluate(window.tm)("")();
     window.requestAnimationFrame(animate);
   }
   function animate(){
@@ -52,7 +53,7 @@
   <div class="editorAndStatus">
     <div class="editor">
       <textarea class="editorArea" id="editorArea">
-        10
+        transmission on
       </textarea>
     </div>
     <div class="status">

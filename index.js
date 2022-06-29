@@ -216,35 +216,16 @@ var intMul = function(x) {
     return x * y | 0;
   };
 };
-var numAdd = function(n1) {
-  return function(n2) {
-    return n1 + n2;
-  };
-};
-var numMul = function(n1) {
-  return function(n2) {
-    return n1 * n2;
-  };
-};
 
 // output/Data.Semiring/index.js
 var zero = function(dict) {
   return dict.zero;
-};
-var semiringNumber = {
-  add: numAdd,
-  zero: 0,
-  mul: numMul,
-  one: 1
 };
 var semiringInt = {
   add: intAdd,
   zero: 0,
   mul: intMul,
   one: 1
-};
-var mul = function(dict) {
-  return dict.mul;
 };
 
 // output/Data.Ring/index.js
@@ -318,10 +299,6 @@ var bottom = function(dict) {
 var showIntImpl = function(n) {
   return n.toString();
 };
-var showNumberImpl = function(n) {
-  var str = n.toString();
-  return isNaN(str + ".0") ? str : str + ".0";
-};
 var showCharImpl = function(c) {
   var code = c.charCodeAt(0);
   if (code < 32 || code === 127) {
@@ -386,14 +363,24 @@ var showArrayImpl = function(f) {
 var showString = {
   show: showStringImpl
 };
-var showNumber = {
-  show: showNumberImpl
-};
 var showInt = {
   show: showIntImpl
 };
 var showChar = {
   show: showCharImpl
+};
+var showBoolean = {
+  show: function(v) {
+    if (v) {
+      return "true";
+    }
+    ;
+    if (!v) {
+      return "false";
+    }
+    ;
+    throw new Error("Failed pattern match at Data.Show (line 23, column 1 - line 25, column 23): " + [v.constructor.name]);
+  }
 };
 var show = function(dict) {
   return dict.show;
@@ -422,6 +409,21 @@ var Just = /* @__PURE__ */ function() {
   };
   return Just2;
 }();
+var showMaybe = function(dictShow) {
+  return {
+    show: function(v) {
+      if (v instanceof Just) {
+        return "(Just " + (show(dictShow)(v.value0) + ")");
+      }
+      ;
+      if (v instanceof Nothing) {
+        return "Nothing";
+      }
+      ;
+      throw new Error("Failed pattern match at Data.Maybe (line 223, column 1 - line 225, column 28): " + [v.constructor.name]);
+    }
+  };
+};
 var maybe = function(v) {
   return function(v1) {
     return function(v2) {
@@ -505,6 +507,95 @@ var applicativeMaybe = /* @__PURE__ */ function() {
       return applyMaybe;
     }
   };
+}();
+
+// output/AST/index.js
+var LiteralTransmission = /* @__PURE__ */ function() {
+  function LiteralTransmission2(value0) {
+    this.value0 = value0;
+  }
+  ;
+  LiteralTransmission2.create = function(value0) {
+    return new LiteralTransmission2(value0);
+  };
+  return LiteralTransmission2;
+}();
+var Channel = /* @__PURE__ */ function() {
+  function Channel2(value0) {
+    this.value0 = value0;
+  }
+  ;
+  Channel2.create = function(value0) {
+    return new Channel2(value0);
+  };
+  return Channel2;
+}();
+var ChannelReference = /* @__PURE__ */ function() {
+  function ChannelReference2(value0) {
+    this.value0 = value0;
+  }
+  ;
+  ChannelReference2.create = function(value0) {
+    return new ChannelReference2(value0);
+  };
+  return ChannelReference2;
+}();
+var Assignment = /* @__PURE__ */ function() {
+  function Assignment2(value0, value1) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+  ;
+  Assignment2.create = function(value0) {
+    return function(value1) {
+      return new Assignment2(value0, value1);
+    };
+  };
+  return Assignment2;
+}();
+var Transmission = /* @__PURE__ */ function() {
+  function Transmission2(value0) {
+    this.value0 = value0;
+  }
+  ;
+  Transmission2.create = function(value0) {
+    return new Transmission2(value0);
+  };
+  return Transmission2;
+}();
+var showLiteralTransmission = {
+  show: function(v) {
+    return "LitTransmission " + show(showBoolean)(v.value0);
+  }
+};
+var showChannel = {
+  show: function(v) {
+    if (v instanceof Channel) {
+      return show(showString)(v.value0);
+    }
+    ;
+    if (v instanceof ChannelReference) {
+      return show(showString)(v.value0);
+    }
+    ;
+    throw new Error("Failed pattern match at AST (line 50, column 1 - line 52, column 37): " + [v.constructor.name]);
+  }
+};
+var showStatement = {
+  show: function(v) {
+    if (v instanceof Assignment) {
+      return "Assignment " + (show(showString)(v.value0) + (show(showString)(" ") + show(showChannel)(v.value1)));
+    }
+    ;
+    if (v instanceof Transmission) {
+      return "Transmission " + show(showLiteralTransmission)(v.value0);
+    }
+    ;
+    throw new Error("Failed pattern match at AST (line 27, column 1 - line 29, column 52): " + [v.constructor.name]);
+  }
+};
+var defaultProgram = /* @__PURE__ */ function() {
+  return Nothing.value;
 }();
 
 // output/Data.Either/index.js
@@ -1742,6 +1833,15 @@ var option = function(a) {
 var notFollowedBy = function(p) {
   return $$try(alt(altParserT)(applySecond(applyParserT)($$try(p))(fail("Negated parser succeeded")))(pure(applicativeParserT)(unit)));
 };
+var lookAhead = function(v) {
+  return function(state1, more, lift3, $$throw, done) {
+    return v(state1, more, lift3, function(v1, err) {
+      return $$throw(state1, err);
+    }, function(v1, res) {
+      return done(state1, res);
+    });
+  };
+};
 var choice = function(dictFoldable) {
   var go = function(p1) {
     return function(v) {
@@ -2674,6 +2774,22 @@ var satisfy = function(f) {
     };
   });
 };
+var eof = /* @__PURE__ */ mkFn5(function(v) {
+  return function(v1) {
+    return function(v2) {
+      return function($$throw) {
+        return function(done) {
+          var $70 = $$null(v.value0);
+          if ($70) {
+            return done(new ParseState(v.value0, v.value1, true), unit);
+          }
+          ;
+          return $$throw(v, new ParseError("Expected EOF", v.value1));
+        };
+      };
+    };
+  };
+});
 var consumeWith = function(f) {
   return mkFn5(function(v) {
     return function(v1) {
@@ -24359,7 +24475,7 @@ var makeTokenParser = function(v) {
     });
     return withErrorMessage(go)("operator");
   }();
-  var number2 = function(base) {
+  var number = function(base) {
     return function(baseDigit) {
       var folder = function(v1) {
         return function(v2) {
@@ -24381,7 +24497,7 @@ var makeTokenParser = function(v) {
       });
     };
   };
-  var octal = applySecond(applyParserT)(oneOf2(["o", "O"]))(number2(8)(octDigit));
+  var octal = applySecond(applyParserT)(oneOf2(["o", "O"]))(number(8)(octDigit));
   var lexeme = function(p) {
     return applyFirst(applyParserT)(p)(whiteSpace$prime(v));
   };
@@ -24426,7 +24542,7 @@ var makeTokenParser = function(v) {
     });
     return withErrorMessage(go)("identifier");
   }();
-  var identifier = function() {
+  var identifier2 = function() {
     var go = bind(bindParserT)(ident)(function(name2) {
       var $66 = isReservedName(v)(name2);
       if ($66) {
@@ -24437,7 +24553,7 @@ var makeTokenParser = function(v) {
     });
     return lexeme($$try(go));
   }();
-  var hexadecimal2 = applySecond(applyParserT)(oneOf2(["x", "X"]))(number2(16)(hexDigit));
+  var hexadecimal2 = applySecond(applyParserT)(oneOf2(["x", "X"]))(number(16)(hexDigit));
   var fraction = function() {
     var op = function(v1) {
       return function(v2) {
@@ -24464,7 +24580,7 @@ var makeTokenParser = function(v) {
   var escapeEmpty = $$char("&");
   var escMap = zip(["a", "b", "f", "n", "r", "t", "v", "\\", '"', "'"])(["\x07", "\b", "\f", "\n", "\r", "	", "\v", "\\", '"', "'"]);
   var dot = symbol(".");
-  var decimal = number2(10)(digit);
+  var decimal = number(10)(digit);
   var exponent$prime = function() {
     var power = function(e) {
       if (e < 0) {
@@ -24506,7 +24622,7 @@ var makeTokenParser = function(v) {
   var natFloat = alt(altParserT)(applySecond(applyParserT)($$char("0"))(zeroNumFloat))(decimalFloat);
   var naturalOrFloat = withErrorMessage(lexeme(natFloat))("number");
   var floating = bind(bindParserT)(decimal)(fractExponent);
-  var $$float2 = withErrorMessage(lexeme(floating))("float");
+  var $$float = withErrorMessage(lexeme(floating))("float");
   var zeroNumber = withErrorMessage(applySecond(applyParserT)($$char("0"))(alt(altParserT)(hexadecimal2)(alt(altParserT)(octal)(alt(altParserT)(decimal)(pure(applicativeParserT)(0))))))("");
   var nat = alt(altParserT)(zeroNumber)(decimal);
   var $$int = bind(bindParserT)(lexeme(sign2(ringInt)))(function(f) {
@@ -24514,7 +24630,7 @@ var makeTokenParser = function(v) {
       return pure(applicativeParserT)(f(n));
     });
   });
-  var integer2 = withErrorMessage(lexeme($$int))("integer");
+  var integer = withErrorMessage(lexeme($$int))("integer");
   var natural = withErrorMessage(lexeme(nat))("natural");
   var comma = symbol(",");
   var commaSep = function(p) {
@@ -24524,7 +24640,7 @@ var makeTokenParser = function(v) {
     return sepBy1(p)(comma);
   };
   var colon = symbol(":");
-  var charNum = bind(bindParserT)(alt(altParserT)(decimal)(alt(altParserT)(applySecond(applyParserT)($$char("o"))(number2(8)(octDigit)))(applySecond(applyParserT)($$char("x"))(number2(16)(hexDigit)))))(function(code) {
+  var charNum = bind(bindParserT)(alt(altParserT)(decimal)(alt(altParserT)(applySecond(applyParserT)($$char("o"))(number(8)(octDigit)))(applySecond(applyParserT)($$char("x"))(number(16)(hexDigit)))))(function(code) {
     var $71 = code > 1114111;
     if ($71) {
       return fail("invalid escape sequence");
@@ -24613,7 +24729,7 @@ var makeTokenParser = function(v) {
     ;
     throw new Error("Failed pattern match at Parsing.Token (line 751, column 3 - line 751, column 50): " + [name2.constructor.name]);
   };
-  var reserved = function(name2) {
+  var reserved2 = function(name2) {
     var go = applySecond(applyParserT)(caseString(name2))(withErrorMessage(notFollowedBy(v.identLetter))("end of " + name2));
     return lexeme($$try(go));
   };
@@ -24645,7 +24761,7 @@ var makeTokenParser = function(v) {
     return alt(altParserT)(voidLeft(functorParserT)(escapeGap)(Nothing.value))(alt(altParserT)(voidLeft(functorParserT)(escapeEmpty)(Nothing.value))(map(functorParserT)(Just.create)(escapeCode)));
   });
   var stringChar = alt(altParserT)(map(functorParserT)(Just.create)(stringLetter))(withErrorMessage(stringEscape)("string character"));
-  var stringLiteral = function() {
+  var stringLiteral2 = function() {
     var folder = function(v1) {
       return function(chars) {
         if (v1 instanceof Nothing) {
@@ -24668,15 +24784,15 @@ var makeTokenParser = function(v) {
     return between(symbol("<"))(symbol(">"))(p);
   };
   return {
-    identifier,
-    reserved,
+    identifier: identifier2,
+    reserved: reserved2,
     operator,
     reservedOp: reservedOp2,
     charLiteral,
-    stringLiteral,
+    stringLiteral: stringLiteral2,
     natural,
-    integer: integer2,
-    "float": $$float2,
+    integer,
+    "float": $$float,
     naturalOrFloat,
     decimal,
     hexadecimal: hexadecimal2,
@@ -24734,23 +24850,62 @@ var tokenParser = /* @__PURE__ */ makeTokenParser(/* @__PURE__ */ function() {
     caseSensitive: v.caseSensitive
   };
 }());
+var whiteSpace = /* @__PURE__ */ function() {
+  return tokenParser.whiteSpace;
+}();
+var stringLiteral = /* @__PURE__ */ function() {
+  return tokenParser.stringLiteral;
+}();
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
 };
 var reservedOp = /* @__PURE__ */ function() {
   return tokenParser.reservedOp;
 }();
-var integer = /* @__PURE__ */ function() {
-  return tokenParser.integer;
+var reserved = /* @__PURE__ */ function() {
+  return tokenParser.reserved;
 }();
-var $$float = /* @__PURE__ */ function() {
-  return tokenParser["float"];
-}();
-var negativeFloat = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reservedOp("-"))(function() {
-  return map(functorParserT)(mul(semiringNumber)(-1))($$float);
+var onOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ reserved("onnn"))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ reserved("offf"))))(false)]));
+var transmissionOnOff = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmission"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmision"))(/* @__PURE__ */ reserved("transmisssion"))))(function() {
+  return bind(bindParserT)(onOff)(function(b) {
+    return pure(applicativeParserT)(new LiteralTransmission(b));
+  });
 });
-var number = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(negativeFloat), /* @__PURE__ */ $$try($$float), /* @__PURE__ */ map(functorParserT)(toNumber)(integer)]);
-var ast = number;
+var litTransmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmission"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmision"))(/* @__PURE__ */ reserved("transmisssion"))))(function() {
+  return pure(applicativeParserT)(new LiteralTransmission(false));
+});
+var transmission = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(transmissionOnOff), litTransmission]);
+var justWhiteSpace = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ lookAhead(eof))(function() {
+  return pure(applicativeParserT)(Nothing.value);
+});
+var identifier = /* @__PURE__ */ function() {
+  return tokenParser.identifier;
+}();
+var channel = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("channel"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("chanel"))(/* @__PURE__ */ reserved("chianel"))))(function() {
+  return bind(bindParserT)(stringLiteral)(function(s) {
+    return pure(applicativeParserT)(new Channel(s));
+  });
+});
+var assignment = /* @__PURE__ */ bind(bindParserT)(identifier)(function(i) {
+  return discard(discardUnit)(bindParserT)(reservedOp("="))(function() {
+    return bind(bindParserT)(channel)(function(c) {
+      return pure(applicativeParserT)(new Assignment(i, c));
+    });
+  });
+});
+var statement = /* @__PURE__ */ function() {
+  return choice(foldableArray)([$$try(assignment), map(functorParserT)(Transmission.create)(transmission)]);
+}();
+var justAStatement = /* @__PURE__ */ bind(bindParserT)(statement)(function(s) {
+  return pure(applicativeParserT)(new Just(s));
+});
+var ast = /* @__PURE__ */ discard(discardUnit)(bindParserT)(whiteSpace)(function() {
+  return bind(bindParserT)(choice(foldableArray)([justAStatement, justWhiteSpace]))(function(x) {
+    return discard(discardUnit)(bindParserT)(eof)(function() {
+      return pure(applicativeParserT)(x);
+    });
+  });
+});
 var parseProgram = function(x) {
   var v = runParser(x)(ast);
   if (v instanceof Left) {
@@ -24761,7 +24916,7 @@ var parseProgram = function(x) {
     return new Right(v.value0);
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 22, column 18 - line 24, column 27): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 23, column 18 - line 25, column 27): " + [v.constructor.name]);
 };
 
 // output/ThreeJS/foreign.js
@@ -24770,11 +24925,9 @@ var newPerspectiveCamera = (fov) => (aspect) => (near) => (far) => () => new THR
 var newWebGLRenderer = (params) => () => new THREE.WebGLRenderer(params);
 var render = (renderer) => (scene) => (camera) => () => renderer.render(scene, camera);
 var setSize = (renderer) => (w) => (h) => (updateStyle) => () => renderer.setSize(w, h, updateStyle);
-var domElement = (renderer) => () => document.body.appendChild(renderer.domElement);
 var newMesh = (geometry) => (material) => () => new THREE.Mesh(geometry, material);
 var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
 var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
-var printAnything = (thing) => () => console.log(thing);
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
 var newBoxGeometry = (w) => (h) => (d) => () => new THREE.BoxGeometry(w, h, d);
 var meshBasicMaterial = (params) => () => new THREE.MeshBasicMaterial(params);
@@ -24796,19 +24949,9 @@ var launch = function(cvs) {
       canvas: cvs
     })();
     setSize(renderer)(1250)(720)(false)();
-    domElement(renderer)();
-    var geometry = newBoxGeometry(1)(1)(1)();
-    printAnything(geometry)();
-    var material = meshBasicMaterial({
-      color: 65280
-    })();
-    printAnything(material)();
-    var cube = newMesh(geometry)(material)();
-    addAnythingToScene(scene)(cube)();
     var lights = newHemisphereLight(16777147)(526368)(1)();
     addAnythingToScene(scene)(lights)();
-    var program = $$new(0.5)();
-    setPositionOfAnything(cube)(0)(1)(0)();
+    var program = $$new(defaultProgram)();
     var re = {
       scene,
       camera,
@@ -24832,14 +24975,45 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 98, column 3 - line 104, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 127, column 3 - line 133, column 32): " + [v.constructor.name]);
   };
 };
 var animate = function(re) {
   return function __do() {
     var p = read(re.program)();
-    log2(monadEffectEffect)("animate parser: " + show(showNumber)(p))();
-    return render(re.renderer)(re.scene)(re.camera)();
+    log2(monadEffectEffect)("animate parser: " + show(showMaybe(showStatement))(p))();
+    if (p instanceof Just) {
+      var $5 = show(showMaybe(showStatement))(p) === "(Just Transmission LitTransmission true)";
+      if ($5) {
+        var geometry = newBoxGeometry(2)(2)(2)();
+        var material = meshBasicMaterial({
+          color: 65280
+        })();
+        var cube = newMesh(geometry)(material)();
+        addAnythingToScene(re.scene)(cube)();
+        return render(re.renderer)(re.scene)(re.camera)();
+      }
+      ;
+      var geometry = newBoxGeometry(2)(2)(2)();
+      var material = meshBasicMaterial({
+        color: 16777215
+      })();
+      var cube = newMesh(geometry)(material)();
+      addAnythingToScene(re.scene)(cube)();
+      return render(re.renderer)(re.scene)(re.camera)();
+    }
+    ;
+    if (p instanceof Nothing) {
+      var geometry = newBoxGeometry(2)(2)(2)();
+      var material = meshBasicMaterial({
+        color: "rgb(0%, 0%, 0%)"
+      })();
+      var cube = newMesh(geometry)(material)();
+      addAnythingToScene(re.scene)(cube)();
+      return render(re.renderer)(re.scene)(re.camera)();
+    }
+    ;
+    throw new Error("Failed pattern match at RenderEngine (line 100, column 3 - line 122, column 48): " + [p.constructor.name]);
   };
 };
 
