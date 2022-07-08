@@ -578,7 +578,7 @@ var showChannel = {
       return show(showString)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at AST (line 50, column 1 - line 52, column 37): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at AST (line 53, column 1 - line 55, column 37): " + [v.constructor.name]);
   }
 };
 var showStatement = {
@@ -591,7 +591,7 @@ var showStatement = {
       return "Transmission " + show(showLiteralTransmission)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at AST (line 27, column 1 - line 29, column 52): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at AST (line 30, column 1 - line 32, column 52): " + [v.constructor.name]);
   }
 };
 var defaultProgram = /* @__PURE__ */ function() {
@@ -24928,16 +24928,97 @@ var setSize = (renderer) => (w) => (h) => (updateStyle) => () => renderer.setSiz
 var newMesh = (geometry) => (material) => () => new THREE.Mesh(geometry, material);
 var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
 var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
+var preloadAnything = (elem3) => () => elem3.preload = "auto";
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
 var newBoxGeometry = (w) => (h) => (d) => () => new THREE.BoxGeometry(w, h, d);
 var meshBasicMaterial = (params) => () => new THREE.MeshBasicMaterial(params);
+var textureLoader = (url) => () => new THREE.TextureLoader().load(url);
+var createElement = (name2) => () => document.createElement(name2);
+var videoTexture = (videoElem) => () => new THREE.VideoTexture(videoElem);
 var clampToEdgeWrapping = THREE.ClampToEdgeWrapping;
 var repeatWrapping = THREE.RepeatWrapping;
 var mirroredRepeatWrapping = THREE.MirroredRepeatWrapping;
 var nearestFilter = THREE.NearestFilter;
 var linearFilter = THREE.LinearFilter;
 
+// output/Web.HTML.HTMLMediaElement/foreign.js
+function setSrc(src2) {
+  return function(media) {
+    return function() {
+      media.src = src2;
+    };
+  };
+}
+function setAutoplay(autoplay2) {
+  return function(media) {
+    return function() {
+      media.autoplay = autoplay2;
+    };
+  };
+}
+function setLoop(loop2) {
+  return function(media) {
+    return function() {
+      media.loop = loop2;
+    };
+  };
+}
+function play(media) {
+  return function() {
+    media.play();
+  };
+}
+function setVolume(volume2) {
+  return function(media) {
+    return function() {
+      media.volume = volume2;
+    };
+  };
+}
+function setMuted(muted2) {
+  return function(media) {
+    return function() {
+      media.muted = muted2;
+    };
+  };
+}
+
 // output/RenderEngine/index.js
+var tranmissionOn = function(re) {
+  return function __do() {
+    play(re.video)();
+    setVolume(0)(re.video)();
+    var geometry = newBoxGeometry(2)(2)(2)();
+    var material = meshBasicMaterial({
+      map: re.vidTexture
+    })();
+    var cube = newMesh(geometry)(material)();
+    return addAnythingToScene(re.scene)(cube)();
+  };
+};
+var tranmissionOff = function(re) {
+  return function __do() {
+    var geometry = newBoxGeometry(2)(2)(2)();
+    var material = meshBasicMaterial({
+      map: re.imgTexture
+    })();
+    var cube = newMesh(geometry)(material)();
+    return addAnythingToScene(re.scene)(cube)();
+  };
+};
+var runProgram = function(re) {
+  return function(p) {
+    if (show(showMaybe(showStatement))(p) === "(Just Transmission LitTransmission true)") {
+      return tranmissionOn(re);
+    }
+    ;
+    if (otherwise) {
+      return tranmissionOff(re);
+    }
+    ;
+    throw new Error("Failed pattern match at RenderEngine (line 124, column 1 - line 124, column 49): " + [re.constructor.name, p.constructor.name]);
+  };
+};
 var launch = function(cvs) {
   return function __do() {
     log2(monadEffectEffect)("launch now with ineffective program")();
@@ -24949,6 +25030,15 @@ var launch = function(cvs) {
       canvas: cvs
     })();
     setSize(renderer)(1250)(720)(false)();
+    var video = createElement("video")();
+    setSrc("textures/04.mov")(video)();
+    preloadAnything(video)();
+    setAutoplay(true)(video)();
+    setLoop(true)(video)();
+    setMuted(false)(video)();
+    var vidTexture = videoTexture(video)();
+    var imgTexture = textureLoader("textures/static.jpg")();
+    preloadAnything(imgTexture)();
     var lights = newHemisphereLight(16777147)(526368)(1)();
     addAnythingToScene(scene)(lights)();
     var program = $$new(defaultProgram)();
@@ -24956,6 +25046,9 @@ var launch = function(cvs) {
       scene,
       camera,
       renderer,
+      video,
+      vidTexture,
+      imgTexture,
       program
     };
     return re;
@@ -24975,45 +25068,23 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 127, column 3 - line 133, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 115, column 3 - line 121, column 32): " + [v.constructor.name]);
   };
 };
 var animate = function(re) {
   return function __do() {
     var p = read(re.program)();
     log2(monadEffectEffect)("animate parser: " + show(showMaybe(showStatement))(p))();
-    if (p instanceof Just) {
-      var $5 = show(showMaybe(showStatement))(p) === "(Just Transmission LitTransmission true)";
-      if ($5) {
-        var geometry = newBoxGeometry(2)(2)(2)();
-        var material = meshBasicMaterial({
-          color: 65280
-        })();
-        var cube = newMesh(geometry)(material)();
-        addAnythingToScene(re.scene)(cube)();
-        return render(re.renderer)(re.scene)(re.camera)();
-      }
-      ;
-      var geometry = newBoxGeometry(2)(2)(2)();
-      var material = meshBasicMaterial({
-        color: 16777215
-      })();
-      var cube = newMesh(geometry)(material)();
-      addAnythingToScene(re.scene)(cube)();
-      return render(re.renderer)(re.scene)(re.camera)();
-    }
-    ;
     if (p instanceof Nothing) {
-      var geometry = newBoxGeometry(2)(2)(2)();
-      var material = meshBasicMaterial({
-        color: "rgb(0%, 0%, 0%)"
-      })();
-      var cube = newMesh(geometry)(material)();
-      addAnythingToScene(re.scene)(cube)();
       return render(re.renderer)(re.scene)(re.camera)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 100, column 3 - line 122, column 48): " + [p.constructor.name]);
+    if (p instanceof Just) {
+      runProgram(re)(p)();
+      return render(re.renderer)(re.scene)(re.camera)();
+    }
+    ;
+    throw new Error("Failed pattern match at RenderEngine (line 78, column 3 - line 82, column 48): " + [p.constructor.name]);
   };
 };
 
