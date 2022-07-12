@@ -46,8 +46,6 @@ launch cvs = do
   renderer <- TJS.newWebGLRenderer {antialias: true, canvas: cvs}
   TJS.setSize renderer 1250.0 720.0 false
 
-  -- texture <- TJS.textureLoader "textures/static.jpg"
-
   video <- TJS.createElement "video"
   HTML2.setSrc "textures/04.mov" video
   TJS.preloadAnything video
@@ -80,34 +78,6 @@ animate re = do
     Just prog -> do
       runProgram re p
       TJS.render re.renderer re.scene re.camera
-
-
--- animate :: RenderEngine -> Effect Unit
--- animate re = do
---   p <- read re.program
---   --log $ "animate parser: " <> (show p)
---
---   case p of
---
---     Just prog -> do
---       if (show p) == "(Just Transmission LitTransmission true)"
---         then do
---           HTML2.play re.video
---           HTML2.setVolume 0.0 re.video
---           geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
---           material <- TJS.meshBasicMaterial { map: re.texture }
---           cube <- TJS.newMesh geometry material
---           TJS.addAnythingToScene re.scene cube
---           TJS.render re.renderer re.scene re.camera
---
---         else do
---           geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
---           material <- TJS.meshBasicMaterial {color: 0x00ff00}
---           cube <- TJS.newMesh geometry material
---           TJS.addAnythingToScene re.scene cube
---           TJS.render re.renderer re.scene re.camera
---
---     Nothing -> TJS.render re.renderer re.scene re.camera
 
 
 evaluate :: RenderEngine -> String -> Effect (Maybe String)

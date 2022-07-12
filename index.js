@@ -25016,7 +25016,7 @@ var runProgram = function(re) {
       return tranmissionOff(re);
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 124, column 1 - line 124, column 49): " + [re.constructor.name, p.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 94, column 1 - line 94, column 49): " + [re.constructor.name, p.constructor.name]);
   };
 };
 var launch = function(cvs) {
@@ -25068,7 +25068,7 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 115, column 3 - line 121, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 85, column 3 - line 91, column 32): " + [v.constructor.name]);
   };
 };
 var animate = function(re) {
@@ -25084,7 +25084,7 @@ var animate = function(re) {
       return render(re.renderer)(re.scene)(re.camera)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 78, column 3 - line 82, column 48): " + [p.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 76, column 3 - line 80, column 48): " + [p.constructor.name]);
   };
 };
 
