@@ -29,12 +29,34 @@ type RenderEngine =
   scene :: TJS.Scene,
   camera :: TJS.PerspectiveCamera,
   renderer :: TJS.Renderer,
-  video :: HTML2.HTMLMediaElement,
-  vidTexture :: TJS.TextureLoader,
-  imgTexture :: TJS.TextureLoader,
+  mesh :: Ref (Maybe TJS.Mesh),
+  video :: Ref (Maybe ?Video),
+  textureLoader :: Ref (Maybe TJS.TextureLoader),
   program :: Ref AST
   --object :: Ref (Maybe TJS.OBJ)
   }
+
+{-
+type Monitor = {
+  mesh :: Ref (Maybe TJS.Mesh),
+  video :: Ref (Maybe ?Video),
+  textureLoader :: Ref (Maybe TJS.TextureLoader),
+  }
+
+updateMonitor :: RenderEngine -> Ref (Maybe Monitor) -> Statement -> Effect Unit
+-- if there's no monitor:
+-- make all of the fields appropriately
+-- if there's already a monitor, then...
+-- if transmission on:
+-- make sure there's a cube (update Ref (Maybe TJS.Mesh) if not)
+-- make sure the cube has the right video (update ... if not)
+-- if transmission off:
+-- ...
+
+deleteMonitor :: RenderEngine -> Ref (Maybe Monitor) -> Effect Unit
+-- if there's no monitor, nothing to do
+-- if there is: delete everything and update the refs in Ref Monitor
+  -}
 
 launch :: HTML.HTMLCanvasElement -> Effect RenderEngine
 launch cvs = do
@@ -46,24 +68,13 @@ launch cvs = do
   renderer <- TJS.newWebGLRenderer {antialias: true, canvas: cvs}
   TJS.setSize renderer 1250.0 720.0 false
 
-  video <- TJS.createElement "video"
-  HTML2.setSrc "textures/04.mov" video
-  TJS.preloadAnything video
-  HTML2.setAutoplay true video
-  HTML2.setLoop true video
-  HTML2.setMuted false video
-  vidTexture <- TJS.videoTexture video
-
-  imgTexture <- TJS.textureLoader "textures/static.jpg"
-  TJS.preloadAnything imgTexture
-
-
   lights <- TJS.newHemisphereLight 0xffffbb 0x080820 1.0
   TJS.addAnythingToScene scene lights
 
   program <- new defaultProgram
+  mesh <- new Nothing
 
-  let re = {scene, camera, renderer, video, vidTexture, imgTexture, program}
+  let re = {scene, camera, renderer, mesh, program}
   -- TJS.requestAnimationFrame $ animate re
   pure re
 
@@ -92,28 +103,86 @@ evaluate re s = do
 
 
 runProgram :: RenderEngine -> AST -> Effect Unit
-runProgram re p
-  | (show p) == "(Just Transmission LitTransmission true)"  = tranmissionOn  re
-  | otherwise = tranmissionOff re
-
+runProgram re (Just (Transmission (LiteralTransmission true))) = tranmissionOn re
+runProgram re (Just (Transmission (LiteralTransmission false))) = tranmissionOff re
+runProgram re _ = pure unit
+-- runProgram re Nothing = noTransmission re
 
 
 tranmissionOn :: RenderEngine -> Effect Unit
 tranmissionOn re = do
-  HTML2.play re.video
-  HTML2.setVolume 0.0 re.video
+  video <- TJS.createElement "video"
+  HTML2.setSrc "textures/04.mov" video
+  TJS.preloadAnything video
+  HTML2.setAutoplay true video
+  HTML2.setLoop true video
+  HTML2.setMuted false video
+  vidTexture <- TJS.videoTexture video
+  HTML2.play video
+  HTML2.setVolume 0.0 video
   geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
-  material <- TJS.meshBasicMaterial { map: re.vidTexture }
+  material <- TJS.meshBasicMaterial { map: vidTexture }
   cube <- TJS.newMesh geometry material
+  TJS.printAnything cube
   TJS.addAnythingToScene re.scene cube
+
+
+seeIfCubeIfNotMakeOne :: RenderEngine -> Effect TJS.Mesh
+seeIfCubeIfNotMakeOne re = do
+  c <- read re.mesh
+  case c of
+    Just m -> pure m
+    Nothing -> do
+      nm <- ... make a new mesh that is appropriately set up
+      write nm re.mesh
+      pure nm
+
+deleteCubeIfThereIsOne :: RenderEngine -> Effect Unit
+deleteCubeIfThereIsOne re = do
+  c <- read re.mesh
+  case c of
+    Nothing -> pure unit
+    Just m -> do
+      ...delete the mesh from the threejs scene...
+      write Nothing re.mesh
+
+
+
+
+
+
+getVidTexture :: RenderEngine -> String -> Effect TJS.TextureLoader
+getVidTexture re url = do
+  ...
+
 
 
 tranmissionOff :: RenderEngine -> Effect Unit
 tranmissionOff re = do
+  m <- seeIfCubeIfNotMakeOne re
+  vt <- setVideoURL re "textures/static.jpg"
+
+
+setVideoURL :: RenderEngine -> String -> Effect TJS.TextureLoader
+setVideoURL re url = do
+  is there already a video?
+    if not make one with the provided url
+    if so:
+      is the url the same as the provided url
+      if not:
+        delete (or maybe stop?) the previous video
+        load a new video with the provided url
+
+
+
+
+
+  {- imgTexture <- TJS.textureLoader "textures/static.jpg"
+  TJS.preloadAnything imgTexture
   geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
-  material <- TJS.meshBasicMaterial { map: re.imgTexture }
+  material <- TJS.meshBasicMaterial { map: imgTexture }
   cube <- TJS.newMesh geometry material
-  TJS.addAnythingToScene re.scene cube
+  TJS.addAnythingToScene re.scene cube -}
 
 
 

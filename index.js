@@ -24929,6 +24929,7 @@ var newMesh = (geometry) => (material) => () => new THREE.Mesh(geometry, materia
 var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
 var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
 var preloadAnything = (elem3) => () => elem3.preload = "auto";
+var printAnything = (thing) => () => console.log(thing);
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
 var newBoxGeometry = (w) => (h) => (d) => () => new THREE.BoxGeometry(w, h, d);
 var meshBasicMaterial = (params) => () => new THREE.MeshBasicMaterial(params);
@@ -24986,37 +24987,47 @@ function setMuted(muted2) {
 // output/RenderEngine/index.js
 var tranmissionOn = function(re) {
   return function __do() {
-    play(re.video)();
-    setVolume(0)(re.video)();
+    var video = createElement("video")();
+    setSrc("textures/04.mov")(video)();
+    preloadAnything(video)();
+    setAutoplay(true)(video)();
+    setLoop(true)(video)();
+    setMuted(false)(video)();
+    var vidTexture = videoTexture(video)();
+    play(video)();
+    setVolume(0)(video)();
     var geometry = newBoxGeometry(2)(2)(2)();
     var material = meshBasicMaterial({
-      map: re.vidTexture
+      map: vidTexture
     })();
     var cube = newMesh(geometry)(material)();
+    printAnything(cube)();
     return addAnythingToScene(re.scene)(cube)();
   };
 };
 var tranmissionOff = function(re) {
   return function __do() {
+    var imgTexture = textureLoader("textures/static.jpg")();
+    preloadAnything(imgTexture)();
     var geometry = newBoxGeometry(2)(2)(2)();
     var material = meshBasicMaterial({
-      map: re.imgTexture
+      map: imgTexture
     })();
     var cube = newMesh(geometry)(material)();
     return addAnythingToScene(re.scene)(cube)();
   };
 };
 var runProgram = function(re) {
-  return function(p) {
-    if (show(showMaybe(showStatement))(p) === "(Just Transmission LitTransmission true)") {
+  return function(v) {
+    if (v instanceof Just && (v.value0 instanceof Transmission && v.value0.value0.value0)) {
       return tranmissionOn(re);
     }
     ;
-    if (otherwise) {
+    if (v instanceof Just && (v.value0 instanceof Transmission && !v.value0.value0.value0)) {
       return tranmissionOff(re);
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 94, column 1 - line 94, column 49): " + [re.constructor.name, p.constructor.name]);
+    return pure(applicativeEffect)(unit);
   };
 };
 var launch = function(cvs) {
@@ -25030,25 +25041,15 @@ var launch = function(cvs) {
       canvas: cvs
     })();
     setSize(renderer)(1250)(720)(false)();
-    var video = createElement("video")();
-    setSrc("textures/04.mov")(video)();
-    preloadAnything(video)();
-    setAutoplay(true)(video)();
-    setLoop(true)(video)();
-    setMuted(false)(video)();
-    var vidTexture = videoTexture(video)();
-    var imgTexture = textureLoader("textures/static.jpg")();
-    preloadAnything(imgTexture)();
     var lights = newHemisphereLight(16777147)(526368)(1)();
     addAnythingToScene(scene)(lights)();
     var program = $$new(defaultProgram)();
+    var mesh = $$new(Nothing.value)();
     var re = {
       scene,
       camera,
       renderer,
-      video,
-      vidTexture,
-      imgTexture,
+      mesh,
       program
     };
     return re;
@@ -25068,7 +25069,7 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 85, column 3 - line 91, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 72, column 3 - line 78, column 32): " + [v.constructor.name]);
   };
 };
 var animate = function(re) {
@@ -25084,7 +25085,7 @@ var animate = function(re) {
       return render(re.renderer)(re.scene)(re.camera)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 76, column 3 - line 80, column 48): " + [p.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 63, column 3 - line 67, column 48): " + [p.constructor.name]);
   };
 };
 
