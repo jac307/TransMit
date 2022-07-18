@@ -24933,7 +24933,6 @@ var printAnything = (thing) => () => console.log(thing);
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
 var newBoxGeometry = (w) => (h) => (d) => () => new THREE.BoxGeometry(w, h, d);
 var meshBasicMaterial = (params) => () => new THREE.MeshBasicMaterial(params);
-var textureLoader = (url) => () => new THREE.TextureLoader().load(url);
 var createElement = (name2) => () => document.createElement(name2);
 var videoTexture = (videoElem) => () => new THREE.VideoTexture(videoElem);
 var clampToEdgeWrapping = THREE.ClampToEdgeWrapping;
@@ -24948,6 +24947,11 @@ function setSrc(src2) {
     return function() {
       media.src = src2;
     };
+  };
+}
+function currentSrc(media) {
+  return function() {
+    return media.currentSrc;
   };
 }
 function setAutoplay(autoplay2) {
@@ -25005,18 +25009,6 @@ var tranmissionOn = function(re) {
     return addAnythingToScene(re.scene)(cube)();
   };
 };
-var tranmissionOff = function(re) {
-  return function __do() {
-    var imgTexture = textureLoader("textures/static.jpg")();
-    preloadAnything(imgTexture)();
-    var geometry = newBoxGeometry(2)(2)(2)();
-    var material = meshBasicMaterial({
-      map: imgTexture
-    })();
-    var cube = newMesh(geometry)(material)();
-    return addAnythingToScene(re.scene)(cube)();
-  };
-};
 var runProgram = function(re) {
   return function(v) {
     if (v instanceof Just && (v.value0 instanceof Transmission && v.value0.value0.value0)) {
@@ -25024,7 +25016,7 @@ var runProgram = function(re) {
     }
     ;
     if (v instanceof Just && (v.value0 instanceof Transmission && !v.value0.value0.value0)) {
-      return tranmissionOff(re);
+      return tranmissionOn(re);
     }
     ;
     return pure(applicativeEffect)(unit);
@@ -25043,12 +25035,19 @@ var launch = function(cvs) {
     setSize(renderer)(1250)(720)(false)();
     var lights = newHemisphereLight(16777147)(526368)(1)();
     addAnythingToScene(scene)(lights)();
-    var program = $$new(defaultProgram)();
+    var video$prime = createElement("video")();
+    var getURL = currentSrc(video$prime)();
+    log2(monadEffectEffect)("url: " + show(showString)(getURL))();
+    var video = $$new(Nothing.value)();
+    var textureLoader2 = $$new(Nothing.value)();
     var mesh = $$new(Nothing.value)();
+    var program = $$new(defaultProgram)();
     var re = {
       scene,
       camera,
       renderer,
+      video,
+      textureLoader: textureLoader2,
       mesh,
       program
     };
@@ -25069,7 +25068,7 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 72, column 3 - line 78, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 104, column 3 - line 110, column 32): " + [v.constructor.name]);
   };
 };
 var animate = function(re) {
@@ -25085,7 +25084,7 @@ var animate = function(re) {
       return render(re.renderer)(re.scene)(re.camera)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 63, column 3 - line 67, column 48): " + [p.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 95, column 3 - line 99, column 48): " + [p.constructor.name]);
   };
 };
 
