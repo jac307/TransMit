@@ -112,44 +112,60 @@ evaluate re s = do
 
 runProgram :: RenderEngine -> AST -> Effect Unit
 runProgram re (Just (Transmission (LiteralTransmission true))) = tranmissionOn re
-runProgram re (Just (Transmission (LiteralTransmission false))) = tranmissionOn re
+runProgram re (Just (Transmission (LiteralTransmission false))) = tranmissionOff re
 runProgram re _ = pure unit
 -- runProgram re Nothing = noTransmission re
 
 
 tranmissionOn :: RenderEngine -> Effect Unit
 tranmissionOn re = do
-  video <- TJS.createElement "video"
-  HTML2.setSrc "textures/04.mov" video
-  TJS.preloadAnything video
-  HTML2.setAutoplay true video
-  HTML2.setLoop true video
-  HTML2.setMuted false video
-  vidTexture <- TJS.videoTexture video
-  HTML2.play video
-  HTML2.setVolume 0.0 video
-  geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
-  material <- TJS.meshBasicMaterial { map: vidTexture }
-  cube <- TJS.newMesh geometry material
+  cube <- seeIfCubeIfNotMakeOne re "textures/04.mov" -- :: Effect TJS.Mesh
+  v <- toHTMLMediaElement re
+  HTML2.play v
   TJS.printAnything cube
   TJS.addAnythingToScene re.scene cube
 
--- tranmissionOff :: RenderEngine -> Effect Unit
--- tranmissionOff re = do
---   m <- seeIfCubeIfNotMakeOne re
---   vt <- setVideoURL re "textures/static.jpg"
+tranmissionOff :: RenderEngine -> Effect Unit
+tranmissionOff re = do
+  cube <- seeIfCubeIfNotMakeOne re "textures/static.mov" -- Effect Unit
+  v <- toHTMLMediaElement re
+  HTML2.play v
+  TJS.printAnything cube
+  TJS.addAnythingToScene re.scene cube
+
+
+  -- video <- TJS.createElement "video"
+  -- HTML2.setSrc "textures/04.mov" video
+  -- TJS.preloadAnything video
+  -- HTML2.setAutoplay true video
+  -- HTML2.setLoop true video
+  -- HTML2.setMuted false video
+  -- vidTexture <- TJS.videoTexture video
+  -- HTML2.play video
+  -- HTML2.setVolume 0.0 video
+  --
+  -- geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
+  --
+  -- material <- TJS.meshBasicMaterial { map: vidTexture }
+  -- cube <- TJS.newMesh geometry material
+  -- TJS.printAnything cube
+  -- TJS.addAnythingToScene re.scene cube
+
 
 ---------------
 
-seeIfCubeIfNotMakeOne :: RenderEngine ->  Effect TJS.Mesh
-seeIfCubeIfNotMakeOne re = do
+seeIfCubeIfNotMakeOne :: RenderEngine -> String ->  Effect TJS.Mesh
+seeIfCubeIfNotMakeOne re s = do
   c <- read re.mesh -- see if there is a cube
   case c of
     Just m -> pure m -- if so, do nothing
     Nothing -> do -- if not, then create one
       nm <- do
+        velem <- createVideoElement re
+        setVideoURL re s
+        vidTexture <- TJS.videoTexture velem
         geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
-        material <- TJS.meshBasicMaterial { colour: 0x00ff00 }
+        material <- TJS.meshBasicMaterial { map: vidTexture }
         cube <- TJS.newMesh geometry material
         pure cube
       write (Just nm) re.mesh -- write mesh into the RenderEngine
@@ -164,32 +180,43 @@ seeIfCubeIfNotMakeOne re = do
 --       ...delete the mesh from the threejs scene...
 --       write Nothing re.mesh
 
----------------
-
--- setTexture???
+-------- video element ++ video texture --------
 
 setVideoURL :: RenderEngine -> String -> Effect Unit
 setVideoURL re s = do
   velem <- toHTMLMediaElement re -- :: HTML2.HTMLMediaElement
   url <- getVideoURL re -- :: String
-  case url of
-    "" -> do -- if "", then add a url with the s input
-      HTML2.setSrc s velem -- add new url
-      addDefsToHTMLMediaElement velem -- autoplay,load,etc.
-    otherwise -> do -- if not "", then:
-      let b = compareURLs url s -- :: Boolean -- compare s to currentURL
-      case b of
-        true -> pure unit -- just continue playing, IS THIS CORRECT?
-        false -> do
-          HTML2.pause velem -- stop current video
-          HTML2.setSrc s velem -- load new url
-          addDefsToHTMLMediaElement velem -- autoplay,load,etc.
+  if s /= url
+    then do
+      HTML2.setSrc s velem
+      addDefsToHTMLMediaElement velem
+      --HTML2.play velem
+    else pure unit
+
+  -- when (s /= url) $ do
+  --   HTML2.setSrc s velem
+  --   addDefsToHTMLMediaElement velem
 
 
-compareURLs :: String -> String -> Boolean
-compareURLs s1 s2
-  | s1 == s2 = true
-  | otherwise = false
+
+--   case url of
+--     "" -> do -- if "", then add a url with the s input
+--       HTML2.setSrc s velem -- add new url
+--       addDefsToHTMLMediaElement velem -- autoplay,load,etc.
+--     otherwise -> do -- if not "", then:
+--       let b = url == s -- :: Boolean -- compare s to currentURL
+--       case b of
+--         true -> pure unit -- just continue playing, IS THIS CORRECT?
+--         false -> do
+--           HTML2.pause velem -- stop current video???
+--           HTML2.setSrc s velem -- load new url
+--           addDefsToHTMLMediaElement velem -- autoplay,load,etc.
+--
+--
+-- compareURLs :: String -> String -> Boolean
+-- compareURLs s1 s2
+--   | s1 == s2 = true
+--   | otherwise = false
 
 
 -- maybeURL :: String -> Maybe String
@@ -228,14 +255,14 @@ createVideoElement re = do
       write (Just video') re.video
       pure video'
 
-
 addDefsToHTMLMediaElement :: HTML2.HTMLMediaElement -> Effect Unit
 addDefsToHTMLMediaElement velem = do
   TJS.preloadAnything velem
   HTML2.load velem
-  HTML2.setAutoplay true velem
+  --HTML2.setAutoplay true velem
   HTML2.setLoop true velem
   HTML2.setMuted false velem
+  HTML2.setVolume 0.0 velem
 
 ------------------------------------
 
