@@ -3,7 +3,8 @@ module RenderEngine
 RenderEngine(..),
 launch,
 animate,
-evaluate
+evaluate,
+Monitor
 ) where
 
 import Prelude --(Unit, bind, discard, pure, ($), (/))
@@ -23,28 +24,34 @@ import ThreeJS as TJS
 import AST
 import Parser
 
+-- python -m SimpleHTTPServer 8000
 
 type RenderEngine =
   {
   scene :: TJS.Scene,
   camera :: TJS.PerspectiveCamera,
   renderer :: TJS.Renderer,
-  video :: Ref (Maybe HTML2.HTMLMediaElement),
-  textureLoader :: Ref (Maybe TJS.TextureLoader),
-  mesh :: Ref (Maybe TJS.Mesh),
+  monitor :: Ref (Maybe Monitor),
   program :: Ref AST
   }
 
-{-
+------------- monitor -------------------
+
 type Monitor = {
-  video :: Ref (Maybe ?Video),
-  textureLoader :: Ref (Maybe TJS.TextureLoader),
-  --object :: Ref (Maybe TJS.OBJ)
-  --map :: Ref (Maybe TJS.MTL)
-  mesh :: Ref (Maybe TJS.Mesh),
+  video :: Ref (Maybe HTML2.HTMLMediaElement),
+  --object :: Ref (Maybe TJS.OBJ),
+  --map :: Ref (Maybe TJS.MTL),
+  mesh :: Ref (Maybe TJS.Mesh)
   }
 
-updateMonitor :: RenderEngine -> Ref (Maybe Monitor) -> Statement -> Effect Unit
+defMonitor :: Effect Monitor
+defMonitor = do
+  video <- new Nothing
+  mesh <- new Nothing
+  let mo = {video, mesh}
+  pure mo
+
+-- updateMonitor :: RenderEngine -> Ref (Maybe Monitor) -> Statement -> Effect Unit
 -- if there's no monitor:
 -- make all of the fields appropriately
 -- if there's already a monitor, then...
@@ -54,10 +61,11 @@ updateMonitor :: RenderEngine -> Ref (Maybe Monitor) -> Statement -> Effect Unit
 -- if transmission off:
 -- ...
 
-deleteMonitor :: RenderEngine -> Ref (Maybe Monitor) -> Effect Unit
+-- deleteMonitor :: RenderEngine -> Ref (Maybe Monitor) -> Effect Unit
 -- if there's no monitor, nothing to do
 -- if there is: delete everything and update the refs in Ref Monitor
-  -}
+
+----------------------------------------
 
 launch :: HTML.HTMLCanvasElement -> Effect RenderEngine
 launch cvs = do
@@ -65,27 +73,14 @@ launch cvs = do
   scene <- TJS.newScene
   camera <- TJS.newPerspectiveCamera 75.0 (16.0/9.0) 0.1 100.0
   TJS.setPositionOfAnything camera 0.0 0.0 5.0
-
   renderer <- TJS.newWebGLRenderer {antialias: true, canvas: cvs}
   TJS.setSize renderer 1250.0 720.0 false
-
   lights <- TJS.newHemisphereLight 0xffffbb 0x080820 1.0
   TJS.addAnythingToScene scene lights
-
-  video' <- TJS.createElement "video"
-  getURL <- HTML2.currentSrc video'
-  log $ "url: " <> (show getURL)
-
-  video <- new Nothing
-  textureLoader <- new Nothing
-  mesh <- new Nothing
-
+  monitor <- new Nothing
   program <- new defaultProgram
-
-  let re = {scene, camera, renderer, video, textureLoader, mesh, program}
-  -- TJS.requestAnimationFrame $ animate re
+  let re = {scene, camera, renderer, monitor, program}
   pure re
-
 
 
 animate :: RenderEngine -> Effect Unit
@@ -104,11 +99,10 @@ evaluate re s = do
   case parseProgram s of
     Right p -> do
       write p re.program
-      -- log $ "parser on renderEngine evaluate function: " <> (show p)
-      -- log $ "string on renderEngine evaluate function: " <> (show s)
       pure Nothing
     Left err -> pure $ Just err
 
+----------------------------------------
 
 runProgram :: RenderEngine -> AST -> Effect Unit
 runProgram re (Just (Transmission (LiteralTransmission true))) = tranmissionOn re
@@ -116,73 +110,80 @@ runProgram re (Just (Transmission (LiteralTransmission false))) = tranmissionOff
 runProgram re _ = pure unit
 -- runProgram re Nothing = noTransmission re
 
-
 tranmissionOn :: RenderEngine -> Effect Unit
 tranmissionOn re = do
-  cube <- seeIfCubeIfNotMakeOne re "textures/04.mov" -- :: Effect TJS.Mesh
-  v <- toHTMLMediaElement re
-  HTML2.play v
-  TJS.printAnything cube
-  TJS.addAnythingToScene re.scene cube
+  c <- read re.monitor -- :: Ref (Maybe Monitor)
+  case c of
+    Just m -> monitorOn re m
+    Nothing -> do
+      m <- defMonitor
+      monitorOn re m
+      write (Just m) re.monitor
 
 tranmissionOff :: RenderEngine -> Effect Unit
 tranmissionOff re = do
-  cube <- seeIfCubeIfNotMakeOne re "textures/static.mov" -- Effect Unit
-  v <- toHTMLMediaElement re
-  HTML2.play v
-  TJS.printAnything cube
+  c <- read re.monitor -- :: Ref (Maybe Monitor)
+  case c of
+    Just m -> monitorOff re m
+    Nothing -> do
+      m <- defMonitor
+      monitorOff re m
+      write (Just m) re.monitor
+
+-------- monitorOn and monitorff --------
+
+monitorOn :: RenderEngine -> Monitor -> Effect Unit
+monitorOn re mo = do
+  --deleteMeshIfThereIsOne mo
+  cube <- seeIfMeshIfNotMakeOne mo "textures/04.mov"
+  playVideoElement mo
+  TJS.addAnythingToScene re.scene cube
+
+monitorOff :: RenderEngine -> Monitor -> Effect Unit
+monitorOff re mo = do
+  --deleteMeshIfThereIsOne mo
+  cube <- seeIfMeshIfNotMakeOne mo "textures/static.mov"
+  playVideoElement mo
   TJS.addAnythingToScene re.scene cube
 
 
-  -- video <- TJS.createElement "video"
-  -- HTML2.setSrc "textures/04.mov" video
-  -- TJS.preloadAnything video
-  -- HTML2.setAutoplay true video
-  -- HTML2.setLoop true video
-  -- HTML2.setMuted false video
-  -- vidTexture <- TJS.videoTexture video
-  -- HTML2.play video
-  -- HTML2.setVolume 0.0 video
-  --
-  -- geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
-  --
-  -- material <- TJS.meshBasicMaterial { map: vidTexture }
-  -- cube <- TJS.newMesh geometry material
-  -- TJS.printAnything cube
-  -- TJS.addAnythingToScene re.scene cube
+-------- create mesh --------
 
-
----------------
-
-seeIfCubeIfNotMakeOne :: RenderEngine -> String ->  Effect TJS.Mesh
-seeIfCubeIfNotMakeOne re s = do
-  c <- read re.mesh -- see if there is a cube
+seeIfMeshIfNotMakeOne :: Monitor -> String -> Effect TJS.Mesh
+seeIfMeshIfNotMakeOne mo s = do
+  c <- read mo.mesh -- see if there is a mesh
   case c of
     Just m -> pure m -- if so, do nothing
     Nothing -> do -- if not, then create one
       nm <- do
-        velem <- createVideoElement re
-        setVideoURL re s
+        velem <- toHTMLMediaElement mo
+        setVideoURL mo s
         vidTexture <- TJS.videoTexture velem
         geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
         material <- TJS.meshBasicMaterial { map: vidTexture }
         cube <- TJS.newMesh geometry material
         pure cube
-      write (Just nm) re.mesh -- write mesh into the RenderEngine
+      write (Just nm) mo.mesh -- write mesh into the Monitor
       pure nm
 
--- deleteCubeIfThereIsOne :: RenderEngine -> Effect Unit
--- deleteCubeIfThereIsOne re = do
---   c <- read re.mesh
---   case c of
---     Nothing -> pure unit
---     Just m -> do
---       ...delete the mesh from the threejs scene...
---       write Nothing re.mesh
+deleteMeshIfThereIsOne :: Monitor -> Effect Unit
+deleteMeshIfThereIsOne re = do
+  c <- read re.mesh
+  case c of -- see if there is a mesh
+    Nothing -> pure unit -- if not, do nothing
+    Just m -> write Nothing re.mesh -- if so, erase mesh
 
--------- video element ++ video texture --------
 
-setVideoURL :: RenderEngine -> String -> Effect Unit
+-------- create velem --------
+
+playVideoElement :: Monitor -> Effect Unit
+playVideoElement mo = do
+  v <- toHTMLMediaElement mo
+  HTML2.play v
+  --HTML2.setAutoplay true v
+
+
+setVideoURL :: Monitor -> String -> Effect Unit
 setVideoURL re s = do
   velem <- toHTMLMediaElement re -- :: HTML2.HTMLMediaElement
   url <- getVideoURL re -- :: String
@@ -190,50 +191,10 @@ setVideoURL re s = do
     then do
       HTML2.setSrc s velem
       addDefsToHTMLMediaElement velem
-      --HTML2.play velem
     else pure unit
 
-  -- when (s /= url) $ do
-  --   HTML2.setSrc s velem
-  --   addDefsToHTMLMediaElement velem
 
-
-
---   case url of
---     "" -> do -- if "", then add a url with the s input
---       HTML2.setSrc s velem -- add new url
---       addDefsToHTMLMediaElement velem -- autoplay,load,etc.
---     otherwise -> do -- if not "", then:
---       let b = url == s -- :: Boolean -- compare s to currentURL
---       case b of
---         true -> pure unit -- just continue playing, IS THIS CORRECT?
---         false -> do
---           HTML2.pause velem -- stop current video???
---           HTML2.setSrc s velem -- load new url
---           addDefsToHTMLMediaElement velem -- autoplay,load,etc.
---
---
--- compareURLs :: String -> String -> Boolean
--- compareURLs s1 s2
---   | s1 == s2 = true
---   | otherwise = false
-
-
--- maybeURL :: String -> Maybe String
--- maybeURL s
---   | s == "" = Nothing
---   | otherwise = Just s
-
-
-toHTMLMediaElement :: RenderEngine -> Effect HTML2.HTMLMediaElement
-toHTMLMediaElement re = do
-  v <- read re.video -- :: Maybe HTML2.HTMLMediaElement
-  case v of
-    Just x -> pure x
-    Nothing -> createVideoElement re
-
-
-getVideoURL :: RenderEngine -> Effect String
+getVideoURL :: Monitor -> Effect String
 getVideoURL re = do
   velem <- read re.video -- :: Effect (Maybe HTMLMediaElement)
   case velem of
@@ -244,7 +205,7 @@ getVideoURL re = do
       HTML2.src elem -- src :: HTMLMediaElement -> Effect String
 
 
-createVideoElement :: RenderEngine -> Effect HTML2.HTMLMediaElement
+createVideoElement :: Monitor -> Effect HTML2.HTMLMediaElement
 createVideoElement re = do
   velem <- read re.video -- is there already a video element?
   case velem of
@@ -259,12 +220,18 @@ addDefsToHTMLMediaElement :: HTML2.HTMLMediaElement -> Effect Unit
 addDefsToHTMLMediaElement velem = do
   TJS.preloadAnything velem
   HTML2.load velem
-  --HTML2.setAutoplay true velem
   HTML2.setLoop true velem
   HTML2.setMuted false velem
   HTML2.setVolume 0.0 velem
 
 ------------------------------------
+
+toHTMLMediaElement :: Monitor -> Effect HTML2.HTMLMediaElement
+toHTMLMediaElement re = do
+  v <- read re.video -- :: Maybe HTML2.HTMLMediaElement
+  case v of
+    Just x -> pure x
+    Nothing -> createVideoElement re
 
 
 -- animate :: RenderEngine -> Effect Unit
