@@ -25030,7 +25030,7 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 99, column 3 - line 103, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 100, column 3 - line 104, column 32): " + [v.constructor.name]);
   };
 };
 var defMonitor = function __do() {
@@ -25065,7 +25065,7 @@ var createVideoElement = function(re) {
       return video$prime;
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 211, column 3 - line 217, column 18): " + [velem.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 326, column 3 - line 332, column 18): " + [velem.constructor.name]);
   };
 };
 var getVideoURL = function(re) {
@@ -25080,7 +25080,7 @@ var getVideoURL = function(re) {
       return src(elem3)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 200, column 3 - line 205, column 21): " + [velem.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 315, column 3 - line 320, column 21): " + [velem.constructor.name]);
   };
 };
 var toHTMLMediaElement = function(re) {
@@ -25094,7 +25094,7 @@ var toHTMLMediaElement = function(re) {
       return createVideoElement(re)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 232, column 3 - line 234, column 37): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 347, column 3 - line 349, column 37): " + [v.constructor.name]);
   };
 };
 var playVideoElement = function(mo) {
@@ -25103,13 +25103,13 @@ var playVideoElement = function(mo) {
     return play(v)();
   };
 };
-var setVideoURL = function(re) {
+var updateVideoURL = function(re) {
   return function(s) {
     return function __do2() {
       var velem = toHTMLMediaElement(re)();
       var url = getVideoURL(re)();
-      var $13 = s !== url;
-      if ($13) {
+      var $15 = s !== url;
+      if ($15) {
         setSrc(s)(velem)();
         return addDefsToHTMLMediaElement(velem)();
       }
@@ -25118,40 +25118,42 @@ var setVideoURL = function(re) {
     };
   };
 };
-var seeIfMeshIfNotMakeOne = function(mo) {
-  return function(s) {
-    return function __do2() {
-      var c = read(mo.mesh)();
-      if (c instanceof Just) {
-        return c.value0;
-      }
-      ;
-      if (c instanceof Nothing) {
-        var nm = function __do3() {
-          var velem = toHTMLMediaElement(mo)();
-          setVideoURL(mo)(s)();
-          var vidTexture = videoTexture(velem)();
-          var geometry = newBoxGeometry(2)(2)(2)();
-          var material = meshBasicMaterial({
-            map: vidTexture
-          })();
-          var cube = newMesh(geometry)(material)();
-          return cube;
-        }();
-        write(new Just(nm))(mo.mesh)();
-        return nm;
-      }
-      ;
-      throw new Error("Failed pattern match at RenderEngine (line 155, column 3 - line 167, column 14): " + [c.constructor.name]);
+var seeIfMeshIfNotMakeOne = function(scene) {
+  return function(mo) {
+    return function(s) {
+      return function __do2() {
+        var c = read(mo.mesh)();
+        if (c instanceof Just) {
+          return c.value0;
+        }
+        ;
+        if (c instanceof Nothing) {
+          var nm = function __do3() {
+            var velem = toHTMLMediaElement(mo)();
+            updateVideoURL(mo)(s)();
+            var vidTexture = videoTexture(velem)();
+            var geometry = newBoxGeometry(2)(2)(2)();
+            var material = meshBasicMaterial({
+              map: vidTexture
+            })();
+            var cube = newMesh(geometry)(material)();
+            addAnythingToScene(scene)(cube)();
+            return cube;
+          }();
+          write(new Just(nm))(mo.mesh)();
+          return nm;
+        }
+        ;
+        throw new Error("Failed pattern match at RenderEngine (line 267, column 3 - line 280, column 14): " + [c.constructor.name]);
+      };
     };
   };
 };
 var monitorOff = function(re) {
   return function(mo) {
     return function __do2() {
-      var cube = seeIfMeshIfNotMakeOne(mo)("textures/static.mov")();
-      playVideoElement(mo)();
-      return addAnythingToScene(re.scene)(cube)();
+      var cube = seeIfMeshIfNotMakeOne(re.scene)(mo)("textures/static.mov")();
+      return playVideoElement(mo)();
     };
   };
 };
@@ -25168,15 +25170,14 @@ var tranmissionOff = function(re) {
       return write(new Just(m))(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 126, column 3 - line 131, column 32): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 127, column 3 - line 132, column 32): " + [c.constructor.name]);
   };
 };
 var monitorOn = function(re) {
   return function(mo) {
     return function __do2() {
-      var cube = seeIfMeshIfNotMakeOne(mo)("textures/04.mov")();
-      playVideoElement(mo)();
-      return addAnythingToScene(re.scene)(cube)();
+      var cube = seeIfMeshIfNotMakeOne(re.scene)(mo)("textures/04.mov")();
+      return playVideoElement(mo)();
     };
   };
 };
@@ -25193,7 +25194,7 @@ var tranmissionOn = function(re) {
       return write(new Just(m))(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 116, column 3 - line 121, column 32): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 117, column 3 - line 122, column 32): " + [c.constructor.name]);
   };
 };
 var runProgram = function(re) {
@@ -25222,7 +25223,7 @@ var animate = function(re) {
       return render(re.renderer)(re.scene)(re.camera)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 90, column 3 - line 94, column 48): " + [p.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 91, column 3 - line 95, column 48): " + [p.constructor.name]);
   };
 };
 

@@ -38,15 +38,16 @@ type RenderEngine =
 ------------- monitor -------------------
 
 type Monitor = {
-  video :: Ref (Maybe HTML2.HTMLMediaElement),
-  --object :: Ref (Maybe TJS.OBJ),
+  video :: Ref (Maybe HTML2.HTMLMediaElement), -- could just without Ref and Maybe  ... add videoTexture... both can be without Ref and Maybe
+  --url :: Ref (Maybe String),
+  --object :: Ref (Maybe TJS.OBJ), -- only when it changes then update something
   --map :: Ref (Maybe TJS.MTL),
   mesh :: Ref (Maybe TJS.Mesh)
   }
 
 defMonitor :: Effect Monitor
 defMonitor = do
-  video <- new Nothing
+  video <- new Nothing -- it will be an actual velem
   mesh <- new Nothing
   let mo = {video, mesh}
   pure mo
@@ -90,7 +91,7 @@ animate re = do
   case p of
     Nothing -> TJS.render re.renderer re.scene re.camera
     Just prog -> do
-      runProgram re p
+      runProgram re p -- runs every frame
       TJS.render re.renderer re.scene re.camera
 
 
@@ -104,7 +105,7 @@ evaluate re s = do
 
 ----------------------------------------
 
-runProgram :: RenderEngine -> AST -> Effect Unit
+runProgram :: RenderEngine -> AST -> Effect Unit --
 runProgram re (Just (Transmission (LiteralTransmission true))) = tranmissionOn re
 runProgram re (Just (Transmission (LiteralTransmission false))) = tranmissionOff re
 runProgram re _ = pure unit
@@ -134,44 +135,158 @@ tranmissionOff re = do
 
 monitorOn :: RenderEngine -> Monitor -> Effect Unit
 monitorOn re mo = do
-  --deleteMeshIfThereIsOne mo
-  cube <- seeIfMeshIfNotMakeOne mo "textures/04.mov"
+  cube <- seeIfMeshIfNotMakeOne re.scene mo "textures/04.mov"
   playVideoElement mo
-  TJS.addAnythingToScene re.scene cube
 
 monitorOff :: RenderEngine -> Monitor -> Effect Unit
 monitorOff re mo = do
-  --deleteMeshIfThereIsOne mo
-  cube <- seeIfMeshIfNotMakeOne mo "textures/static.mov"
+  cube <- seeIfMeshIfNotMakeOne re.scene mo "textures/static.mov"
   playVideoElement mo
-  TJS.addAnythingToScene re.scene cube
+
+-- monitorOn :: RenderEngine -> Monitor -> Effect Unit
+-- monitorOn re mo = do
+--   updateMonitor re mo "textures/04.mov"
+--   playVideoElement mo
+--
+-- monitorOff :: RenderEngine -> Monitor -> Effect Unit
+-- monitorOff re mo = do
+--   updateMonitor re mo "textures/static.mov"
+--   playVideoElement mo
+
+------
+
+--
+-- updateMonitor :: RenderEngine -> Monitor -> String -> Effect Unit -- keep in mind that it will be called repeatelly
+-- updateMonitor re mo url = do
+--   -- is there an url setup?...
+--   v <- updateVideoURL mo url -- Effect HTMLMediaElement
+--   -- updateVideoURL mo s -- :: Effect Unit -- if so, compare/change if necessary, if not, create ne
+--   m <- createOrUpdateMesh re mo ... -- Effect Mesh; and it would store the mesh in the Monitor record
+--   connectVideoElementToMesh v m
+
+
+  -- store the video element, the url, the mesh for later
+
+  -- for the future... the monitor would be created everytime one of these things happen: either the url changes or the geometry changes.
+
+
+--   velem <- read mo.video -- read url :: Maybe String
+--   case u of
+--     Just x -> do -- if there is a url:
+--       let b = compareURLs s (Just x) -- compare
+--       case b of
+--         true -> pure unit --if same, do nothing
+--         false -> do -- if different, change url
+--           HTML2.setSrc s v
+--           addDefsToHTMLMediaElement v
+--           write (Just b) mo.url -- write url
+--           pure b
+--     Nothing -> do -- if there is not, create one
+--       nu <- do
+--         HTML2.setSrc s v
+--         addDefsToHTMLMediaElement v
+--       write nu mo.url -- write url
+--       pure nu
+--
+-- compareURLs :: String -> String -> Boolean
+-- compareURLs s1 s2
+--   | s1 == s2 = true
+--   | otherwise = false
+
+
+  -- u <- read mo.url -- is that url already setup? {read the url and compare} -- store url
+  -- case u of
+  --   Just x -> do
+  --     if s == u
+  --   then pure unit -- if so, there is nothing to do
+  --   else do -- if not:
+  --     m <- read mo.mesh -- read the mesh
+  --     case m of
+  --       Just x -> deleteMeshIfThereIsOne mo -- if there is an existing mesh: delete (using TJS functions) both from the scene
+  --       Nothing -> do
+  --         seeIfMeshIfNotMakeOne re.scene mo s -- if there no existing video mesh, then make it
+
+
+
 
 
 -------- create mesh --------
 
-seeIfMeshIfNotMakeOne :: Monitor -> String -> Effect TJS.Mesh
-seeIfMeshIfNotMakeOne mo s = do
+-- createOrUpdateMesh :: RenderEngine -> Monitor -> Effect TJS.Mesh
+-- createOrUpdateMesh re mo = do
+--   deleteMeshIfChanged re mo -- to be non-trivial would need another argument that has to do with program/specification
+--   makeMeshIfNecessary re mo
+--
+-- deleteMeshIfChanged :: RenderEngine -> Monitor -> Effect Unit
+-- deleteMeshIfChanged re mo = do
+--   m <- read mo.mesh
+--   case m of
+--     Nothing -> pure unit
+--     Just m' -> do
+--       -- right now, there's no condition that would necessitate a mesh change, so...
+--       pure unit
+--       -- if it did actually delete a mesh, it would write Nothing back to mo.mesh
+--
+--   -- is there an existing mesh that needs to be deleted? if so, delete it.
+--   -- is there no mesh - if so, make one.
+--
+--
+--
+--   m <- read mo.mesh
+--   case m of
+--     -- should be more like: if there is an existing mesh, compare the mesh: if different, then delete mesh, if same: do nothing
+--     Just x -> do
+--       if m /= mo.mesh -- compara
+--         then deleteMeshIfThereIsOne re mo -- :: Effect Unit
+--       else pure x
+--     Nothing -> do
+--       nm <- seeIfMeshIfNotMakeOne' re mo -- :: Effect TJS.Mesh
+--       write (Just nm) mo.mesh
+    --  pure unit
+
+
+seeIfMeshIfNotMakeOne' :: RenderEngine -> Monitor -> Effect TJS.Mesh
+seeIfMeshIfNotMakeOne' re mo = do
+  c <- read mo.mesh -- see if there is a mesh
+  case c of
+    Just m -> pure m -- if so, do nothing
+    Nothing -> do -- if not, then create one
+      velem <- toHTMLMediaElement mo -- this would be made when Monitor is first created
+      vidTexture <- TJS.videoTexture velem -- this would be made when Monitor is first created
+      geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
+      material <- TJS.meshBasicMaterial { map: vidTexture }
+      cube <- TJS.newMesh geometry material
+      TJS.addAnythingToScene re.scene cube
+      write (Just cube) mo.mesh -- write mesh into the Monitor
+      pure cube
+
+seeIfMeshIfNotMakeOne :: TJS.Scene -> Monitor -> String -> Effect TJS.Mesh
+--seeIfMeshIfNotMakeOne :: TJS.Scene -> Monitor -> Effect TJS.Mesh
+seeIfMeshIfNotMakeOne scene mo s = do
   c <- read mo.mesh -- see if there is a mesh
   case c of
     Just m -> pure m -- if so, do nothing
     Nothing -> do -- if not, then create one
       nm <- do
         velem <- toHTMLMediaElement mo
-        setVideoURL mo s
+        updateVideoURL mo s
         vidTexture <- TJS.videoTexture velem
         geometry <- TJS.newBoxGeometry 2.0 2.0 2.0
         material <- TJS.meshBasicMaterial { map: vidTexture }
         cube <- TJS.newMesh geometry material
+        TJS.addAnythingToScene scene cube
         pure cube
       write (Just nm) mo.mesh -- write mesh into the Monitor
       pure nm
 
-deleteMeshIfThereIsOne :: Monitor -> Effect Unit
-deleteMeshIfThereIsOne re = do
-  c <- read re.mesh
+deleteMeshIfThereIsOne :: RenderEngine -> Monitor -> Effect Unit
+deleteMeshIfThereIsOne re mo = do
+  c <- read mo.mesh
   case c of -- see if there is a mesh
     Nothing -> pure unit -- if not, do nothing
-    Just m -> write Nothing re.mesh -- if so, erase mesh
+    Just m -> do -- if so, erase mesh
+      TJS.removeAnythingFromScene re.scene mo.mesh
+      write Nothing mo.mesh
 
 
 -------- create velem --------
@@ -183,8 +298,8 @@ playVideoElement mo = do
   --HTML2.setAutoplay true v
 
 
-setVideoURL :: Monitor -> String -> Effect Unit
-setVideoURL re s = do
+updateVideoURL :: Monitor -> String -> Effect Unit --HTML2.HTMLMediaElement
+updateVideoURL re s = do
   velem <- toHTMLMediaElement re -- :: HTML2.HTMLMediaElement
   url <- getVideoURL re -- :: String
   if s /= url
