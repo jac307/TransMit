@@ -1,14 +1,11 @@
 module Main where
 
-import Prelude
+import Prelude (Unit, bind, pure, ($))
 import Effect (Effect)
-import Data.Maybe
+import Data.Maybe (Maybe(..))
 import Web.HTML.HTMLCanvasElement as HTML
-import Effect.Class.Console (log)
 
 import RenderEngine as RE
-import AST
-import Parser
 
 launch :: HTML.HTMLCanvasElement -> Effect RE.RenderEngine
 launch = RE.launch
