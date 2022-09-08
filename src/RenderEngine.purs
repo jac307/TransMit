@@ -42,6 +42,7 @@ type RenderEngine =
 --- segunda linea> lo que le debo dar
 
 type Monitor = {
+  currentURL :: Ref String,   -- add a Ref to currentURL
   video :: HTML2.HTMLMediaElement,
   vidTexture :: TJS.TextureLoader,
   mesh :: Ref (Maybe TJS.Mesh)
@@ -49,16 +50,20 @@ type Monitor = {
 
 defMonitor :: Effect Monitor
 defMonitor = do
+  currentURL <- new defURL
   video <- defVidElem
   vidTexture <- defVidTexture
   mesh <- new Nothing
-  let mo = {video, vidTexture, mesh}
+  let mo = {currentURL, video, vidTexture, mesh}
   pure mo
+
+defURL :: String
+defURL = ""
 
 defVidElem :: Effect HTML2.HTMLMediaElement
 defVidElem = do
   v <- TJS.createElement "video"
-  HTML2.setSrc "" v -- later, the def url should be = "textures/static.mov"
+  HTML2.setSrc defURL v -- later, the def url should be = "textures/static.mov"
   pure v
 
 defVidTexture :: Effect TJS.TextureLoader
@@ -194,18 +199,17 @@ updateVideoTexture mo url = do
   vt <- TJS.videoTexture mo.video -- :: TJS.TextureLoader
   pure vt
 
--------- vElem --------
+-------- vElem & currentURL --------
 
 playVideoElement :: Monitor -> Effect Unit
 playVideoElement mo = do
   let v = mo.video -- :: HTML2.HTMLMediaElement
   HTML2.play v
 
-
 updateURLfromVidElem :: Monitor -> String -> Effect Unit
 updateURLfromVidElem mo url = do
   let v = mo.video -- :: HTML2.HTMLMediaElement
-  currURL <- HTML2.currentSrc v -- :: String
+  currURL <- read mo.currentURL -- :: String
   if url /= currURL
     then do
       HTML2.setSrc url v
@@ -214,7 +218,9 @@ updateURLfromVidElem mo url = do
       HTML2.setLoop true v
       HTML2.setMuted false v
       HTML2.setVolume 0.0 v
+      write url mo.currentURL -- write new info
     else (pure unit)
+
 
 -------- end --------
 
