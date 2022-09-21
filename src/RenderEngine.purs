@@ -53,7 +53,10 @@ type Monitor = {
   currMtlURL :: Ref String,
   material :: Ref (Maybe TJS.MTL),
   -- mesh
-  mesh :: Ref (Maybe TJS.Mesh)
+  mesh :: Ref (Maybe TJS.Mesh),
+  --
+  currGltfURL :: Ref String,
+  shape :: Ref (Maybe TJS.GLTF)
   }
 
 defMonitor :: Effect Monitor
@@ -70,7 +73,10 @@ defMonitor = do
   material <- new Nothing
   -- mesh
   mesh <- new Nothing
-  let mo = {currVidURL, video, vidTexture, currObjURL, geometry, currMtlURL, material, mesh}
+  --
+  currGltfURL <- new defURL
+  shape <- new Nothing
+  let mo = {currVidURL, video, vidTexture, currObjURL, geometry, currMtlURL, material, mesh, currGltfURL, shape}
   pure mo
 
 defURL :: String
@@ -171,8 +177,10 @@ noTransmission re = do
 
 monitorOn :: RenderEngine -> Monitor -> Effect Unit
 monitorOn re mo = do
-  updateMonitor re mo "textures/04.mov"
-  playVideoElement mo
+  -- updateMonitor re mo "textures/04.mov"
+  -- playVideoElement mo
+  updateGltfURL mo "3dObjects/cubo3.glb"
+  changeOrLoadShapeIfNecessary re mo
 
 monitorOff :: RenderEngine -> Monitor -> Effect Unit
 monitorOff re mo = do
@@ -192,59 +200,57 @@ updateMonitor re mo url = do
   m <- createOrUpdateMesh re mo vt -- :: Effect TJS.Mesh
   pure unit
 
--- -- new --
---
--- monitorOn' :: RenderEngine -> Monitor -> Effect Unit
--- monitorOn' re mo = do
---   updateMonitor' re mo "3dObjects/cubo2.obj" "3dObjects/cubo2.mtl"
---
--- monitorOff' :: RenderEngine -> Monitor -> Effect Unit
--- monitorOff' re mo = do
---   updateMonitor' re mo "3dObjects/cubo.obj" "3dObjects/cubo.mtl"
---
--- noMonitor' :: RenderEngine -> Monitor -> Effect Unit
--- noMonitor' re mo = do
---   deleteObject re mo
---
--- -- I should add the texture later
--- updateMonitor' :: RenderEngine -> Monitor -> String -> String -> Effect Unit
--- updateMonitor' re mo objURL mtlURL = do
---   updateObjURL mo objURL
---   updateMtlURL mo mtlURL
---   loadObjectIfNecessary re mo
---
--- --
 
----- new ---
+---- shape ---
 
--- ~ updateMonitor
+updateGltfURL :: Monitor -> String -> Effect Unit
+updateGltfURL mo url = do
+  currURL <- read mo.currGltfURL
+  if url /= currURL
+    then write url mo.currGltfURL
+    else (pure unit)
 
--- 1. change the video URL if necessary
---  (see the stored URL, if not the same then change the URL in the DOM AND store the new URL in the Monitor)
---
--- 2. change/load the geometry URL if necessary
---   compare the specified URL to the stored URL to see whether a load should be triggered
---   if the load is triggered - response is asynchronous (happen in between some future frames):
---     (in the callback, this is later, in between some future frames)
---     a. store the geometry
---     b. try to make a new mesh from stuff stored in Monitor
---   immediately after triggering load: stored URL should be updated
---
--- 3. change/load the material (URL) if necessary
---   compare the specified URL to the stored URL to see whether a load should be triggered
---   if the load is triggered - response is asynchronous (happen in between some future frames):
---     (in the callback, this is later, in between some future frames)
---     a. store the material
---     b. try to make a new mesh from stuff stored in Monitor
---   immediately after triggering load: stored URL should be updated
+-- currGltfURL :: Ref String,
+-- shape :: Ref (Maybe TJS.GLTF)
+changeOrLoadShapeIfNecessary :: RenderEngine -> Monitor -> Effect Unit
+changeOrLoadShapeIfNecessary re mo = do
+  gltfURL <- read mo.currGltfURL -- :: String
+  s <- read mo.shape -- :: Maybe TJS.GLTF
+  case s of
+    Just m -> pure unit
+    Nothing -> do
+      loader <- TJS.newGLTFLoader
+      TJS.loadGLTF1 loader gltfURL $ \o -> do
+        TJS.preloadAnything o
+        TJS.addAnythingToScene re.scene o.scene
+        write (Just o) mo.shape
+        pure unit
 
--- end of updateMonitor....
+---- new monitor ---
 
+-- updateMonitor :: RenderEngine -> Monitor -> String -> String -> String -> Effect Unit
+-- updateMonitor re mo vURL oURL mURL = do
+--   -- 1. change video url if necessary
+--   -- 2. change/load geometry url/object
+--   -- 3. change/load material url/create new mesh
+--   pure unit
+
+---- update OBJ/MTL URLs ---
+
+-- updateObjURL :: Monitor -> String -> Effect Unit
+-- updateObjURL mo url = do
+--   currURL <- read mo.currObjURL
+--   if url /= currURL
+--     then write url mo.currObjURL
+--     else (pure unit)
+
+---- create/update Mesh ---
+
+-- -- note: only called if something has been just loaded
 -- tryToMakeMesh :: RenderEngine -> Monitor -> Effect Unit
 -- tryToMakeMesh re m = do
---   -- note: only called if something has been just loaded
 --   -- if there is already a mesh, delete it
---   deleteMeshIfThereIsOne re m -- ie. delete from scene and Monitor(ref)
+--   --deleteMeshIfThereIsOne re m -- ie. delete from scene and Monitor(ref)
 --   -- if in the refs you have a geometry and a material then
 --   g <- read m.geometry
 --   case g of
@@ -254,29 +260,66 @@ updateMonitor re mo url = do
 --       case m of
 --         Nothing -> pure unit
 --         Just m' -> makeMesh re g' m'
+
+-- makeMesh :: RenderEngine -> TJS.OBJ -> TJS.MTL -> TJS.TextureLoader -> Effect Unit
+-- makeMesh re g m vt = do
+-- makeMesh :: RenderEngine -> Monitor -> Effect Unit
+-- makeMesh re mo = do
+--   -- combine the three things to make a mesh
+--   --t <- updateVideoTexture mo url  -- :: TJS.TextureLoader
+--   m <- loadMaterialIfNecessary mo -- :: TJS.MTL
+--   g <- loadGeometryIfNecessary mo m -- :: TJS.OBJ
+--   -- add the mesh to the scene
+--   --TJS.addAnythingToScene re.scene ?
+--   -- store the mesh in the appropriate ref
+--   --write ? mo.mesh
+--   pure unit
+
+-- --   currMtlURL :: Ref String,
+-- --   material :: Ref (Maybe TJS.MTL),
+-- loadMaterialIfNecessary :: Monitor -> Effect Unit
+-- loadMaterialIfNecessary mo = do
+--   mtlURL <- read mo.currMtlURL -- :: String
+--   m <- read mo.material -- :: Maybe TJS.MTL
+--   case m of
+--     Just x -> pure unit
+--     Nothing -> do -- if there is none, then load and write it
+--       TJS.loadMTL mtlURL $ \m' -> do
+--         TJS.preloadAnything m'
+--         write (Just m') mo.material
+--         pure unit
 --
--- -- makeMesh :: RenderEngine -> Geometry? -> Material? -> VideoTexture? -> Effect Unit
--- -- makeMesh re g m vt = do
--- --   -- combine the three things to make a mesh
--- --   -- add the mesh to the scene
--- --   -- store the mesh in the appropriate ref
--- --
--- -- ---
+-- --   currObjURL :: Ref String,
+-- --   geometry :: Ref (Maybe TJS.OBJ),
+-- loadGeometryIfNecessary :: Monitor -> TJS.MTL -> Effect Unit
+-- loadGeometryIfNecessary mo m = do
+--   objURL <- read mo.currObjURL -- :: String
+--   g <- read mo.geometry -- :: Maybe TJS.OBJ
+--   case g of
+--     Just x -> pure unit
+--     Nothing -> do -- if there is none, then load and write it
+--       TJS.loadOBJ objURL $ \g' -> do
+--         TJS.preloadAnything g'
+--         --TJS.setMaterials g' m
+--         write (Just g') mo.geometry
+--         pure g'
 
 
+        -- TJS.loadMTL mtlURL $ \m -> do
+        -- TJS.preloadAnything m
+        -- TJS.loadOBJ objURL $ \o -> do
+        --   TJS.addAnythingToScene re.scene o
+        --   write (Just o) mo.object
+        --   pure unit
 
-------- Object -------
 
--- updateObjURL :: Monitor -> String -> Effect Unit
--- updateObjURL mo url = write url mo.currObjURL
+---  1. Material ---
+-- currMtlURL :: Ref String,
+-- material :: Ref (Maybe TJS.MTL),
 
---  -- change
--- updateObjURL :: Monitor -> String -> Effect Unit
--- updateObjURL mo url = do
---   currURL <- read mo.currObjURL
---   if url /= currURL
---     then write url mo.currObjURL
---     else (pure unit)
+-- changeLoadMaterialIfNecessary :: Monitor -> String -> TJS.MTL
+-- changeLoadMaterialIfNecessary mo = do
+--   m <- read mo.material -- :: Maybe TJS.MTL
 --
 -- updateMtlURL :: Monitor -> String -> Effect Unit
 -- updateMtlURL mo url = do
@@ -285,6 +328,13 @@ updateMonitor re mo url = do
 --   if url /= currURL
 --     then write url mo.currMtlURL
 --     else (pure unit)
+
+------- Object -------
+
+-- updateObjURL :: Monitor -> String -> Effect Unit
+-- updateObjURL mo url = write url mo.currObjURL
+
+--  -- change
 --
 -- deleteObject :: RenderEngine -> Monitor -> Effect Unit
 -- deleteObject re mo = do
@@ -323,13 +373,13 @@ updateMonitor re mo url = do
 --       --   --       -- stuff to store material in a ref or something?
 --       --   write (Just o) mo.object
 --       --   pure unit
---
---       TJS.loadMTL mtlURL $ \m -> do
---         TJS.preloadAnything m
---         TJS.loadOBJ objURL $ \o -> do
---           TJS.addAnythingToScene re.scene o
---           write (Just o) mo.object
---           pure unit
+
+      -- TJS.loadMTL mtlURL $ \m -> do
+      --   TJS.preloadAnything m
+      --   TJS.loadOBJ objURL $ \o -> do
+      --     -- TJS.addAnythingToScene re.scene o
+      --     -- write (Just o) mo.object
+      --     -- pure unit
 
 
 -------- Mesh --------
