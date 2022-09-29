@@ -60,45 +60,44 @@ defVidTexture = do
   pure vidTexture
 
 
+---- new monitor ---
+
+updateMonitor :: TJS.Scene -> Monitor -> String -> String -> String -> Effect Unit
+updateMonitor sc mo vURL objURL mtlURL = do
+  -- 1. change video url if necessary
+  v <- updateVideoTexture mo vURL -- :: TJS.TextureLoader
+  -- 2. change/load geometry url/object
+  changeOrLoadGeoIfNecessary sc mo objURL
+  -- 3. change/load material url/create new mesh
+  --changeOrLoadMatIfNecessary mo mtlURL
+
 ---- Geometry ---
 
-changeOrLoadGeoIfNecessary :: Monitor -> String -> Effect Unit
-changeOrLoadGeoIfNecessary mo url = do
+changeOrLoadGeoIfNecessary :: TJS.Scene -> Monitor -> String -> Effect Unit
+changeOrLoadGeoIfNecessary sc mo url = do
   currURL <- read mo.currObjURL
-  --compare the specified URL to the stored URL to see whether a load should be triggered
   if url == currURL
     then (pure unit)
     else do -- if the load is triggered:
-      g <- read mo.geometry -- :: Maybe TJS.OBJ
-      case g of -- check if there is a geometry
-        Just x -> pure unit -- what happens if there is one already?
-        Nothing -> do -- if there isn't
-          -- try to make a new mesh from stuff stored in Monitor
-          loader <- TJS.newOBJLoader
-          TJS.loadOBJ loader url $ \o -> do
-            -- should I load the o to the scene?
-            write (Just o) mo.geometry
-            write url mo.currObjURL
-            pure unit
+      loader <- TJS.newOBJLoader
+      TJS.loadOBJ loader url $ \o -> do
+        write (Just o) mo.geometry
+        tryToMakeMesh sc mo
+      write url mo.currObjURL
 
 ---- Material ---
 
-changeOrLoadMatIfNecessary :: Monitor -> String -> Effect Unit
-changeOrLoadMatIfNecessary mo url = do
+changeOrLoadMatIfNecessary :: TJS.Scene -> Monitor -> String -> Effect Unit
+changeOrLoadMatIfNecessary sc mo url = do
   currURL <- read mo.currMtlURL
-  --compare the specified URL to the stored URL to see whether a load should be triggered
   if url == currURL
     then (pure unit)
-    else do -- if load is triggered
-      m <- read mo.material -- check if there is a material
-      case m of
-        Just x -> pure unit
-        Nothing -> do
-          loader <- TJS.newMTLLoader
-          TJS.loadMTL loader url $ \o -> do
-            write (Just o) mo.material
-            write url mo.currMtlURL
-            pure unit
+    else do
+      loader <- TJS.newMTLLoader
+      TJS.loadMTL loader url $ \o -> do
+        write (Just o) mo.material
+        tryToMakeMesh sc mo
+      write url mo.currMtlURL
 
 ---- Mesh ---
 
@@ -127,21 +126,12 @@ makeMesh sc g m vt = do
   -- add the mesh to the scene
   TJS.addAnythingToScene sc g
   -- store the mesh in the appropriate ref
-  pure unit
+  --pure unit
 
 -- Imported Functions --
 foreign import setMaterials :: TJS.OBJ -> TJS.MTL -> Effect Unit
 foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
 foreign import mapMatToObj :: TJS.OBJ -> TJS.MTL -> Int -> Effect Unit
-
-
-
-
-
-
-
-
-
 
 
 -------- vTexture --------
