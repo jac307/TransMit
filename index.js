@@ -808,31 +808,81 @@ var write = function(val) {
 // output/Effect.Ref/index.js
 var $$new = _new;
 
-// output/Data.Foldable/foreign.js
-var foldrArray = function(f) {
-  return function(init3) {
-    return function(xs) {
-      var acc = init3;
-      var len = xs.length;
-      for (var i = len - 1; i >= 0; i--) {
-        acc = f(xs[i])(acc);
-      }
-      return acc;
+// output/MonitorState/foreign.js
+var preloadMaterials = (m) => () => m.preload();
+var mapVidTextToMat = (m) => (vt) => () => m.materials.Material.map = vt;
+var mapMatToObj = (o) => (n) => (m) => () => o.children[n].material = m.materials.Material;
+
+// output/ThreeJS/foreign.js
+var newScene = () => new THREE.Scene();
+var newPerspectiveCamera = (fov) => (aspect) => (near) => (far) => () => new THREE.PerspectiveCamera(fov, aspect, near, far);
+var newWebGLRenderer = (params) => () => new THREE.WebGLRenderer(params);
+var render = (renderer) => (scene) => (camera) => () => renderer.render(scene, camera);
+var setSize = (renderer) => (w) => (h) => (updateStyle) => () => renderer.setSize(w, h, updateStyle);
+var newOBJLoader = () => new THREE.OBJLoader();
+var loadOBJ = (loader) => (url) => (cb) => () => loader.load(url, (x) => cb(x)());
+var newMTLLoader = () => new THREE.MTLLoader();
+var loadMTL = (loader) => (url) => (cb) => () => loader.load(url, (x) => cb(x)());
+var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
+var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
+var preloadAnything = (elem3) => () => elem3.preload = "auto";
+var printAnything = (thing) => () => console.log(thing);
+var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
+var createElement = (name2) => () => document.createElement(name2);
+var videoTexture = (videoElem) => () => new THREE.VideoTexture(videoElem);
+var clampToEdgeWrapping = THREE.ClampToEdgeWrapping;
+var repeatWrapping = THREE.RepeatWrapping;
+var mirroredRepeatWrapping = THREE.MirroredRepeatWrapping;
+var nearestFilter = THREE.NearestFilter;
+var linearFilter = THREE.LinearFilter;
+
+// output/Web.HTML.HTMLMediaElement/foreign.js
+function setSrc(src2) {
+  return function(media) {
+    return function() {
+      media.src = src2;
     };
   };
-};
-var foldlArray = function(f) {
-  return function(init3) {
-    return function(xs) {
-      var acc = init3;
-      var len = xs.length;
-      for (var i = 0; i < len; i++) {
-        acc = f(acc)(xs[i]);
-      }
-      return acc;
+}
+function load(media) {
+  return function() {
+    return media.load();
+  };
+}
+function setLoop(loop2) {
+  return function(media) {
+    return function() {
+      media.loop = loop2;
     };
   };
-};
+}
+function play(media) {
+  return function() {
+    media.play();
+  };
+}
+function setVolume(volume2) {
+  return function(media) {
+    return function() {
+      media.volume = volume2;
+    };
+  };
+}
+function setMuted(muted2) {
+  return function(media) {
+    return function() {
+      media.muted = muted2;
+    };
+  };
+}
+
+// output/Data.Enum/foreign.js
+function toCharCode(c) {
+  return c.charCodeAt(0);
+}
+function fromCharCode(c) {
+  return String.fromCharCode(c);
+}
 
 // output/Control.Plus/index.js
 var empty = function(dict) {
@@ -890,6 +940,106 @@ var fst = function(v) {
   return v.value0;
 };
 
+// output/Data.Unfoldable/foreign.js
+var unfoldrArrayImpl = function(isNothing2) {
+  return function(fromJust2) {
+    return function(fst2) {
+      return function(snd2) {
+        return function(f) {
+          return function(b) {
+            var result = [];
+            var value = b;
+            while (true) {
+              var maybe2 = f(value);
+              if (isNothing2(maybe2))
+                return result;
+              var tuple = fromJust2(maybe2);
+              result.push(fst2(tuple));
+              value = snd2(tuple);
+            }
+          };
+        };
+      };
+    };
+  };
+};
+
+// output/Data.Traversable/foreign.js
+var traverseArrayImpl = function() {
+  function array1(a) {
+    return [a];
+  }
+  function array2(a) {
+    return function(b) {
+      return [a, b];
+    };
+  }
+  function array3(a) {
+    return function(b) {
+      return function(c) {
+        return [a, b, c];
+      };
+    };
+  }
+  function concat2(xs) {
+    return function(ys) {
+      return xs.concat(ys);
+    };
+  }
+  return function(apply2) {
+    return function(map2) {
+      return function(pure2) {
+        return function(f) {
+          return function(array) {
+            function go(bot, top2) {
+              switch (top2 - bot) {
+                case 0:
+                  return pure2([]);
+                case 1:
+                  return map2(array1)(f(array[bot]));
+                case 2:
+                  return apply2(map2(array2)(f(array[bot])))(f(array[bot + 1]));
+                case 3:
+                  return apply2(apply2(map2(array3)(f(array[bot])))(f(array[bot + 1])))(f(array[bot + 2]));
+                default:
+                  var pivot = bot + Math.floor((top2 - bot) / 4) * 2;
+                  return apply2(map2(concat2)(go(bot, pivot)))(go(pivot, top2));
+              }
+            }
+            return go(0, array.length);
+          };
+        };
+      };
+    };
+  };
+}();
+
+// output/Data.Foldable/foreign.js
+var foldrArray = function(f) {
+  return function(init3) {
+    return function(xs) {
+      var acc = init3;
+      var len = xs.length;
+      for (var i = len - 1; i >= 0; i--) {
+        acc = f(xs[i])(acc);
+      }
+      return acc;
+    };
+  };
+};
+var foldlArray = function(f) {
+  return function(init3) {
+    return function(xs) {
+      var acc = init3;
+      var len = xs.length;
+      for (var i = 0; i < len; i++) {
+        acc = f(acc)(xs[i]);
+      }
+      return acc;
+    };
+  };
+};
+
 // output/Data.Bifunctor/index.js
 var bimap = function(dict) {
   return dict.bimap;
@@ -932,6 +1082,343 @@ var foldableArray = {
   foldMap: function(dictMonoid) {
     return foldMapDefaultR(foldableArray)(dictMonoid);
   }
+};
+
+// output/Data.Identity/index.js
+var Identity = function(x) {
+  return x;
+};
+var functorIdentity = {
+  map: function(f) {
+    return function(m) {
+      return f(m);
+    };
+  }
+};
+var applyIdentity = {
+  apply: function(v) {
+    return function(v1) {
+      return v(v1);
+    };
+  },
+  Functor0: function() {
+    return functorIdentity;
+  }
+};
+var bindIdentity = {
+  bind: function(v) {
+    return function(f) {
+      return f(v);
+    };
+  },
+  Apply0: function() {
+    return applyIdentity;
+  }
+};
+var applicativeIdentity = {
+  pure: Identity,
+  Apply0: function() {
+    return applyIdentity;
+  }
+};
+var monadIdentity = {
+  Applicative0: function() {
+    return applicativeIdentity;
+  },
+  Bind1: function() {
+    return bindIdentity;
+  }
+};
+
+// output/Data.Unfoldable1/foreign.js
+var unfoldr1ArrayImpl = function(isNothing2) {
+  return function(fromJust2) {
+    return function(fst2) {
+      return function(snd2) {
+        return function(f) {
+          return function(b) {
+            var result = [];
+            var value = b;
+            while (true) {
+              var tuple = f(value);
+              result.push(fst2(tuple));
+              var maybe2 = snd2(tuple);
+              if (isNothing2(maybe2))
+                return result;
+              value = fromJust2(maybe2);
+            }
+          };
+        };
+      };
+    };
+  };
+};
+
+// output/Data.Unfoldable1/index.js
+var unfoldable1Array = {
+  unfoldr1: /* @__PURE__ */ unfoldr1ArrayImpl(isNothing)(/* @__PURE__ */ fromJust())(fst)(snd)
+};
+
+// output/Data.Unfoldable/index.js
+var unfoldr = function(dict) {
+  return dict.unfoldr;
+};
+var unfoldableArray = {
+  unfoldr: /* @__PURE__ */ unfoldrArrayImpl(isNothing)(/* @__PURE__ */ fromJust())(fst)(snd),
+  Unfoldable10: function() {
+    return unfoldable1Array;
+  }
+};
+
+// output/Data.Enum/index.js
+var toEnum = function(dict) {
+  return dict.toEnum;
+};
+var fromEnum = function(dict) {
+  return dict.fromEnum;
+};
+var toEnumWithDefaults = function(dictBoundedEnum) {
+  return function(low) {
+    return function(high) {
+      return function(x) {
+        var v = toEnum(dictBoundedEnum)(x);
+        if (v instanceof Just) {
+          return v.value0;
+        }
+        ;
+        if (v instanceof Nothing) {
+          var $54 = x < fromEnum(dictBoundedEnum)(bottom(dictBoundedEnum.Bounded0()));
+          if ($54) {
+            return low;
+          }
+          ;
+          return high;
+        }
+        ;
+        throw new Error("Failed pattern match at Data.Enum (line 158, column 33 - line 160, column 62): " + [v.constructor.name]);
+      };
+    };
+  };
+};
+var defaultSucc = function(toEnum$prime) {
+  return function(fromEnum$prime) {
+    return function(a) {
+      return toEnum$prime(fromEnum$prime(a) + 1 | 0);
+    };
+  };
+};
+var defaultPred = function(toEnum$prime) {
+  return function(fromEnum$prime) {
+    return function(a) {
+      return toEnum$prime(fromEnum$prime(a) - 1 | 0);
+    };
+  };
+};
+var charToEnum = function(v) {
+  if (v >= bottom(boundedInt) && v <= top(boundedInt)) {
+    return new Just(fromCharCode(v));
+  }
+  ;
+  return Nothing.value;
+};
+var enumChar = {
+  succ: /* @__PURE__ */ defaultSucc(charToEnum)(toCharCode),
+  pred: /* @__PURE__ */ defaultPred(charToEnum)(toCharCode),
+  Ord0: function() {
+    return ordChar;
+  }
+};
+var boundedEnumChar = /* @__PURE__ */ function() {
+  return {
+    cardinality: toCharCode(top(boundedChar)) - toCharCode(bottom(boundedChar)) | 0,
+    toEnum: charToEnum,
+    fromEnum: toCharCode,
+    Bounded0: function() {
+      return boundedChar;
+    },
+    Enum1: function() {
+      return enumChar;
+    }
+  };
+}();
+
+// output/MonitorState/index.js
+var updateURLfromVidElem = function(mo) {
+  return function(url) {
+    return function __do4() {
+      var currURL = read(mo.currVidURL)();
+      var $0 = url !== currURL;
+      if ($0) {
+        setSrc(url)(mo.video)();
+        preloadAnything(mo.video)();
+        load(mo.video)();
+        setLoop(true)(mo.video)();
+        setMuted(false)(mo.video)();
+        setVolume(0)(mo.video)();
+        return write(url)(mo.currVidURL)();
+      }
+      ;
+      return unit;
+    };
+  };
+};
+var updateVideoTexture = function(mo) {
+  return function(url) {
+    return function __do4() {
+      updateURLfromVidElem(mo)(url)();
+      var vt = videoTexture(mo.video)();
+      return vt;
+    };
+  };
+};
+var playVideoElement = function(mo) {
+  return play(mo.video);
+};
+var makeMesh = function(sc) {
+  return function(g) {
+    return function(m) {
+      return function(vt) {
+        return function __do4() {
+          printAnything(m)();
+          printAnything(g)();
+          mapVidTextToMat(m)(vt)();
+          mapMatToObj(g)(0)(m)();
+          return addAnythingToScene(sc)(g)();
+        };
+      };
+    };
+  };
+};
+var tryToMakeMesh = function(sc) {
+  return function(mo) {
+    return function __do4() {
+      var g = read(mo.geometry)();
+      if (g instanceof Nothing) {
+        return unit;
+      }
+      ;
+      if (g instanceof Just) {
+        var m = read(mo.material)();
+        if (m instanceof Nothing) {
+          return unit;
+        }
+        ;
+        if (m instanceof Just) {
+          return makeMesh(sc)(g.value0)(m.value0)(mo.vidTexture)();
+        }
+        ;
+        throw new Error("Failed pattern match at MonitorState (line 130, column 7 - line 132, column 51): " + [m.constructor.name]);
+      }
+      ;
+      throw new Error("Failed pattern match at MonitorState (line 126, column 3 - line 132, column 51): " + [g.constructor.name]);
+    };
+  };
+};
+var defURL = "";
+var defVidElem = function __do() {
+  var v = createElement("video")();
+  setSrc(defURL)(v)();
+  return v;
+};
+var defVidTexture = function __do2() {
+  var v = defVidElem();
+  var vidTexture = videoTexture(v)();
+  return vidTexture;
+};
+var defMonitor = function __do3() {
+  var currVidURL = $$new(defURL)();
+  var video = defVidElem();
+  var vidTexture = defVidTexture();
+  var currObjURL = $$new(defURL)();
+  var geometry = $$new(Nothing.value)();
+  var currMtlURL = $$new(defURL)();
+  var material = $$new(Nothing.value)();
+  var mo = {
+    currVidURL,
+    video,
+    vidTexture,
+    currObjURL,
+    geometry,
+    currMtlURL,
+    material
+  };
+  return mo;
+};
+var changeOrLoadMatIfNecessary = function(sc) {
+  return function(mo) {
+    return function(url) {
+      return function __do4() {
+        var currURL = read(mo.currMtlURL)();
+        var $5 = url === currURL;
+        if ($5) {
+          return unit;
+        }
+        ;
+        var loader = newMTLLoader();
+        loadMTL(loader)(url)(function(m) {
+          return function __do5() {
+            preloadMaterials(m)();
+            write(new Just(m))(mo.material)();
+            return tryToMakeMesh(sc)(mo)();
+          };
+        })();
+        return write(url)(mo.currMtlURL)();
+      };
+    };
+  };
+};
+var changeOrLoadGeoIfNecessary = function(sc) {
+  return function(mo) {
+    return function(url) {
+      return function __do4() {
+        var currURL = read(mo.currObjURL)();
+        var $6 = url === currURL;
+        if ($6) {
+          return unit;
+        }
+        ;
+        var loader = newOBJLoader();
+        loadOBJ(loader)(url)(function(o) {
+          return function __do5() {
+            write(new Just(o))(mo.geometry)();
+            return tryToMakeMesh(sc)(mo)();
+          };
+        })();
+        return write(url)(mo.currObjURL)();
+      };
+    };
+  };
+};
+var updateMonitor = function(sc) {
+  return function(mo) {
+    return function(vURL) {
+      return function(objURL) {
+        return function(mtlURL) {
+          return function __do4() {
+            var v = updateVideoTexture(mo)(vURL)();
+            changeOrLoadGeoIfNecessary(sc)(mo)(objURL)();
+            return changeOrLoadMatIfNecessary(sc)(mo)(mtlURL)();
+          };
+        };
+      };
+    };
+  };
+};
+var monitorOff = function(sc) {
+  return function(mo) {
+    return function __do4() {
+      updateMonitor(sc)(mo)("textures/static.mov")("3dObjects/cubo.obj")("3dObjects/cubo2.mtl")();
+      return playVideoElement(mo)();
+    };
+  };
+};
+var monitorOn = function(sc) {
+  return function(mo) {
+    return function __do4() {
+      updateMonitor(sc)(mo)("textures/04.mov")("t/cubo.obj")("t/cubo.mtl")();
+      return playVideoElement(mo)();
+    };
+  };
 };
 
 // output/Data.Int/foreign.js
@@ -985,52 +1472,6 @@ var floor2 = function($25) {
 // output/Control.Monad.Error.Class/index.js
 var throwError = function(dict) {
   return dict.throwError;
-};
-
-// output/Data.Identity/index.js
-var Identity = function(x) {
-  return x;
-};
-var functorIdentity = {
-  map: function(f) {
-    return function(m) {
-      return f(m);
-    };
-  }
-};
-var applyIdentity = {
-  apply: function(v) {
-    return function(v1) {
-      return v(v1);
-    };
-  },
-  Functor0: function() {
-    return functorIdentity;
-  }
-};
-var bindIdentity = {
-  bind: function(v) {
-    return function(f) {
-      return f(v);
-    };
-  },
-  Apply0: function() {
-    return applyIdentity;
-  }
-};
-var applicativeIdentity = {
-  pure: Identity,
-  Apply0: function() {
-    return applyIdentity;
-  }
-};
-var monadIdentity = {
-  Applicative0: function() {
-    return applicativeIdentity;
-  },
-  Bind1: function() {
-    return bindIdentity;
-  }
 };
 
 // output/Control.Monad.Rec.Class/index.js
@@ -1133,56 +1574,6 @@ var defer2 = function(thunk) {
 var force = function(l) {
   return l();
 };
-
-// output/Data.Traversable/foreign.js
-var traverseArrayImpl = function() {
-  function array1(a) {
-    return [a];
-  }
-  function array2(a) {
-    return function(b) {
-      return [a, b];
-    };
-  }
-  function array3(a) {
-    return function(b) {
-      return function(c) {
-        return [a, b, c];
-      };
-    };
-  }
-  function concat2(xs) {
-    return function(ys) {
-      return xs.concat(ys);
-    };
-  }
-  return function(apply2) {
-    return function(map2) {
-      return function(pure2) {
-        return function(f) {
-          return function(array) {
-            function go(bot, top2) {
-              switch (top2 - bot) {
-                case 0:
-                  return pure2([]);
-                case 1:
-                  return map2(array1)(f(array[bot]));
-                case 2:
-                  return apply2(map2(array2)(f(array[bot])))(f(array[bot + 1]));
-                case 3:
-                  return apply2(apply2(map2(array3)(f(array[bot])))(f(array[bot + 1])))(f(array[bot + 2]));
-                default:
-                  var pivot = bot + Math.floor((top2 - bot) / 4) * 2;
-                  return apply2(map2(concat2)(go(bot, pivot)))(go(pivot, top2));
-              }
-            }
-            return go(0, array.length);
-          };
-        };
-      };
-    };
-  };
-}();
 
 // output/Parsing/index.js
 var $runtime_lazy3 = function(name2, moduleName, init3) {
@@ -1503,70 +1894,6 @@ var alternativeParserT = {
   },
   Plus1: function() {
     return plusParserT;
-  }
-};
-
-// output/Data.Unfoldable/foreign.js
-var unfoldrArrayImpl = function(isNothing2) {
-  return function(fromJust2) {
-    return function(fst2) {
-      return function(snd2) {
-        return function(f) {
-          return function(b) {
-            var result = [];
-            var value = b;
-            while (true) {
-              var maybe2 = f(value);
-              if (isNothing2(maybe2))
-                return result;
-              var tuple = fromJust2(maybe2);
-              result.push(fst2(tuple));
-              value = snd2(tuple);
-            }
-          };
-        };
-      };
-    };
-  };
-};
-
-// output/Data.Unfoldable1/foreign.js
-var unfoldr1ArrayImpl = function(isNothing2) {
-  return function(fromJust2) {
-    return function(fst2) {
-      return function(snd2) {
-        return function(f) {
-          return function(b) {
-            var result = [];
-            var value = b;
-            while (true) {
-              var tuple = f(value);
-              result.push(fst2(tuple));
-              var maybe2 = snd2(tuple);
-              if (isNothing2(maybe2))
-                return result;
-              value = fromJust2(maybe2);
-            }
-          };
-        };
-      };
-    };
-  };
-};
-
-// output/Data.Unfoldable1/index.js
-var unfoldable1Array = {
-  unfoldr1: /* @__PURE__ */ unfoldr1ArrayImpl(isNothing)(/* @__PURE__ */ fromJust())(fst)(snd)
-};
-
-// output/Data.Unfoldable/index.js
-var unfoldr = function(dict) {
-  return dict.unfoldr;
-};
-var unfoldableArray = {
-  unfoldr: /* @__PURE__ */ unfoldrArrayImpl(isNothing)(/* @__PURE__ */ fromJust())(fst)(snd),
-  Unfoldable10: function() {
-    return unfoldable1Array;
   }
 };
 
@@ -2191,86 +2518,6 @@ var traverse1Impl = function() {
         };
       };
     };
-  };
-}();
-
-// output/Data.Enum/foreign.js
-function toCharCode(c) {
-  return c.charCodeAt(0);
-}
-function fromCharCode(c) {
-  return String.fromCharCode(c);
-}
-
-// output/Data.Enum/index.js
-var toEnum = function(dict) {
-  return dict.toEnum;
-};
-var fromEnum = function(dict) {
-  return dict.fromEnum;
-};
-var toEnumWithDefaults = function(dictBoundedEnum) {
-  return function(low) {
-    return function(high) {
-      return function(x) {
-        var v = toEnum(dictBoundedEnum)(x);
-        if (v instanceof Just) {
-          return v.value0;
-        }
-        ;
-        if (v instanceof Nothing) {
-          var $54 = x < fromEnum(dictBoundedEnum)(bottom(dictBoundedEnum.Bounded0()));
-          if ($54) {
-            return low;
-          }
-          ;
-          return high;
-        }
-        ;
-        throw new Error("Failed pattern match at Data.Enum (line 158, column 33 - line 160, column 62): " + [v.constructor.name]);
-      };
-    };
-  };
-};
-var defaultSucc = function(toEnum$prime) {
-  return function(fromEnum$prime) {
-    return function(a) {
-      return toEnum$prime(fromEnum$prime(a) + 1 | 0);
-    };
-  };
-};
-var defaultPred = function(toEnum$prime) {
-  return function(fromEnum$prime) {
-    return function(a) {
-      return toEnum$prime(fromEnum$prime(a) - 1 | 0);
-    };
-  };
-};
-var charToEnum = function(v) {
-  if (v >= bottom(boundedInt) && v <= top(boundedInt)) {
-    return new Just(fromCharCode(v));
-  }
-  ;
-  return Nothing.value;
-};
-var enumChar = {
-  succ: /* @__PURE__ */ defaultSucc(charToEnum)(toCharCode),
-  pred: /* @__PURE__ */ defaultPred(charToEnum)(toCharCode),
-  Ord0: function() {
-    return ordChar;
-  }
-};
-var boundedEnumChar = /* @__PURE__ */ function() {
-  return {
-    cardinality: toCharCode(top(boundedChar)) - toCharCode(bottom(boundedChar)) | 0,
-    toEnum: charToEnum,
-    fromEnum: toCharCode,
-    Bounded0: function() {
-      return boundedChar;
-    },
-    Enum1: function() {
-      return enumChar;
-    }
   };
 }();
 
@@ -24919,137 +25166,50 @@ var parseProgram = function(x) {
   throw new Error("Failed pattern match at Parser (line 23, column 18 - line 25, column 27): " + [v.constructor.name]);
 };
 
-// output/ThreeJS/foreign.js
-var newScene = () => new THREE.Scene();
-var newPerspectiveCamera = (fov) => (aspect) => (near) => (far) => () => new THREE.PerspectiveCamera(fov, aspect, near, far);
-var newWebGLRenderer = (params) => () => new THREE.WebGLRenderer(params);
-var render = (renderer) => (scene) => (camera) => () => renderer.render(scene, camera);
-var setSize = (renderer) => (w) => (h) => (updateStyle) => () => renderer.setSize(w, h, updateStyle);
-var newGLTFLoader = () => new THREE.GLTFLoader();
-var loadGLTF1 = (loader) => (url) => (cb) => () => loader.load(url, (x) => cb(x)());
-var newMesh = (geometry) => (material) => () => new THREE.Mesh(geometry, material);
-var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
-var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
-var preloadAnything = (elem3) => () => elem3.preload = "auto";
-var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
-var newBoxGeometry = (w) => (h) => (d) => () => new THREE.BoxGeometry(w, h, d);
-var meshBasicMaterial = (params) => () => new THREE.MeshBasicMaterial(params);
-var createElement = (name2) => () => document.createElement(name2);
-var videoTexture = (videoElem) => () => new THREE.VideoTexture(videoElem);
-var clampToEdgeWrapping = THREE.ClampToEdgeWrapping;
-var repeatWrapping = THREE.RepeatWrapping;
-var mirroredRepeatWrapping = THREE.MirroredRepeatWrapping;
-var nearestFilter = THREE.NearestFilter;
-var linearFilter = THREE.LinearFilter;
-
-// output/Web.HTML.HTMLMediaElement/foreign.js
-function setSrc(src2) {
-  return function(media) {
-    return function() {
-      media.src = src2;
-    };
-  };
-}
-function load(media) {
-  return function() {
-    return media.load();
-  };
-}
-function setLoop(loop2) {
-  return function(media) {
-    return function() {
-      media.loop = loop2;
-    };
-  };
-}
-function play(media) {
-  return function() {
-    media.play();
-  };
-}
-function setVolume(volume2) {
-  return function(media) {
-    return function() {
-      media.volume = volume2;
-    };
-  };
-}
-function setMuted(muted2) {
-  return function(media) {
-    return function() {
-      media.muted = muted2;
-    };
-  };
-}
-
 // output/RenderEngine/index.js
-var updateURLfromVidElem = function(mo) {
-  return function(url) {
-    return function __do4() {
-      var currURL = read(mo.currVidURL)();
-      var $2 = url !== currURL;
-      if ($2) {
-        setSrc(url)(mo.video)();
-        preloadAnything(mo.video)();
-        load(mo.video)();
-        setLoop(true)(mo.video)();
-        setMuted(false)(mo.video)();
-        setVolume(0)(mo.video)();
-        return write(url)(mo.currVidURL)();
-      }
-      ;
-      return unit;
-    };
+var tranmissionOn = function(re) {
+  return function __do4() {
+    var c = read(re.monitor)();
+    if (c instanceof Just) {
+      return monitorOn(re.scene)(c.value0)();
+    }
+    ;
+    if (c instanceof Nothing) {
+      var m = defMonitor();
+      monitorOn(re.scene)(m)();
+      return write(new Just(m))(re.monitor)();
+    }
+    ;
+    throw new Error("Failed pattern match at RenderEngine (line 87, column 3 - line 92, column 32): " + [c.constructor.name]);
   };
 };
-var updateVideoTexture = function(mo) {
-  return function(url) {
-    return function __do4() {
-      updateURLfromVidElem(mo)(url)();
-      var vt = videoTexture(mo.video)();
-      return vt;
-    };
+var tranmissionOff = function(re) {
+  return function __do4() {
+    var c = read(re.monitor)();
+    if (c instanceof Just) {
+      return monitorOff(re.scene)(c.value0)();
+    }
+    ;
+    if (c instanceof Nothing) {
+      var m = defMonitor();
+      monitorOff(re.scene)(m)();
+      return write(new Just(m))(re.monitor)();
+    }
+    ;
+    throw new Error("Failed pattern match at RenderEngine (line 97, column 3 - line 102, column 32): " + [c.constructor.name]);
   };
 };
-var updateGltfURL = function(mo) {
-  return function(url) {
-    return function __do4() {
-      var currURL = read(mo.currGltfURL)();
-      var $3 = url !== currURL;
-      if ($3) {
-        return write(url)(mo.currGltfURL)();
-      }
-      ;
-      return unit;
-    };
-  };
-};
-var playVideoElement = function(mo) {
-  return play(mo.video);
-};
-var makeMeshIfNecessary = function(re) {
-  return function(mo) {
-    return function(vt) {
-      return function __do4() {
-        var c = read(mo.mesh)();
-        if (c instanceof Just) {
-          return c.value0;
-        }
-        ;
-        if (c instanceof Nothing) {
-          var geometry = newBoxGeometry(2)(2)(2)();
-          var material = meshBasicMaterial({
-            map: vt
-          })();
-          var cube = newMesh(geometry)(material)();
-          addAnythingToScene(re.scene)(cube)();
-          write(new Just(cube))(mo.mesh)();
-          return cube;
-        }
-        ;
-        throw new Error("Failed pattern match at RenderEngine (line 320, column 3 - line 328, column 16): " + [c.constructor.name]);
-      };
-    };
+var runProgram = function(re) {
+  return function(v) {
+    if (v instanceof Just && (v.value0 instanceof Transmission && v.value0.value0.value0)) {
+      return tranmissionOn(re);
+    }
+    ;
+    if (v instanceof Just && (v.value0 instanceof Transmission && !v.value0.value0.value0)) {
+      return tranmissionOff(re);
+    }
+    ;
+    return pure(applicativeEffect)(unit);
   };
 };
 var launch = function(cvs) {
@@ -25091,147 +25251,7 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 70, column 3 - line 74, column 32): " + [v.constructor.name]);
-  };
-};
-var defURL = "";
-var defVidElem = function __do() {
-  var v = createElement("video")();
-  setSrc(defURL)(v)();
-  return v;
-};
-var defVidTexture = function __do2() {
-  var v = defVidElem();
-  var vidTexture = videoTexture(v)();
-  return vidTexture;
-};
-var defMonitor = function __do3() {
-  var currVidURL = $$new(defURL)();
-  var video = defVidElem();
-  var vidTexture = defVidTexture();
-  var currObjURL = $$new(defURL)();
-  var geometry = $$new(Nothing.value)();
-  var currMtlURL = $$new(defURL)();
-  var material = $$new(Nothing.value)();
-  var mesh = $$new(Nothing.value)();
-  var currGltfURL = $$new(defURL)();
-  var shape = $$new(Nothing.value)();
-  var mo = {
-    currVidURL,
-    video,
-    vidTexture,
-    currObjURL,
-    geometry,
-    currMtlURL,
-    material,
-    mesh,
-    currGltfURL,
-    shape
-  };
-  return mo;
-};
-var createOrUpdateMesh = function(re) {
-  return function(mo) {
-    return function(vt) {
-      return makeMeshIfNecessary(re)(mo)(vt);
-    };
-  };
-};
-var updateMonitor$prime = function(re) {
-  return function(mo) {
-    return function(url) {
-      return function __do4() {
-        var vt = updateVideoTexture(mo)(url)();
-        var m = createOrUpdateMesh(re)(mo)(vt)();
-        return unit;
-      };
-    };
-  };
-};
-var monitorOff = function(re) {
-  return function(mo) {
-    return function __do4() {
-      updateMonitor$prime(re)(mo)("textures/static.mov")();
-      return playVideoElement(mo)();
-    };
-  };
-};
-var tranmissionOff = function(re) {
-  return function __do4() {
-    var c = read(re.monitor)();
-    if (c instanceof Just) {
-      return monitorOff(re)(c.value0)();
-    }
-    ;
-    if (c instanceof Nothing) {
-      var m = defMonitor();
-      monitorOff(re)(m)();
-      return write(new Just(m))(re.monitor)();
-    }
-    ;
-    throw new Error("Failed pattern match at RenderEngine (line 100, column 3 - line 105, column 32): " + [c.constructor.name]);
-  };
-};
-var changeOrLoadShapeIfNecessary = function(re) {
-  return function(mo) {
-    return function __do4() {
-      var gltfURL = read(mo.currGltfURL)();
-      var s = read(mo.shape)();
-      if (s instanceof Just) {
-        return unit;
-      }
-      ;
-      if (s instanceof Nothing) {
-        var loader = newGLTFLoader();
-        return loadGLTF1(loader)(gltfURL)(function(o) {
-          return function __do5() {
-            preloadAnything(o)();
-            addAnythingToScene(re.scene)(o.scene)();
-            write(new Just(o))(mo.shape)();
-            return unit;
-          };
-        })();
-      }
-      ;
-      throw new Error("Failed pattern match at RenderEngine (line 247, column 3 - line 256, column 18): " + [s.constructor.name]);
-    };
-  };
-};
-var monitorOn = function(re) {
-  return function(mo) {
-    return function __do4() {
-      updateGltfURL(mo)("3dObjects/cubo3.glb")();
-      return changeOrLoadShapeIfNecessary(re)(mo)();
-    };
-  };
-};
-var tranmissionOn = function(re) {
-  return function __do4() {
-    var c = read(re.monitor)();
-    if (c instanceof Just) {
-      return monitorOn(re)(c.value0)();
-    }
-    ;
-    if (c instanceof Nothing) {
-      var m = defMonitor();
-      monitorOn(re)(m)();
-      return write(new Just(m))(re.monitor)();
-    }
-    ;
-    throw new Error("Failed pattern match at RenderEngine (line 90, column 3 - line 95, column 32): " + [c.constructor.name]);
-  };
-};
-var runProgram = function(re) {
-  return function(v) {
-    if (v instanceof Just && (v.value0 instanceof Transmission && v.value0.value0.value0)) {
-      return tranmissionOn(re);
-    }
-    ;
-    if (v instanceof Just && (v.value0 instanceof Transmission && !v.value0.value0.value0)) {
-      return tranmissionOff(re);
-    }
-    ;
-    return pure(applicativeEffect)(unit);
+    throw new Error("Failed pattern match at RenderEngine (line 68, column 3 - line 72, column 32): " + [v.constructor.name]);
   };
 };
 var animate = function(re) {
@@ -25247,7 +25267,7 @@ var animate = function(re) {
       return render(re.renderer)(re.scene)(re.camera)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 61, column 3 - line 65, column 48): " + [p.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 59, column 3 - line 63, column 48): " + [p.constructor.name]);
   };
 };
 

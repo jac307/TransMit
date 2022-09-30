@@ -1,9 +1,10 @@
-module MonitorState where
--- (
--- Monitor(..),
--- monitorOn,
--- monitorOff
--- ) where
+module MonitorState
+(
+Monitor(..),
+defMonitor,
+monitorOn,
+monitorOff
+) where
 
 import Prelude (Unit, unit, bind, discard, pure, show, ($), (/), (/=), (==), (<>))
 import Effect (Effect)
@@ -15,12 +16,11 @@ import Web.HTML.HTMLMediaElement as HTML2
 
 import ThreeJS as TJS
 
-
 type Monitor = {
   -- texture
   currVidURL :: Ref String,
   video :: HTML2.HTMLMediaElement,
-  vidTexture :: TJS.TextureLoader,
+  vidTexture :: TJS.TextureLoader, -- create in the beginning
   -- object
   currObjURL :: Ref String,
   geometry :: Ref (Maybe TJS.OBJ),
@@ -29,18 +29,21 @@ type Monitor = {
   material :: Ref (Maybe TJS.MTL)
   }
 
+----------------------------------------
+
 defMonitor :: Effect Monitor
 defMonitor = do
   -- texture
   currVidURL <- new defURL
   video <- defVidElem
-  vidTexture <- defVidTexture
+  vidTexture <- defVidTexture video
   -- object
   currObjURL <- new defURL
   geometry <- new Nothing
   -- material
   currMtlURL <- new defURL
   material <- new Nothing
+  --
   let mo = {currVidURL, video, vidTexture, currObjURL, geometry, currMtlURL, material}
   pure mo
 
@@ -53,23 +56,36 @@ defVidElem = do
   HTML2.setSrc defURL v -- later, the def url should be = "textures/static.mov"
   pure v
 
-defVidTexture :: Effect TJS.TextureLoader
-defVidTexture = do
-  v <- defVidElem
-  vidTexture <- TJS.videoTexture v -- :: Effect TJS.TextureLoader
+-- change to this other type
+defVidTexture :: HTML2.HTMLMediaElement -> Effect TJS.TextureLoader
+defVidTexture  v = do
+  vidTexture <- TJS.videoTexture v
   pure vidTexture
 
+--------------------------------
+---- monitor ---
 
----- new monitor ---
+monitorOn :: TJS.Scene -> Monitor -> Effect Unit
+monitorOn sc mo = do
+  updateMonitor sc mo "textures/04.mov" "t/cubo.obj" "t/cubo.mtl"
+  playVideoElement mo
+
+monitorOff :: TJS.Scene -> Monitor -> Effect Unit
+monitorOff sc mo = do
+  updateMonitor sc mo "textures/static.mov" "3dObjects/cubo.obj" "3dObjects/cubo2.mtl"
+  playVideoElement mo
 
 updateMonitor :: TJS.Scene -> Monitor -> String -> String -> String -> Effect Unit
 updateMonitor sc mo vURL objURL mtlURL = do
   -- 1. change video url if necessary
-  v <- updateVideoTexture mo vURL -- :: TJS.TextureLoader
+  updateURLfromVidElem mo vURL
   -- 2. change/load geometry url/object
   changeOrLoadGeoIfNecessary sc mo objURL
   -- 3. change/load material url/create new mesh
-  --changeOrLoadMatIfNecessary mo mtlURL
+  changeOrLoadMatIfNecessary sc mo mtlURL
+  -- add/complete
+  updateVideoTexture mo
+  -- if( video.readyState === video.HAVE_ENOUGH_DATA ) videoTexture.needsUpdate	= true;
 
 ---- Geometry ---
 
@@ -92,10 +108,12 @@ changeOrLoadMatIfNecessary sc mo url = do
   currURL <- read mo.currMtlURL
   if url == currURL
     then (pure unit)
-    else do
+    else do -- if the load is triggered:
       loader <- TJS.newMTLLoader
-      TJS.loadMTL loader url $ \o -> do
-        write (Just o) mo.material
+      TJS.loadMTL loader url $ \m -> do
+        preloadMaterials m
+        --TJS.printAnything m
+        write (Just m) mo.material
         tryToMakeMesh sc mo
       write url mo.currMtlURL
 
@@ -116,27 +134,25 @@ tryToMakeMesh sc mo = do
         Nothing -> pure unit
         Just m' -> makeMesh sc g' m' mo.vidTexture
 
-
 makeMesh :: TJS.Scene -> TJS.OBJ -> TJS.MTL -> TJS.TextureLoader -> Effect Unit
 makeMesh sc g m vt = do
-  -- combine the three things to make a mesh
+  -- 1. combine the three things to make a mesh
+  -- TJS.printAnything m
+  -- TJS.printAnything g
+  -- TJS.printAnything vt
   mapVidTextToMat m vt
-  mapMatToObj g m 1
-  setMaterials g m
-  -- add the mesh to the scene
-  TJS.addAnythingToScene sc g
-  -- store the mesh in the appropriate ref
-  --pure unit
+  mapMatToObj g 0 m
+  -- 2. add mesh to scene
+  TJS.addAnythingToScene sc gå
 
 -- Imported Functions --
-foreign import setMaterials :: TJS.OBJ -> TJS.MTL -> Effect Unit
+foreign import preloadMaterials :: TJS.MTL -> Effect Unit
 foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
-foreign import mapMatToObj :: TJS.OBJ -> TJS.MTL -> Int -> Effect Unit
+foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
 
+-------- vTexture -------- erase
 
--------- vTexture --------
-
-updateVideoTexture :: Monitor -> String -> Effect TJS.TextureLoader
+updateVideoTexture :: Monitor -> String -> Effect Unit
 updateVideoTexture mo url = do
   updateURLfromVidElem mo url -- Effect HTMLMediaElement
   vt <- TJS.videoTexture mo.video -- :: TJS.TextureLoader
