@@ -10,6 +10,6 @@ in  upstream
   with purescript-threejs =
     { dependencies = [ "prelude", "effect" ]
     , repo = "https://github.com/jac307/purescript-threejs"
-    , version = "69c87f292f8062ab422172f990cbfbd2e6c0ecd8"
+    , version = "69c4a4f696d5d7666c9263e9f932cb84ea942f0f"
     }
 -}

@@ -84,7 +84,6 @@ updateMonitor sc mo vURL objURL mtlURL = do
   -- 3. change/load material url/create new mesh
   changeOrLoadMatIfNecessary sc mo mtlURL
   -- add/complete
-  updateVideoTexture mo
   -- if( video.readyState === video.HAVE_ENOUGH_DATA ) videoTexture.needsUpdate	= true;
 
 ---- Geometry ---
@@ -143,20 +142,12 @@ makeMesh sc g m vt = do
   mapVidTextToMat m vt
   mapMatToObj g 0 m
   -- 2. add mesh to scene
-  TJS.addAnythingToScene sc gå
+  TJS.addAnythingToScene sc g
 
 -- Imported Functions --
 foreign import preloadMaterials :: TJS.MTL -> Effect Unit
 foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
 foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
-
--------- vTexture -------- erase
-
-updateVideoTexture :: Monitor -> String -> Effect Unit
-updateVideoTexture mo url = do
-  updateURLfromVidElem mo url -- Effect HTMLMediaElement
-  vt <- TJS.videoTexture mo.video -- :: TJS.TextureLoader
-  pure vt
 
 -------- vElem & currVidURL --------
 
