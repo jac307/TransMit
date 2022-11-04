@@ -824,6 +824,7 @@ var loadOBJ = (loader) => (url) => (cb) => () => loader.load(url, (x) => cb(x)()
 var newMTLLoader = () => new THREE.MTLLoader();
 var loadMTL = (loader) => (url) => (cb) => () => loader.load(url, (x) => cb(x)());
 var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
+var disposeAnything = (anything) => (anything2) => () => anything2.dispose();
 var removeObject3D = (parent) => (child) => () => parent.remove(child);
 var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
 var preloadAnything = (elem3) => () => elem3.preload = "auto";
@@ -1271,6 +1272,7 @@ var removeMesh = function(sc) {
       }
       ;
       if (g instanceof Just) {
+        disposeAnything(g.value0)();
         removeObject3D(sc)(g.value0)();
         return write(Nothing.value)(mo.geometry)();
       }
@@ -1288,6 +1290,7 @@ var removeMaterial = function(sc) {
       }
       ;
       if (m instanceof Just) {
+        disposeAnything(m.value0)();
         removeObject3D(sc)(m.value0)();
         return write(Nothing.value)(mo.material)();
       }

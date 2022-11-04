@@ -144,7 +144,7 @@ removeMesh sc mo = do
   case g of
     Nothing -> pure unit
     Just g' -> do
-      --TJS.disposeAnything mo.geometry
+      TJS.disposeAnything g'
       TJS.removeObject3D sc g'
       write Nothing mo.geometry
 
@@ -154,7 +154,7 @@ removeMaterial sc mo = do
   case m of
     Nothing -> pure unit
     Just m' -> do
-      --TJS.disposeAnything mo.geometry
+      TJS.disposeAnything m'
       TJS.removeObject3D sc m'
       write Nothing mo.material
 
@@ -171,7 +171,6 @@ makeMesh sc g m z vt = do
 foreign import preloadMaterials :: TJS.MTL -> Effect Unit
 foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
 foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
-foreign import removeObjFromSc :: TJS.Scene -> forall a. a -> Effect Unit
 
 -------- vElem & currVidURL --------
 
