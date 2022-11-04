@@ -2,6 +2,7 @@ module MonitorState
 (
 Monitor(..),
 defMonitor,
+noMonitor,
 monitorOn,
 monitorOff
 ) where
@@ -65,31 +66,35 @@ defVidTexture  v = do
 --------------------------------
 ---- monitor ---
 
+noMonitor :: TJS.Scene -> Monitor -> Effect Unit
+noMonitor sc mo = do
+  removeMesh sc mo
+  removeMaterial sc mo
+
 monitorOn :: TJS.Scene -> Monitor -> Effect Unit
 monitorOn sc mo = do
-  updateMonitor sc mo "textures/04.mov" "t/cubo.obj" "t/cubo.mtl"
+  updateMonitor sc mo "textures/04.mov" "3dObjects/cubo.obj" "3dObjects/cubo.mtl" 0
   playVideoElement mo
 
 monitorOff :: TJS.Scene -> Monitor -> Effect Unit
 monitorOff sc mo = do
-  updateMonitor sc mo "textures/static.mov" "3dObjects/cubo.obj" "3dObjects/cubo2.mtl"
+  updateMonitor sc mo "textures/static.mov" "3dObjects/cubo.obj" "3dObjects/cubo.mtl" 0
   playVideoElement mo
 
-updateMonitor :: TJS.Scene -> Monitor -> String -> String -> String -> Effect Unit
-updateMonitor sc mo vURL objURL mtlURL = do
+updateMonitor :: TJS.Scene -> Monitor -> String -> String -> String -> Int -> Effect Unit
+updateMonitor sc mo vURL objURL mtlURL z = do
   -- 1. change video url if necessary
   updateURLfromVidElem mo vURL
   -- 2. change/load geometry url/object
-  changeOrLoadGeoIfNecessary sc mo objURL
+  changeOrLoadGeoIfNecessary sc mo objURL z
   -- 3. change/load material url/create new mesh
-  changeOrLoadMatIfNecessary sc mo mtlURL
-  -- add/complete
-  -- if( video.readyState === video.HAVE_ENOUGH_DATA ) videoTexture.needsUpdate	= true;
+  changeOrLoadMatIfNecessary sc mo mtlURL z
+  -- ifVidStatement mo.video mo.vidTexture
 
 ---- Geometry ---
 
-changeOrLoadGeoIfNecessary :: TJS.Scene -> Monitor -> String -> Effect Unit
-changeOrLoadGeoIfNecessary sc mo url = do
+changeOrLoadGeoIfNecessary :: TJS.Scene -> Monitor -> String -> Int -> Effect Unit
+changeOrLoadGeoIfNecessary sc mo url z = do
   currURL <- read mo.currObjURL
   if url == currURL
     then (pure unit)
@@ -97,13 +102,13 @@ changeOrLoadGeoIfNecessary sc mo url = do
       loader <- TJS.newOBJLoader
       TJS.loadOBJ loader url $ \o -> do
         write (Just o) mo.geometry
-        tryToMakeMesh sc mo
+        tryToMakeMesh sc mo z
       write url mo.currObjURL
 
 ---- Material ---
 
-changeOrLoadMatIfNecessary :: TJS.Scene -> Monitor -> String -> Effect Unit
-changeOrLoadMatIfNecessary sc mo url = do
+changeOrLoadMatIfNecessary :: TJS.Scene -> Monitor -> String -> Int -> Effect Unit
+changeOrLoadMatIfNecessary sc mo url z = do
   currURL <- read mo.currMtlURL
   if url == currURL
     then (pure unit)
@@ -113,16 +118,16 @@ changeOrLoadMatIfNecessary sc mo url = do
         preloadMaterials m
         --TJS.printAnything m
         write (Just m) mo.material
-        tryToMakeMesh sc mo
+        tryToMakeMesh sc mo z
       write url mo.currMtlURL
 
 ---- Mesh ---
 
 -- note: only called if something has been just loaded
-tryToMakeMesh :: TJS.Scene -> Monitor -> Effect Unit
-tryToMakeMesh sc mo = do
+tryToMakeMesh :: TJS.Scene -> Monitor -> Int -> Effect Unit
+tryToMakeMesh sc mo z = do
   -- if there is already a mesh, delete it
-  --deleteMeshIfThereIsOne re m -- ie. delete from scene and Monitor(ref)
+  -- deleteMeshIfThereIsOne sc mo -- ie. delete from scene and Monitor(ref)
   -- if in the refs you have a geometry and a material then
   g <- read mo.geometry
   case g of
@@ -131,23 +136,42 @@ tryToMakeMesh sc mo = do
       m <- read mo.material
       case m of
         Nothing -> pure unit
-        Just m' -> makeMesh sc g' m' mo.vidTexture
+        Just m' -> makeMesh sc g' m' z mo.vidTexture
 
-makeMesh :: TJS.Scene -> TJS.OBJ -> TJS.MTL -> TJS.TextureLoader -> Effect Unit
-makeMesh sc g m vt = do
+removeMesh :: TJS.Scene -> Monitor -> Effect Unit
+removeMesh sc mo = do
+  g <- read mo.geometry
+  case g of
+    Nothing -> pure unit
+    Just g' -> do
+      --TJS.disposeAnything mo.geometry
+      TJS.removeObject3D sc g'
+      write Nothing mo.geometry
+
+removeMaterial :: TJS.Scene -> Monitor -> Effect Unit
+removeMaterial sc mo = do
+  m <- read mo.material
+  case m of
+    Nothing -> pure unit
+    Just m' -> do
+      --TJS.disposeAnything mo.geometry
+      TJS.removeObject3D sc m'
+      write Nothing mo.material
+
+makeMesh :: TJS.Scene -> TJS.OBJ -> TJS.MTL -> Int -> TJS.TextureLoader -> Effect Unit
+makeMesh sc g m z vt = do
   -- 1. combine the three things to make a mesh
-  -- TJS.printAnything m
-  -- TJS.printAnything g
-  -- TJS.printAnything vt
   mapVidTextToMat m vt
-  mapMatToObj g 0 m
+  mapMatToObj g z m
   -- 2. add mesh to scene
   TJS.addAnythingToScene sc g
 
 -- Imported Functions --
+--foreign import ifVidStatement :: HTML2.HTMLMediaElement -> TJS.TextureLoader -> Effect Unit
 foreign import preloadMaterials :: TJS.MTL -> Effect Unit
 foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
 foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
+foreign import removeObjFromSc :: TJS.Scene -> forall a. a -> Effect Unit
 
 -------- vElem & currVidURL --------
 

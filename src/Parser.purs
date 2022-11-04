@@ -34,7 +34,8 @@ ast = do
   whiteSpace
   x <- choice [
     justAStatement,
-    justWhiteSpace
+    justWhiteSpace,
+    noTranmission
     ]
   eof
   pure x
@@ -48,6 +49,11 @@ justWhiteSpace :: P AST
 justWhiteSpace = do
   lookAhead eof
   pure $ Nothing
+
+noTranmission :: P AST
+noTranmission = do
+  reserved "turn off"
+  pure Nothing
 
 
 -- program :: P Program
@@ -65,8 +71,7 @@ statement = choice [
 
 transmission :: P Transmission
 transmission = choice [
-  try $ transmissionOnOff,
-  litTransmission
+  try $ transmissionOnOff
   ]
 
 ----------
@@ -92,12 +97,6 @@ channel = do
   --data Channel = Channel String | ChannelReference String
 
 ----------
-
--- tranmission
-litTransmission :: P Transmission
-litTransmission = do
-  (reserved "transmission" <|> reserved "transmision" <|> reserved "transmisssion")
-  pure $ LiteralTransmission false
 
 -- transmission on / off
 transmissionOnOff :: P Transmission

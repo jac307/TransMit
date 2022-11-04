@@ -57,7 +57,9 @@ animate re = do
   p <- read re.program
   log $ "animate parser: " <> (show p)
   case p of
-    Nothing -> TJS.render re.renderer re.scene re.camera
+    Nothing -> do
+      noTransmission re
+      TJS.render re.renderer re.scene re.camera
     Just prog -> do
       runProgram re p -- runs every frame
       TJS.render re.renderer re.scene re.camera
@@ -77,28 +79,33 @@ runProgram :: RenderEngine -> AST -> Effect Unit --
 runProgram re (Just (Transmission (LiteralTransmission true))) = tranmissionOn re
 runProgram re (Just (Transmission (LiteralTransmission false))) = tranmissionOff re
 runProgram re _ = pure unit
--- runProgram re Nothing = noTransmission re
 
 -------- Tranmission Status --------
 
-tranmissionOn :: RenderEngine -> Effect Unit
-tranmissionOn re = do
-  c <- read re.monitor -- :: Ref (Maybe Monitor)
+noTransmission :: RenderEngine -> Effect Unit
+noTransmission re = do
+  c <- read re.monitor
   case c of
-    Just m -> monitorOn re.scene m -- :: TJS.Scene -> Monitor
     Nothing -> do
-      m <- defMonitor
-      monitorOn re.scene m
-      write (Just m) re.monitor
+      pure unit
+    Just m -> do
+      noMonitor re.scene m
+      write Nothing re.monitor
+
+tranmissionOn :: RenderEngine -> Effect Unit
+tranmissionOn re = transmission re monitorOn
 
 tranmissionOff :: RenderEngine -> Effect Unit
-tranmissionOff re = do
+tranmissionOff re = transmission re monitorOff
+
+transmission :: RenderEngine -> (TJS.Scene -> Monitor -> Effect Unit) -> Effect Unit
+transmission re mState = do
   c <- read re.monitor -- :: Ref (Maybe Monitor)
   case c of
-    Just m -> monitorOff re.scene m
+    Just m -> mState re.scene m
     Nothing -> do
       m <- defMonitor
-      monitorOff re.scene m
+      mState re.scene m
       write (Just m) re.monitor
 
 --- errores
