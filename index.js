@@ -827,6 +827,7 @@ var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
 var disposeAnything = (anything) => (anything2) => () => anything2.dispose();
 var removeObject3D = (parent) => (child) => () => parent.remove(child);
 var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
+var setRotationOfAnything = (thing) => (x) => (y) => (z) => () => thing.rotation.set(x, y, z);
 var preloadAnything = (elem3) => () => elem3.preload = "auto";
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
 var createElement = (name2) => () => document.createElement(name2);
@@ -1263,24 +1264,6 @@ var updateURLfromVidElem = function(mo) {
     };
   };
 };
-var removeMesh = function(sc) {
-  return function(mo) {
-    return function __do3() {
-      var g = read(mo.geometry)();
-      if (g instanceof Nothing) {
-        return unit;
-      }
-      ;
-      if (g instanceof Just) {
-        disposeAnything(g.value0)();
-        removeObject3D(sc)(g.value0)();
-        return write(Nothing.value)(mo.geometry)();
-      }
-      ;
-      throw new Error("Failed pattern match at MonitorState (line 144, column 3 - line 149, column 32): " + [g.constructor.name]);
-    };
-  };
-};
 var removeMaterial = function(sc) {
   return function(mo) {
     return function __do3() {
@@ -1295,7 +1278,25 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 154, column 3 - line 159, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 155, column 3 - line 160, column 32): " + [m.constructor.name]);
+    };
+  };
+};
+var removeGeometry = function(sc) {
+  return function(mo) {
+    return function __do3() {
+      var g = read(mo.geometry)();
+      if (g instanceof Nothing) {
+        return unit;
+      }
+      ;
+      if (g instanceof Just) {
+        disposeAnything(g.value0)();
+        removeObject3D(sc)(g.value0)();
+        return write(Nothing.value)(mo.geometry)();
+      }
+      ;
+      throw new Error("Failed pattern match at MonitorState (line 145, column 3 - line 150, column 32): " + [g.constructor.name]);
     };
   };
 };
@@ -1305,7 +1306,7 @@ var playVideoElement = function(mo) {
 var noMonitor = function(sc) {
   return function(mo) {
     return function __do3() {
-      removeMesh(sc)(mo)();
+      removeGeometry(sc)(mo)();
       return removeMaterial(sc)(mo)();
     };
   };
@@ -1344,10 +1345,10 @@ var tryToMakeMesh = function(sc) {
             return makeMesh(sc)(g.value0)(m.value0)(z)(mo.vidTexture)();
           }
           ;
-          throw new Error("Failed pattern match at MonitorState (line 137, column 7 - line 139, column 53): " + [m.constructor.name]);
+          throw new Error("Failed pattern match at MonitorState (line 138, column 7 - line 140, column 53): " + [m.constructor.name]);
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 133, column 3 - line 139, column 53): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 134, column 3 - line 140, column 53): " + [g.constructor.name]);
       };
     };
   };
@@ -1395,6 +1396,7 @@ var changeOrLoadMatIfNecessary = function(sc) {
           }
           ;
           var loader = newMTLLoader();
+          removeMaterial(sc)(mo)();
           loadMTL(loader)(url)(function(m) {
             return function __do4() {
               preloadMaterials(m)();
@@ -1419,6 +1421,7 @@ var changeOrLoadGeoIfNecessary = function(sc) {
             return unit;
           }
           ;
+          removeGeometry(sc)(mo)();
           var loader = newOBJLoader();
           loadOBJ(loader)(url)(function(o) {
             return function __do4() {
@@ -1453,6 +1456,7 @@ var monitorOff = function(sc) {
   return function(mo) {
     return function __do3() {
       updateMonitor(sc)(mo)("textures/static.mov")("3dObjects/cubo.obj")("3dObjects/cubo.mtl")(0)();
+      setRotationOfAnything(sc)(0.5)(0.8)(1)();
       return playVideoElement(mo)();
     };
   };
@@ -1461,6 +1465,7 @@ var monitorOn = function(sc) {
   return function(mo) {
     return function __do3() {
       updateMonitor(sc)(mo)("textures/04.mov")("3dObjects/cubo.obj")("3dObjects/cubo.mtl")(0)();
+      setRotationOfAnything(sc)(0)(1)(0.5)();
       return playVideoElement(mo)();
     };
   };

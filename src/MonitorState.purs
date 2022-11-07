@@ -68,17 +68,19 @@ defVidTexture  v = do
 
 noMonitor :: TJS.Scene -> Monitor -> Effect Unit
 noMonitor sc mo = do
-  removeMesh sc mo
+  removeGeometry sc mo
   removeMaterial sc mo
 
 monitorOn :: TJS.Scene -> Monitor -> Effect Unit
 monitorOn sc mo = do
   updateMonitor sc mo "textures/04.mov" "3dObjects/cubo.obj" "3dObjects/cubo.mtl" 0
+  TJS.setRotationOfAnything sc 0.0 1.0 0.5
   playVideoElement mo
 
 monitorOff :: TJS.Scene -> Monitor -> Effect Unit
 monitorOff sc mo = do
   updateMonitor sc mo "textures/static.mov" "3dObjects/cubo.obj" "3dObjects/cubo.mtl" 0
+  TJS.setRotationOfAnything sc 0.5 0.8 1.0
   playVideoElement mo
 
 updateMonitor :: TJS.Scene -> Monitor -> String -> String -> String -> Int -> Effect Unit
@@ -99,6 +101,7 @@ changeOrLoadGeoIfNecessary sc mo url z = do
   if url == currURL
     then (pure unit)
     else do -- if the load is triggered:
+      removeGeometry sc mo -- remove and dispose geometry
       loader <- TJS.newOBJLoader
       TJS.loadOBJ loader url $ \o -> do
         write (Just o) mo.geometry
@@ -114,6 +117,7 @@ changeOrLoadMatIfNecessary sc mo url z = do
     then (pure unit)
     else do -- if the load is triggered:
       loader <- TJS.newMTLLoader
+      removeMaterial sc mo -- remove and dispose material
       TJS.loadMTL loader url $ \m -> do
         preloadMaterials m
         --TJS.printAnything m
@@ -126,9 +130,6 @@ changeOrLoadMatIfNecessary sc mo url z = do
 -- note: only called if something has been just loaded
 tryToMakeMesh :: TJS.Scene -> Monitor -> Int -> Effect Unit
 tryToMakeMesh sc mo z = do
-  -- if there is already a mesh, delete it
-  -- deleteMeshIfThereIsOne sc mo -- ie. delete from scene and Monitor(ref)
-  -- if in the refs you have a geometry and a material then
   g <- read mo.geometry
   case g of
     Nothing -> pure unit
@@ -138,8 +139,8 @@ tryToMakeMesh sc mo z = do
         Nothing -> pure unit
         Just m' -> makeMesh sc g' m' z mo.vidTexture
 
-removeMesh :: TJS.Scene -> Monitor -> Effect Unit
-removeMesh sc mo = do
+removeGeometry :: TJS.Scene -> Monitor -> Effect Unit
+removeGeometry sc mo = do
   g <- read mo.geometry
   case g of
     Nothing -> pure unit
