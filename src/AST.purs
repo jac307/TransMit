@@ -7,49 +7,49 @@ import Prim.Boolean
 import Data.Map
 import Data.Maybe
 
-import ThreeJS as TJS
-
+import Transmission (Transmission(..), defTransmission)
 
 type AST = Maybe Statement
 
 defaultProgram :: AST
 defaultProgram = Nothing
 
--- Transmission on --- cube with green
--- Transmission off -- cube with color white
-
--- type Program = Map Int Statement
---
--- defaultProgram' :: Program
--- defaultProgram' = empty
-
 data Statement =
-  Assignment String Channel |
-  Transmission Transmission
+  TransmissionAST TransmissionAST
+  --Assignment String Channel |
 
 instance showStatement :: Show Statement where
-  show (Assignment s c) = "Assignment " <> show s <> show " " <> show c
-  show (Transmission s) = "Transmission " <> show s
+  show (TransmissionAST s) = "TransmissionAST " <> show s
+  -- show (Assignment s c) = "Assignment " <> show s <> show " " <> show ]
 
-data Transmission =
-  LiteralTransmission Boolean -- |
-  -- Switchear Transmission Channel |
-  -- Movet Transmission Number Number Number |
-  -- Rodar Transmission Number Number Number |
-  -- Scale Transmission Number
+data TransmissionAST =
+  LiteralTransmissionAST Boolean |
+  Movet Number Number Number TransmissionAST  -- |
+  -- Rodar Number Number Number TransmissionAST |
+  -- Scale Number TransmissionAST
+  -- Switchear TransmissionAST Channel |
 
-instance showLiteralTransmission :: Show Transmission where
-  show (LiteralTransmission b) = "LitTransmission " <> show b
-  -- show (Switchear t c) = "Switchear " <> show t <> show " " <> show c
-  -- show (Movet t n n n) = "Movet " <> show t <> show " " <> show n <> show n <> show n
-  -- show (Rodar t n n n) = "Rodar " <> show t <> show " " <> show n <> show n <> show n
-  -- show (Scale t n) = "Scale " <> show t <> show " " <> show n
+instance showTransmissionAST :: Show TransmissionAST where
+  show (LiteralTransmissionAST b) = "LitTransmission " <> show b
+  show (Movet n1 n2 n3 t) = "Movet " <> " " <> show n1 <> show n2 <> show n3 <> show t
+  -- show (Rodar t n1 n2 n3) = "Rodar " <> show t <> " " <> show n1 <> show n2 <> show n3
+  -- show (Scale t n) = "Scale " <> show t <> " " <> show n
+  -- show (Switchear t c) = "Switchear " <> show t <> " " <> show c
+
+-- f :: TransmissionAST -> Transmission
+--f (LiteralTransmissionAST b) = defTransmission {estado = b}
+--                                                                                                                                                                                                                                                                          mm   f (Movet n1 n2 n3 t) = f t {locationX=n1, locationY=n2, locationZ=n3}
 
 
-data Channel =
-  Channel String |
-  ChannelReference String
 
-instance showChannel :: Show Channel where
-  show (Channel s) = show s
-  show (ChannelReference s) = show s
+
+-- f (Switchear t c) = f t { someField = c }
+-- f (Scale t s) = f t { someFieldorFields = s ... }
+
+-- data Channel =
+--   Channel String |
+--   ChannelReference String
+--
+-- instance showChannel :: Show Channel where
+--   show (Channel s) = show s
+--   show (ChannelReference s) = show s

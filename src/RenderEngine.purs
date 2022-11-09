@@ -6,23 +6,20 @@ animate,
 evaluate
 ) where
 
-import Prelude (Unit, unit, bind, discard, pure, show, ($), (/), (/=), (==), (<>))
+import Prelude (Unit, bind, discard, pure, show, unit, ($), (/), (<>))
 import Effect (Effect)
-import Effect.Class.Console (log, error)
+import Effect.Class.Console (log)
 import Effect.Ref (Ref, new, read, write)
-import Data.Maybe
-import Data.Either
---import Data.Semigroup ((<>))
---import Data.Show
+import Data.Maybe (Maybe(..))
+import Data.Either (Either(..))
 import Web.HTML.HTMLCanvasElement as HTML
 import Web.HTML.HTMLMediaElement as HTML2
-import Parsing
 
 import ThreeJS as TJS
 
-import AST
-import Parser
-import MonitorState
+import AST (AST, Statement(..), TransmissionAST(..), defaultProgram)
+import Parser (parseProgram)
+import MonitorState (Monitor, defMonitor, monitorOff, monitorOn, noMonitor)
 
 -- python -m SimpleHTTPServer 8000
 
@@ -76,11 +73,13 @@ evaluate re s = do
 ----------------------------------------
 
 runProgram :: RenderEngine -> AST -> Effect Unit --
-runProgram re (Just (Transmission (LiteralTransmission true))) = tranmissionOn re
-runProgram re (Just (Transmission (LiteralTransmission false))) = tranmissionOff re
+runProgram re (Just (TransmissionAST (LiteralTransmissionAST true))) = tranmissionOn re
+runProgram re (Just (TransmissionAST (LiteralTransmissionAST false))) = tranmissionOff re
 runProgram re _ = pure unit
 
 -------- Tranmission Status --------
+
+-- transmission on rodar (360)
 
 noTransmission :: RenderEngine -> Effect Unit
 noTransmission re = do

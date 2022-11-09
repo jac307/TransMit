@@ -55,7 +55,6 @@ noTranmission = do
   reserved "turn off"
   pure Nothing
 
-
 -- program :: P Program
 -- program = do
 --   whiteSpace
@@ -65,11 +64,11 @@ noTranmission = do
 
 statement :: P Statement
 statement = choice [
-  try $ assignment,
-  Transmission <$> transmission
+  --try $ assignment,
+  TransmissionAST <$> transmission
 ]
 
-transmission :: P Transmission
+transmission :: P TransmissionAST
 transmission = choice [
   try $ transmissionOnOff
   ]
@@ -82,28 +81,28 @@ transmission = choice [
 -- runParser "var = channel \"url\"" assignment
 
 -- someName = chanel "url"
-assignment :: P Statement
-assignment = do
-  i <- identifier
-  reservedOp "="
-  c <- channel
-  pure $ Assignment i c
-
-channel :: P Channel
-channel = do
-  (reserved "channel" <|> reserved "chanel" <|> reserved "chianel")
-  s <- stringLiteral
-  pure $ Channel s
-  --data Channel = Channel String | ChannelReference String
+-- assignment :: P Statement
+-- assignment = do
+--   i <- identifier
+--   reservedOp "="
+--   c <- channel
+--   pure $ Assignment i c
+--
+-- channel :: P Channel
+-- channel = do
+--   (reserved "channel" <|> reserved "chanel" <|> reserved "chianel")
+--   s <- stringLiteral
+--   pure $ Channel s
+--   --data Channel = Channel String | ChannelReference String
 
 ----------
 
 -- transmission on / off
-transmissionOnOff :: P Transmission
+transmissionOnOff :: P TransmissionAST
 transmissionOnOff = do
   (reserved "transmission" <|> reserved "transmision" <|> reserved "transmisssion")
   b <- onOff
-  pure $ LiteralTransmission b
+  pure $ LiteralTransmissionAST b
 
 onOff :: P Boolean
 onOff = try $ choice [
@@ -118,7 +117,7 @@ onOff = try $ choice [
 --
 -- one = channel "/mivideo.mov";
 -- two = channel "/mivideo2.mov";
--- transmission on switchear two rodar (360)
+-- transmission on rodar 360
 -- transmission on ico switchear one
 --
 

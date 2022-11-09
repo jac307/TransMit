@@ -299,6 +299,10 @@ var bottom = function(dict) {
 var showIntImpl = function(n) {
   return n.toString();
 };
+var showNumberImpl = function(n) {
+  var str = n.toString();
+  return isNaN(str + ".0") ? str : str + ".0";
+};
 var showCharImpl = function(c) {
   var code = c.charCodeAt(0);
   if (code < 32 || code === 127) {
@@ -362,6 +366,9 @@ var showArrayImpl = function(f) {
 // output/Data.Show/index.js
 var showString = {
   show: showStringImpl
+};
+var showNumber = {
+  show: showNumberImpl
 };
 var showInt = {
   show: showIntImpl
@@ -510,88 +517,61 @@ var applicativeMaybe = /* @__PURE__ */ function() {
 }();
 
 // output/AST/index.js
-var LiteralTransmission = /* @__PURE__ */ function() {
-  function LiteralTransmission2(value0) {
+var LiteralTransmissionAST = /* @__PURE__ */ function() {
+  function LiteralTransmissionAST2(value0) {
     this.value0 = value0;
   }
   ;
-  LiteralTransmission2.create = function(value0) {
-    return new LiteralTransmission2(value0);
+  LiteralTransmissionAST2.create = function(value0) {
+    return new LiteralTransmissionAST2(value0);
   };
-  return LiteralTransmission2;
+  return LiteralTransmissionAST2;
 }();
-var Channel = /* @__PURE__ */ function() {
-  function Channel2(value0) {
-    this.value0 = value0;
-  }
-  ;
-  Channel2.create = function(value0) {
-    return new Channel2(value0);
-  };
-  return Channel2;
-}();
-var ChannelReference = /* @__PURE__ */ function() {
-  function ChannelReference2(value0) {
-    this.value0 = value0;
-  }
-  ;
-  ChannelReference2.create = function(value0) {
-    return new ChannelReference2(value0);
-  };
-  return ChannelReference2;
-}();
-var Assignment = /* @__PURE__ */ function() {
-  function Assignment2(value0, value1) {
+var Movet = /* @__PURE__ */ function() {
+  function Movet2(value0, value1, value2, value3) {
     this.value0 = value0;
     this.value1 = value1;
+    this.value2 = value2;
+    this.value3 = value3;
   }
   ;
-  Assignment2.create = function(value0) {
+  Movet2.create = function(value0) {
     return function(value1) {
-      return new Assignment2(value0, value1);
+      return function(value2) {
+        return function(value3) {
+          return new Movet2(value0, value1, value2, value3);
+        };
+      };
     };
   };
-  return Assignment2;
+  return Movet2;
 }();
-var Transmission = /* @__PURE__ */ function() {
-  function Transmission2(value0) {
+var TransmissionAST = /* @__PURE__ */ function() {
+  function TransmissionAST2(value0) {
     this.value0 = value0;
   }
   ;
-  Transmission2.create = function(value0) {
-    return new Transmission2(value0);
+  TransmissionAST2.create = function(value0) {
+    return new TransmissionAST2(value0);
   };
-  return Transmission2;
+  return TransmissionAST2;
 }();
-var showLiteralTransmission = {
+var showTransmissionAST = {
   show: function(v) {
-    return "LitTransmission " + show(showBoolean)(v.value0);
-  }
-};
-var showChannel = {
-  show: function(v) {
-    if (v instanceof Channel) {
-      return show(showString)(v.value0);
+    if (v instanceof LiteralTransmissionAST) {
+      return "LitTransmission " + show(showBoolean)(v.value0);
     }
     ;
-    if (v instanceof ChannelReference) {
-      return show(showString)(v.value0);
+    if (v instanceof Movet) {
+      return "Movet " + (" " + (show(showNumber)(v.value0) + (show(showNumber)(v.value1) + (show(showNumber)(v.value2) + show(showTransmissionAST)(v.value3)))));
     }
     ;
-    throw new Error("Failed pattern match at AST (line 53, column 1 - line 55, column 37): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at AST (line 32, column 1 - line 34, column 87): " + [v.constructor.name]);
   }
 };
 var showStatement = {
   show: function(v) {
-    if (v instanceof Assignment) {
-      return "Assignment " + (show(showString)(v.value0) + (show(showString)(" ") + show(showChannel)(v.value1)));
-    }
-    ;
-    if (v instanceof Transmission) {
-      return "Transmission " + show(showLiteralTransmission)(v.value0);
-    }
-    ;
-    throw new Error("Failed pattern match at AST (line 30, column 1 - line 32, column 52): " + [v.constructor.name]);
+    return "TransmissionAST " + show(showTransmissionAST)(v.value0);
   }
 };
 var defaultProgram = /* @__PURE__ */ function() {
@@ -24798,7 +24778,7 @@ var makeTokenParser = function(v) {
   var lexeme = function(p) {
     return applyFirst(applyParserT)(p)(whiteSpace$prime(v));
   };
-  var reservedOp2 = function(name2) {
+  var reservedOp = function(name2) {
     var go = bind(bindParserT)(string(name2))(function() {
       return withErrorMessage(notFollowedBy(v.opLetter))("end of " + name2);
     });
@@ -24839,7 +24819,7 @@ var makeTokenParser = function(v) {
     });
     return withErrorMessage(go)("identifier");
   }();
-  var identifier2 = function() {
+  var identifier = function() {
     var go = bind(bindParserT)(ident)(function(name2) {
       var $66 = isReservedName(v)(name2);
       if ($66) {
@@ -25058,7 +25038,7 @@ var makeTokenParser = function(v) {
     return alt(altParserT)(voidLeft(functorParserT)(escapeGap)(Nothing.value))(alt(altParserT)(voidLeft(functorParserT)(escapeEmpty)(Nothing.value))(map(functorParserT)(Just.create)(escapeCode)));
   });
   var stringChar = alt(altParserT)(map(functorParserT)(Just.create)(stringLetter))(withErrorMessage(stringEscape)("string character"));
-  var stringLiteral2 = function() {
+  var stringLiteral = function() {
     var folder = function(v1) {
       return function(chars) {
         if (v1 instanceof Nothing) {
@@ -25081,12 +25061,12 @@ var makeTokenParser = function(v) {
     return between(symbol("<"))(symbol(">"))(p);
   };
   return {
-    identifier: identifier2,
+    identifier,
     reserved: reserved2,
     operator,
-    reservedOp: reservedOp2,
+    reservedOp,
     charLiteral,
-    stringLiteral: stringLiteral2,
+    stringLiteral,
     natural,
     integer,
     "float": $$float,
@@ -25150,49 +25130,28 @@ var tokenParser = /* @__PURE__ */ makeTokenParser(/* @__PURE__ */ function() {
 var whiteSpace = /* @__PURE__ */ function() {
   return tokenParser.whiteSpace;
 }();
-var stringLiteral = /* @__PURE__ */ function() {
-  return tokenParser.stringLiteral;
-}();
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
 };
-var reservedOp = /* @__PURE__ */ function() {
-  return tokenParser.reservedOp;
-}();
 var reserved = /* @__PURE__ */ function() {
   return tokenParser.reserved;
 }();
 var onOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ reserved("onnn"))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ reserved("offf"))))(false)]));
 var transmissionOnOff = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmission"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmision"))(/* @__PURE__ */ reserved("transmisssion"))))(function() {
   return bind(bindParserT)(onOff)(function(b) {
-    return pure(applicativeParserT)(new LiteralTransmission(b));
+    return pure(applicativeParserT)(new LiteralTransmissionAST(b));
   });
 });
 var transmission = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(transmissionOnOff)]);
+var statement = /* @__PURE__ */ function() {
+  return choice(foldableArray)([map(functorParserT)(TransmissionAST.create)(transmission)]);
+}();
 var noTranmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reserved("turn off"))(function() {
   return pure(applicativeParserT)(Nothing.value);
 });
 var justWhiteSpace = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ lookAhead(eof))(function() {
   return pure(applicativeParserT)(Nothing.value);
 });
-var identifier = /* @__PURE__ */ function() {
-  return tokenParser.identifier;
-}();
-var channel = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("channel"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("chanel"))(/* @__PURE__ */ reserved("chianel"))))(function() {
-  return bind(bindParserT)(stringLiteral)(function(s) {
-    return pure(applicativeParserT)(new Channel(s));
-  });
-});
-var assignment = /* @__PURE__ */ bind(bindParserT)(identifier)(function(i) {
-  return discard(discardUnit)(bindParserT)(reservedOp("="))(function() {
-    return bind(bindParserT)(channel)(function(c) {
-      return pure(applicativeParserT)(new Assignment(i, c));
-    });
-  });
-});
-var statement = /* @__PURE__ */ function() {
-  return choice(foldableArray)([$$try(assignment), map(functorParserT)(Transmission.create)(transmission)]);
-}();
 var justAStatement = /* @__PURE__ */ bind(bindParserT)(statement)(function(s) {
   return pure(applicativeParserT)(new Just(s));
 });
@@ -25231,7 +25190,7 @@ var transmission2 = function(re) {
         return write(new Just(m))(re.monitor)();
       }
       ;
-      throw new Error("Failed pattern match at RenderEngine (line 104, column 3 - line 109, column 32): " + [c.constructor.name]);
+      throw new Error("Failed pattern match at RenderEngine (line 103, column 3 - line 108, column 32): " + [c.constructor.name]);
     };
   };
 };
@@ -25243,11 +25202,11 @@ var tranmissionOff = function(re) {
 };
 var runProgram = function(re) {
   return function(v) {
-    if (v instanceof Just && (v.value0 instanceof Transmission && v.value0.value0.value0)) {
+    if (v instanceof Just && (v.value0.value0 instanceof LiteralTransmissionAST && v.value0.value0.value0)) {
       return tranmissionOn(re);
     }
     ;
-    if (v instanceof Just && (v.value0 instanceof Transmission && !v.value0.value0.value0)) {
+    if (v instanceof Just && (v.value0.value0 instanceof LiteralTransmissionAST && !v.value0.value0.value0)) {
       return tranmissionOff(re);
     }
     ;
@@ -25266,7 +25225,7 @@ var noTransmission = function(re) {
       return write(Nothing.value)(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 88, column 3 - line 93, column 31): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 87, column 3 - line 92, column 31): " + [c.constructor.name]);
   };
 };
 var launch = function(cvs) {
@@ -25308,7 +25267,7 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 70, column 3 - line 74, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 67, column 3 - line 71, column 32): " + [v.constructor.name]);
   };
 };
 var animate = function(re) {
@@ -25325,7 +25284,7 @@ var animate = function(re) {
       return render(re.renderer)(re.scene)(re.camera)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 59, column 3 - line 65, column 48): " + [p.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 56, column 3 - line 62, column 48): " + [p.constructor.name]);
   };
 };
 
