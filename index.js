@@ -54,6 +54,15 @@ var $$const = function(a) {
 // output/Data.Unit/foreign.js
 var unit = void 0;
 
+// output/Type.Proxy/index.js
+var $$Proxy = /* @__PURE__ */ function() {
+  function $$Proxy2() {
+  }
+  ;
+  $$Proxy2.value = new $$Proxy2();
+  return $$Proxy2;
+}();
+
 // output/Data.Functor/index.js
 var map = function(dict) {
   return dict.map;
@@ -80,6 +89,18 @@ var concatArray = function(xs) {
     if (ys.length === 0)
       return xs;
     return xs.concat(ys);
+  };
+};
+
+// output/Data.Symbol/index.js
+var reflectSymbol = function(dict) {
+  return dict.reflectSymbol;
+};
+
+// output/Record.Unsafe/foreign.js
+var unsafeGet = function(label) {
+  return function(rec) {
+    return rec[label];
   };
 };
 
@@ -362,10 +383,46 @@ var showArrayImpl = function(f) {
     return "[" + ss.join(",") + "]";
   };
 };
+var cons = function(head4) {
+  return function(tail2) {
+    return [head4].concat(tail2);
+  };
+};
+var intercalate = function(separator) {
+  return function(xs) {
+    return xs.join(separator);
+  };
+};
 
 // output/Data.Show/index.js
 var showString = {
   show: showStringImpl
+};
+var showRecordFieldsNil = {
+  showRecordFields: function(v) {
+    return function(v1) {
+      return [];
+    };
+  }
+};
+var showRecordFields = function(dict) {
+  return dict.showRecordFields;
+};
+var showRecord = function() {
+  return function() {
+    return function(dictShowRecordFields) {
+      return {
+        show: function(record) {
+          var v = showRecordFields(dictShowRecordFields)($$Proxy.value)(record);
+          if (v.length === 0) {
+            return "{}";
+          }
+          ;
+          return intercalate(" ")(["{", intercalate(", ")(v), "}"]);
+        }
+      };
+    };
+  };
 };
 var showNumber = {
   show: showNumberImpl
@@ -395,6 +452,22 @@ var show = function(dict) {
 var showArray = function(dictShow) {
   return {
     show: showArrayImpl(show(dictShow))
+  };
+};
+var showRecordFieldsCons = function(dictIsSymbol) {
+  return function(dictShowRecordFields) {
+    return function(dictShow) {
+      return {
+        showRecordFields: function(v) {
+          return function(record) {
+            var tail2 = showRecordFields(dictShowRecordFields)($$Proxy.value)(record);
+            var key = reflectSymbol(dictIsSymbol)($$Proxy.value);
+            var focus = unsafeGet(key)(record);
+            return cons(intercalate(": ")([key, show(dictShow)(focus)]))(tail2);
+          };
+        }
+      };
+    };
   };
 };
 
@@ -528,20 +601,14 @@ var LiteralTransmissionAST = /* @__PURE__ */ function() {
   return LiteralTransmissionAST2;
 }();
 var Movet = /* @__PURE__ */ function() {
-  function Movet2(value0, value1, value2, value3) {
+  function Movet2(value0, value1) {
     this.value0 = value0;
     this.value1 = value1;
-    this.value2 = value2;
-    this.value3 = value3;
   }
   ;
   Movet2.create = function(value0) {
     return function(value1) {
-      return function(value2) {
-        return function(value3) {
-          return new Movet2(value0, value1, value2, value3);
-        };
-      };
+      return new Movet2(value0, value1);
     };
   };
   return Movet2;
@@ -563,10 +630,22 @@ var showTransmissionAST = {
     }
     ;
     if (v instanceof Movet) {
-      return "Movet " + (" " + (show(showNumber)(v.value0) + (show(showNumber)(v.value1) + (show(showNumber)(v.value2) + show(showTransmissionAST)(v.value3)))));
+      return "Movet " + (show(showRecord()()(showRecordFieldsCons({
+        reflectSymbol: function() {
+          return "x";
+        }
+      })(showRecordFieldsCons({
+        reflectSymbol: function() {
+          return "y";
+        }
+      })(showRecordFieldsCons({
+        reflectSymbol: function() {
+          return "z";
+        }
+      })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber)))(v.value0) + show(showTransmissionAST)(v.value1));
     }
     ;
-    throw new Error("Failed pattern match at AST (line 32, column 1 - line 34, column 87): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at AST (line 27, column 1 - line 29, column 52): " + [v.constructor.name]);
   }
 };
 var showStatement = {
@@ -25190,7 +25269,7 @@ var transmission2 = function(re) {
         return write(new Just(m))(re.monitor)();
       }
       ;
-      throw new Error("Failed pattern match at RenderEngine (line 103, column 3 - line 108, column 32): " + [c.constructor.name]);
+      throw new Error("Failed pattern match at RenderEngine (line 104, column 3 - line 109, column 32): " + [c.constructor.name]);
     };
   };
 };
@@ -25225,7 +25304,7 @@ var noTransmission = function(re) {
       return write(Nothing.value)(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 87, column 3 - line 92, column 31): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 88, column 3 - line 93, column 31): " + [c.constructor.name]);
   };
 };
 var launch = function(cvs) {

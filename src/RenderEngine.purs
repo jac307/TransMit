@@ -71,7 +71,8 @@ evaluate re s = do
     Left err -> pure $ Just err
 
 ----------------------------------------
-
+-- change the name of AST --- maybe for Tranmission
+-- Program = Tranmission, then use Program instead of AST
 runProgram :: RenderEngine -> AST -> Effect Unit --
 runProgram re (Just (TransmissionAST (LiteralTransmissionAST true))) = tranmissionOn re
 runProgram re (Just (TransmissionAST (LiteralTransmissionAST false))) = tranmissionOff re

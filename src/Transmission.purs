@@ -1,6 +1,7 @@
 module Transmission
-(Transmission(..),
-defTransmission)
+(Transmission,
+defTransmission,
+Vec3)
 where
 
 type Transmission = {
@@ -9,9 +10,7 @@ type Transmission = {
   mapping :: String,
   tvZone :: Int,
   channel :: String,
-  locationX :: Number,
-  locationY :: Number,
-  locationZ :: Number
+  position :: Vec3
   }
 
 defTransmission :: Transmission
@@ -20,12 +19,18 @@ defTransmission = {
   tv: "3dObjects/cubo.obj",
   mapping: "3dObjects/cubo.mtl",
   tvZone: 0,
-  channel: "textures/static.mov",
-  locationX: 0.0,
-  locationY: 0.0,
-  locationZ: 0.0
+  channel: "textures/04.mov", -- only when it is true
+  position: defPosition
 }
 
+type Vec3 = {
+  x :: Number,
+  y :: Number,
+  z :: Number
+  }
+
+defPosition :: Vec3
+defPosition = { x: 0.0, y: 0.0, z: 0.0 }
 
 
 -- Transmission on --- cube with green
