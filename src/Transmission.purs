@@ -31,37 +31,3 @@ type Vec3 = {
 
 defPosition :: Vec3
 defPosition = { x: 0.0, y: 0.0, z: 0.0 }
-
-
--- Transmission on --- cube with green
--- Transmission off -- cube with color white
-
--- uno = channel "" -- tal vez delimitarlo a unicamente urls
--- Transmission on $ switchear uno -- esto cambia vid url
-
--- transmission on rodar 360 rodar 120
---
--- transmission on;
--- transmission on rodar 360;
--- transmission on rodar 360 scale 0.5;
---
--- transmissionParser :: P TransmissionAST
--- transmissionParser = do
---   reserved "transmission"
---   x <- onOrOff
---   let t = LiteralTransmissionAST x
---   xs <- many transformations
---   let xs' = ... foldL on xs (including 'identity') to yield a single TransmissionAST -> TransmissionAST
---   pure $ xs' t
---
---
--- rodarParser :: P (TransmissionAST -> TransmissionAST)
--- rodarParser = do
---   reserved "rodar"
---   x <- number...
---   y <- number...
---   z <- number...
---   pure $ Rodar x y z
---
---
--- Rodar (Rodar (LiteralTransmission true) 360) 120

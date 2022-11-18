@@ -1,23 +1,20 @@
 module Parser where
 
-import Prelude
-import Data.Identity
-import Data.List
-import Data.List.NonEmpty
-import Data.Map
-import Data.Either
-import Data.Number
-import Data.Int
-import Prim.Boolean
-import Data.Maybe
-import Parsing
+import Prelude (Unit, bind, discard, negate, pure, show, identity, ($), ($>), (*), (<$>), (<>), (+), unit)
+import Data.Identity (Identity)
+import Data.List (List, foldl)
+import Data.List.NonEmpty (NonEmptyList)
+import Data.Either (Either(..))
+import Data.Int (toNumber)
+import Data.Maybe (Maybe(..))
+import Parsing (ParseError(..), ParserT, Position(..), runParser)
 import Parsing.Language (emptyDef)
-import Parsing.Token (GenLanguageDef(..),LanguageDef,unGenLanguageDef,TokenParser,GenTokenParser,makeTokenParser)
-import Parsing.Combinators
+import Parsing.Token (GenLanguageDef(..), GenTokenParser, makeTokenParser, unGenLanguageDef)
+import Parsing.Combinators (choice, lookAhead, try, (<|>), many)
 import Parsing.String (eof)
---import Parsing.Parser
 
-import AST
+import AST (AST, Statement(..), TransmissionAST(..))
+import Transmission (Vec3)
 
 parseProgram :: String -> Either String AST
 parseProgram x = case (runParser x ast) of
@@ -55,13 +52,6 @@ noTranmission = do
   reserved "turn off"
   pure Nothing
 
--- program :: P Program
--- program = do
---   whiteSpace
---   xs <- semiSep statement
---   eof
---   pure $ fromFoldableWithIndex xs
-
 statement :: P Statement
 statement = choice [
   --try $ assignment,
@@ -73,92 +63,118 @@ transmission = choice [
   try $ transmissionOnOff
   ]
 
-----------
--- spago repl
--- import AST
--- import Parser
--- import Text.Parsing.Parser
--- runParser "var = channel \"url\"" assignment
-
--- someName = chanel "url"
--- assignment :: P Statement
--- assignment = do
---   i <- identifier
---   reservedOp "="
---   c <- channel
---   pure $ Assignment i c
---
--- channel :: P Channel
--- channel = do
---   (reserved "channel" <|> reserved "chanel" <|> reserved "chianel")
---   s <- stringLiteral
---   pure $ Channel s
---   --data Channel = Channel String | ChannelReference String
-
-----------
+-- transmission on;
+-- transmission on movet 1 1 1;
 
 -- transmission on / off
 transmissionOnOff :: P TransmissionAST
 transmissionOnOff = do
-  (reserved "transmission" <|> reserved "transmision" <|> reserved "transmisssion")
-  b <- onOff
+  (reserved "transmission" <|> reserved "transmision" <|> reserved "transmisssion" <|> reserved "trasmission" <|> reserved "trasmision" <|> reserved "trasmishion")
+  b <- onOrOff
   pure $ LiteralTransmissionAST b
 
-onOff :: P Boolean
-onOff = try $ choice [
+-- transmissionParser :: P TransmissionAST
+-- transmissionParser = do
+--   reserved "transmission"
+--   x <- onOrOff
+--   let t = LiteralTransmissionAST x
+--   xs <- many transformations
+--   let xs' = ... foldL on xs (including 'identity') to yield a single TransmissionAST -> TransmissionAST
+--   pure $ xs' t
+
+-- transmissionParser :: P TransmissionAST
+-- transmissionParser = do
+--   _ <- pure unit
+--   reserved "transmission"
+--   b <- onOrOff
+--   let t = LiteralTransmissionAST b
+--   xs <- many transformations
+--   -- foldl :: forall f b a. Foldable f => (b -> a -> b) -> b -> f a -> b
+--   --foldl (una funcion que acumule)? (identity= valorIncial)? xs=lista
+--   let xs' = foldl ? identity xs
+--   pure $ xs' t
+
+onOrOff :: P Boolean
+onOrOff = try $ choice [
   (reserved "on" <|> reserved "onn" <|> reserved "onnn")  $> true,
   (reserved "off" <|> reserved "of" <|> reserved "offf") $> false
 ]
 
--- transmission on ico
---
--- one = channel "/mivideo.mov";
--- transmission on ico switchear one
---
--- one = channel "/mivideo.mov";
--- two = channel "/mivideo2.mov";
--- transmission on rodar 360
--- transmission on ico switchear one
---
+-- Transformations --
+---------------------
 
+transformations :: P (TransmissionAST -> TransmissionAST)
+transformations = do
+  _ <- pure unit
+  choice [
+  movetParser
+  ]
 
------------
+-- movet 1 1 1
+movetParser :: P (TransmissionAST -> TransmissionAST)
+movetParser = do
+  (reserved "movet" <|> reserved "muvet" <|> reserved "muv" <|> reserved "move" <|> reserved "move it")
+  v3 <- vec3
+  pure $ Movet v3
 
--- methodWithOneParameter :: String -> (Transmission -> Number -> Transmission) -> P (Transmission)
--- methodWithOneParameter methodName constructor = try $ do
---   t <- transmissionOnOff
---   reserved methodName
---   p1 <- parametro
---   pure $ constructor t p1
---
--- methodWithTwoParameters :: String -> (Transmission -> Number -> Number -> Transmission) -> P (Transmission)
--- methodWithTwoParameters methodName constructor = try $ do
---   t <- transmissionOnOff
---   reserved methodName
---   p1 <- parametro
---   p2 <- parametro
---   pure $ constructor t p1 p2
---
--- methodWithThreeParameters :: String -> (Transmission -> Number -> Number -> Number -> Transmission) -> P (Transmission)
--- methodWithThreeParameters methodName constructor = try $ do
---   t <- transmissionOnOff
---   reserved methodName
---   p1 <- parametro
---   p2 <- parametro
---   p3 <- parametro
---   pure $ constructor t p1 p2 p3
+----------
+
+vec3 :: P Vec3
+vec3 = vec3x <|> vec3xy <|> vec3xyz <|> vec3y <|> vec3z
+
+--Function 1 1 1 --> modifies x,y,z
+vec3xyz :: P Vec3
+vec3xyz = do
+  x <- number
+  y <- number
+  z <- number
+  pure $ {x,y,z}
+
+--Function _ _ 1 --> modifies z    defX / defY=0
+vec3z :: P Vec3
+vec3z = do
+  reservedOp "_"
+  let x = 0.0
+  let y = 0.0
+  z <- number
+  pure $ {x,y,z}
+
+--Function _ 1 --> modifies y    defX / defZ=0
+vec3y :: P Vec3
+vec3y = do
+  reservedOp "_"
+  let x = 0.0
+  y <- number
+  let z = 0.0
+  pure $ {x,y,z}
+
+--Function 1 1 --> modifies x,y    defZ=0
+vec3xy :: P Vec3
+vec3xy = do
+  x <- number
+  y <- number
+  let z = 0.0
+  pure $ {x,y,z}
+
+--Function 1 --> modifies x    defY / defZ=0
+vec3x :: P Vec3
+vec3x = do
+  x <- number
+  let y = 0.0
+  let z = 0.0
+  pure $ {x,y,z}
 
 ----------
 
 number :: P Number
 number = choice [
-  try negativeFloat,
+  try negativeNumber,
   try float,
   toNumber <$> integer
   ]
 
-negativeFloat :: P Number
-negativeFloat = do
+negativeNumber :: P Number
+negativeNumber = do
   reservedOp "-"
   ((*) (-1.0)) <$> float
 
@@ -168,7 +184,7 @@ negativeFloat = do
 tokenParser :: GenTokenParser String Identity
 tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
   reservedNames = ["transmission", "on", "off", "channel"],
-  reservedOpNames = ["=", "\"", "\""]
+  reservedOpNames = ["=", "\"", "\"", "_"]
   }
 
 ---------------------

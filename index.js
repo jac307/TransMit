@@ -25202,7 +25202,7 @@ var tokenParser = /* @__PURE__ */ makeTokenParser(/* @__PURE__ */ function() {
     opStart: v.opStart,
     opLetter: v.opLetter,
     reservedNames: ["transmission", "on", "off", "channel"],
-    reservedOpNames: ["=", '"', '"'],
+    reservedOpNames: ["=", '"', '"', "_"],
     caseSensitive: v.caseSensitive
   };
 }());
@@ -25215,9 +25215,9 @@ var showParseError = function(v) {
 var reserved = /* @__PURE__ */ function() {
   return tokenParser.reserved;
 }();
-var onOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ reserved("onnn"))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ reserved("offf"))))(false)]));
-var transmissionOnOff = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmission"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmision"))(/* @__PURE__ */ reserved("transmisssion"))))(function() {
-  return bind(bindParserT)(onOff)(function(b) {
+var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ reserved("onnn"))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ reserved("offf"))))(false)]));
+var transmissionOnOff = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmission"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmision"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmisssion"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("trasmission"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("trasmision"))(/* @__PURE__ */ reserved("trasmishion")))))))(function() {
+  return bind(bindParserT)(onOrOff)(function(b) {
     return pure(applicativeParserT)(new LiteralTransmissionAST(b));
   });
 });
@@ -25251,7 +25251,7 @@ var parseProgram = function(x) {
     return new Right(v.value0);
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 23, column 18 - line 25, column 27): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 20, column 18 - line 22, column 27): " + [v.constructor.name]);
 };
 
 // output/RenderEngine/index.js
