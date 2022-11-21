@@ -1,6 +1,7 @@
 module Parser where
 
 import Prelude (Unit, bind, discard, negate, pure, show, identity, ($), ($>), (*), (<$>), (<>), (+), unit)
+import Control.Semigroupoid ((<<<))
 import Data.Identity (Identity)
 import Data.List (List, foldl)
 import Data.List.NonEmpty (NonEmptyList)
@@ -63,9 +64,6 @@ transmission = choice [
   try $ transmissionOnOff
   ]
 
--- transmission on;
--- transmission on movet 1 1 1;
-
 -- transmission on / off
 transmissionOnOff :: P TransmissionAST
 transmissionOnOff = do
@@ -73,26 +71,21 @@ transmissionOnOff = do
   b <- onOrOff
   pure $ LiteralTransmissionAST b
 
--- transmissionParser :: P TransmissionAST
--- transmissionParser = do
---   reserved "transmission"
---   x <- onOrOff
---   let t = LiteralTransmissionAST x
---   xs <- many transformations
---   let xs' = ... foldL on xs (including 'identity') to yield a single TransmissionAST -> TransmissionAST
---   pure $ xs' t
+-- transmission on;
+-- transmission on movet 1 1 1;
+transmissionParser :: P TransmissionAST
+transmissionParser = do
+  _ <- pure unit
+  reserved "transmission"
+  b <- onOrOff
+  let t = LiteralTransmissionAST b
+  xs <- many transformations
+  --foldl :: forall f b a. Foldable f => (b -> a -> b) -> b -> f a -> b
+  --foldl (una funcion que acumule)? (identity= valorIncial)? xs=lista
+  let xs' = foldl (<<<) identity xs
+  pure $ xs' t
 
--- transmissionParser :: P TransmissionAST
--- transmissionParser = do
---   _ <- pure unit
---   reserved "transmission"
---   b <- onOrOff
---   let t = LiteralTransmissionAST b
---   xs <- many transformations
---   -- foldl :: forall f b a. Foldable f => (b -> a -> b) -> b -> f a -> b
---   --foldl (una funcion que acumule)? (identity= valorIncial)? xs=lista
---   let xs' = foldl ? identity xs
---   pure $ xs' t
+--https://book.purescript.org/chapter4.html
 
 onOrOff :: P Boolean
 onOrOff = try $ choice [
@@ -109,6 +102,11 @@ transformations = do
   choice [
   movetParser
   ]
+--                       x y z
+-- transmission on movet 1 1 1;
+-- transmission on movet 1;
+-- transmission on movet _ 1;
+-- transmission on movet _ _ 1;
 
 -- movet 1 1 1
 movetParser :: P (TransmissionAST -> TransmissionAST)
