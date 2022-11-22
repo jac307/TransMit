@@ -20,6 +20,9 @@ var semigroupoidFn = {
     };
   }
 };
+var compose = function(dict) {
+  return dict.compose;
+};
 
 // output/Control.Category/index.js
 var identity = function(dict) {
@@ -237,16 +240,35 @@ var intMul = function(x) {
     return x * y | 0;
   };
 };
+var numAdd = function(n1) {
+  return function(n2) {
+    return n1 + n2;
+  };
+};
+var numMul = function(n1) {
+  return function(n2) {
+    return n1 * n2;
+  };
+};
 
 // output/Data.Semiring/index.js
 var zero = function(dict) {
   return dict.zero;
+};
+var semiringNumber = {
+  add: numAdd,
+  zero: 0,
+  mul: numMul,
+  one: 1
 };
 var semiringInt = {
   add: intAdd,
   zero: 0,
   mul: intMul,
   one: 1
+};
+var mul = function(dict) {
+  return dict.mul;
 };
 
 // output/Data.Ring/index.js
@@ -2269,6 +2291,7 @@ var option = function(a) {
 var notFollowedBy = function(p) {
   return $$try(alt(altParserT)(applySecond(applyParserT)($$try(p))(fail("Negated parser succeeded")))(pure(applicativeParserT)(unit)));
 };
+var many2 = /* @__PURE__ */ manyRec(monadRecParserT)(alternativeParserT);
 var lookAhead = function(v) {
   return function(state1, more, lift3, $$throw, done) {
     return v(state1, more, lift3, function(v1, err) {
@@ -2560,12 +2583,12 @@ var some2 = function(dictAlternative) {
   return function(dictLazy) {
     return function(v) {
       return apply(dictAlternative.Applicative0().Apply0())(map(dictAlternative.Plus1().Alt0().Functor0())(cons3)(v))(defer(dictLazy)(function(v1) {
-        return many2(dictAlternative)(dictLazy)(v);
+        return many3(dictAlternative)(dictLazy)(v);
       }));
     };
   };
 };
-var many2 = function(dictAlternative) {
+var many3 = function(dictAlternative) {
   return function(dictLazy) {
     return function(v) {
       return alt(dictAlternative.Plus1().Alt0())(some2(dictAlternative)(dictLazy)(v))(pure(dictAlternative.Applicative0())([]));
@@ -24825,13 +24848,13 @@ var makeTokenParser = function(v) {
   };
   var oper = function() {
     var go = bind(bindParserT)(v.opStart)(function(c) {
-      return bind(bindParserT)(many2(alternativeParserT)(lazyParserT)(v.opLetter))(function(cs) {
+      return bind(bindParserT)(many3(alternativeParserT)(lazyParserT)(v.opLetter))(function(cs) {
         return pure(applicativeParserT)(singleton5(c) + fromCharArray(cs));
       });
     });
     return withErrorMessage(go)("operator");
   }();
-  var number = function(base) {
+  var number2 = function(base) {
     return function(baseDigit) {
       var folder = function(v1) {
         return function(v2) {
@@ -24853,11 +24876,11 @@ var makeTokenParser = function(v) {
       });
     };
   };
-  var octal = applySecond(applyParserT)(oneOf2(["o", "O"]))(number(8)(octDigit));
+  var octal = applySecond(applyParserT)(oneOf2(["o", "O"]))(number2(8)(octDigit));
   var lexeme = function(p) {
     return applyFirst(applyParserT)(p)(whiteSpace$prime(v));
   };
-  var reservedOp = function(name2) {
+  var reservedOp2 = function(name2) {
     var go = bind(bindParserT)(string(name2))(function() {
       return withErrorMessage(notFollowedBy(v.opLetter))("end of " + name2);
     });
@@ -24892,7 +24915,7 @@ var makeTokenParser = function(v) {
   }();
   var ident = function() {
     var go = bind(bindParserT)(v.identStart)(function(c) {
-      return bind(bindParserT)(many2(alternativeParserT)(lazyParserT)(v.identLetter))(function(cs) {
+      return bind(bindParserT)(many3(alternativeParserT)(lazyParserT)(v.identLetter))(function(cs) {
         return pure(applicativeParserT)(singleton5(c) + fromCharArray(cs));
       });
     });
@@ -24909,7 +24932,7 @@ var makeTokenParser = function(v) {
     });
     return lexeme($$try(go));
   }();
-  var hexadecimal2 = applySecond(applyParserT)(oneOf2(["x", "X"]))(number(16)(hexDigit));
+  var hexadecimal2 = applySecond(applyParserT)(oneOf2(["x", "X"]))(number2(16)(hexDigit));
   var fraction = function() {
     var op = function(v1) {
       return function(v2) {
@@ -24936,7 +24959,7 @@ var makeTokenParser = function(v) {
   var escapeEmpty = $$char("&");
   var escMap = zip(["a", "b", "f", "n", "r", "t", "v", "\\", '"', "'"])(["\x07", "\b", "\f", "\n", "\r", "	", "\v", "\\", '"', "'"]);
   var dot = symbol(".");
-  var decimal = number(10)(digit);
+  var decimal = number2(10)(digit);
   var exponent$prime = function() {
     var power = function(e) {
       if (e < 0) {
@@ -24978,7 +25001,7 @@ var makeTokenParser = function(v) {
   var natFloat = alt(altParserT)(applySecond(applyParserT)($$char("0"))(zeroNumFloat))(decimalFloat);
   var naturalOrFloat = withErrorMessage(lexeme(natFloat))("number");
   var floating = bind(bindParserT)(decimal)(fractExponent);
-  var $$float = withErrorMessage(lexeme(floating))("float");
+  var $$float2 = withErrorMessage(lexeme(floating))("float");
   var zeroNumber = withErrorMessage(applySecond(applyParserT)($$char("0"))(alt(altParserT)(hexadecimal2)(alt(altParserT)(octal)(alt(altParserT)(decimal)(pure(applicativeParserT)(0))))))("");
   var nat = alt(altParserT)(zeroNumber)(decimal);
   var $$int = bind(bindParserT)(lexeme(sign2(ringInt)))(function(f) {
@@ -24986,7 +25009,7 @@ var makeTokenParser = function(v) {
       return pure(applicativeParserT)(f(n));
     });
   });
-  var integer = withErrorMessage(lexeme($$int))("integer");
+  var integer2 = withErrorMessage(lexeme($$int))("integer");
   var natural = withErrorMessage(lexeme(nat))("natural");
   var comma = symbol(",");
   var commaSep = function(p) {
@@ -24996,7 +25019,7 @@ var makeTokenParser = function(v) {
     return sepBy1(p)(comma);
   };
   var colon = symbol(":");
-  var charNum = bind(bindParserT)(alt(altParserT)(decimal)(alt(altParserT)(applySecond(applyParserT)($$char("o"))(number(8)(octDigit)))(applySecond(applyParserT)($$char("x"))(number(16)(hexDigit)))))(function(code) {
+  var charNum = bind(bindParserT)(alt(altParserT)(decimal)(alt(altParserT)(applySecond(applyParserT)($$char("o"))(number2(8)(octDigit)))(applySecond(applyParserT)($$char("x"))(number2(16)(hexDigit)))))(function(code) {
     var $71 = code > 1114111;
     if ($71) {
       return fail("invalid escape sequence");
@@ -25143,12 +25166,12 @@ var makeTokenParser = function(v) {
     identifier,
     reserved: reserved2,
     operator,
-    reservedOp,
+    reservedOp: reservedOp2,
     charLiteral,
     stringLiteral,
     natural,
-    integer,
-    "float": $$float,
+    integer: integer2,
+    "float": $$float2,
     naturalOrFloat,
     decimal,
     hexadecimal: hexadecimal2,
@@ -25212,25 +25235,97 @@ var whiteSpace = /* @__PURE__ */ function() {
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
 };
+var reservedOp = /* @__PURE__ */ function() {
+  return tokenParser.reservedOp;
+}();
 var reserved = /* @__PURE__ */ function() {
   return tokenParser.reserved;
 }();
 var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ reserved("onnn"))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ reserved("offf"))))(false)]));
-var transmissionOnOff = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmission"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmision"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("transmisssion"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("trasmission"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("trasmision"))(/* @__PURE__ */ reserved("trasmishion")))))))(function() {
-  return bind(bindParserT)(onOrOff)(function(b) {
-    return pure(applicativeParserT)(new LiteralTransmissionAST(b));
-  });
-});
-var transmission = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(transmissionOnOff)]);
-var statement = /* @__PURE__ */ function() {
-  return choice(foldableArray)([map(functorParserT)(TransmissionAST.create)(transmission)]);
-}();
 var noTranmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reserved("turn off"))(function() {
   return pure(applicativeParserT)(Nothing.value);
 });
 var justWhiteSpace = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ lookAhead(eof))(function() {
   return pure(applicativeParserT)(Nothing.value);
 });
+var integer = /* @__PURE__ */ function() {
+  return tokenParser.integer;
+}();
+var $$float = /* @__PURE__ */ function() {
+  return tokenParser["float"];
+}();
+var negativeNumber = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reservedOp("-"))(function() {
+  return map(functorParserT)(mul(semiringNumber)(-1))($$float);
+});
+var number = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(negativeNumber), /* @__PURE__ */ $$try($$float), /* @__PURE__ */ map(functorParserT)(toNumber)(integer)]);
+var vec3x = /* @__PURE__ */ bind(bindParserT)(number)(function(x) {
+  return pure(applicativeParserT)({
+    x,
+    y: 0,
+    z: 0
+  });
+});
+var vec3xy = /* @__PURE__ */ bind(bindParserT)(number)(function(x) {
+  return bind(bindParserT)(number)(function(y) {
+    return pure(applicativeParserT)({
+      x,
+      y,
+      z: 0
+    });
+  });
+});
+var vec3xyz = /* @__PURE__ */ bind(bindParserT)(number)(function(x) {
+  return bind(bindParserT)(number)(function(y) {
+    return bind(bindParserT)(number)(function(z) {
+      return pure(applicativeParserT)({
+        x,
+        y,
+        z
+      });
+    });
+  });
+});
+var vec3y = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reservedOp("_"))(function() {
+  return bind(bindParserT)(number)(function(y) {
+    return pure(applicativeParserT)({
+      x: 0,
+      y,
+      z: 0
+    });
+  });
+});
+var vec3z = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reservedOp("_"))(function() {
+  return bind(bindParserT)(number)(function(z) {
+    return pure(applicativeParserT)({
+      x: 0,
+      y: 0,
+      z
+    });
+  });
+});
+var vec3 = /* @__PURE__ */ alt(altParserT)(vec3x)(/* @__PURE__ */ alt(altParserT)(vec3xy)(/* @__PURE__ */ alt(altParserT)(vec3xyz)(/* @__PURE__ */ alt(altParserT)(vec3y)(vec3z))));
+var movetParser = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("movet"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("muvet"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("muv"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("move"))(/* @__PURE__ */ reserved("move it"))))))(function() {
+  return bind(bindParserT)(vec3)(function(v3) {
+    return pure(applicativeParserT)(Movet.create(v3));
+  });
+});
+var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return choice(foldableArray)([movetParser]);
+});
+var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return discard(discardUnit)(bindParserT)(reserved("transmission"))(function() {
+    return bind(bindParserT)(onOrOff)(function(b) {
+      var t = new LiteralTransmissionAST(b);
+      return bind(bindParserT)(many2(transformations))(function(xs) {
+        var xs$prime = foldl(foldableList)(compose(semigroupoidFn))(identity(categoryFn))(xs);
+        return pure(applicativeParserT)(xs$prime(t));
+      });
+    });
+  });
+});
+var statement = /* @__PURE__ */ function() {
+  return choice(foldableArray)([map(functorParserT)(TransmissionAST.create)(transmissionParser)]);
+}();
 var justAStatement = /* @__PURE__ */ bind(bindParserT)(statement)(function(s) {
   return pure(applicativeParserT)(new Just(s));
 });
@@ -25255,7 +25350,7 @@ var parseProgram = function(x) {
 };
 
 // output/RenderEngine/index.js
-var transmission2 = function(re) {
+var transmission = function(re) {
   return function(mState) {
     return function __do3() {
       var c = read(re.monitor)();
@@ -25274,10 +25369,10 @@ var transmission2 = function(re) {
   };
 };
 var tranmissionOn = function(re) {
-  return transmission2(re)(monitorOn);
+  return transmission(re)(monitorOn);
 };
 var tranmissionOff = function(re) {
-  return transmission2(re)(monitorOff);
+  return transmission(re)(monitorOff);
 };
 var runProgram = function(re) {
   return function(v) {

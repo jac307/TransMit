@@ -43,6 +43,12 @@ justAStatement = do
   s <- statement
   pure $ Just s
 
+statement :: P Statement
+statement = choice [
+  --try $ assignment,
+  TransmissionAST <$> transmissionParser
+]
+
 justWhiteSpace :: P AST
 justWhiteSpace = do
   lookAhead eof
@@ -53,23 +59,8 @@ noTranmission = do
   reserved "turn off"
   pure Nothing
 
-statement :: P Statement
-statement = choice [
-  --try $ assignment,
-  TransmissionAST <$> transmission
-]
-
-transmission :: P TransmissionAST
-transmission = choice [
-  try $ transmissionOnOff
-  ]
-
--- transmission on / off
-transmissionOnOff :: P TransmissionAST
-transmissionOnOff = do
-  (reserved "transmission" <|> reserved "transmision" <|> reserved "transmisssion" <|> reserved "trasmission" <|> reserved "trasmision" <|> reserved "trasmishion")
-  b <- onOrOff
-  pure $ LiteralTransmissionAST b
+--- Transmission ---
+--------------------
 
 -- transmission on;
 -- transmission on movet 1 1 1;
@@ -80,12 +71,8 @@ transmissionParser = do
   b <- onOrOff
   let t = LiteralTransmissionAST b
   xs <- many transformations
-  --foldl :: forall f b a. Foldable f => (b -> a -> b) -> b -> f a -> b
-  --foldl (una funcion que acumule)? (identity= valorIncial)? xs=lista
   let xs' = foldl (<<<) identity xs
   pure $ xs' t
-
---https://book.purescript.org/chapter4.html
 
 onOrOff :: P Boolean
 onOrOff = try $ choice [
