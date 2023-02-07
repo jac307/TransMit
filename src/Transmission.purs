@@ -11,6 +11,7 @@ type Transmission = {
   tvZone :: Int,
   channel :: String,
   position :: Vec3
+  -- should this position be Ref Vec3?
   }
 
 defTransmission :: Transmission
@@ -19,7 +20,7 @@ defTransmission = {
   tv: "3dObjects/cubo.obj",
   mapping: "3dObjects/cubo.mtl",
   tvZone: 0,
-  channel: "textures/04.mov", -- only when it is true
+  channel: "textures/static.mov", -- false statement
   position: defPosition
 }
 

@@ -19,7 +19,8 @@ import ThreeJS as TJS
 
 import AST (AST, Statement(..), TransmissionAST(..), defaultProgram)
 import Parser (parseProgram)
-import MonitorState (Monitor, defMonitor, monitorOff, monitorOn, noMonitor)
+import MonitorState (Monitor, defMonitor, removeMonitor, updateMonitor, playVideoElement)
+import Transmission (Transmission, defTransmission)
 
 -- python -m SimpleHTTPServer 8000
 
@@ -51,16 +52,15 @@ launch cvs = do
 
 animate :: RenderEngine -> Effect Unit
 animate re = do
-  p <- read re.program
+  p <- read re.program -- :: AST = Maybe Statement
   log $ "animate parser: " <> (show p)
   case p of
     Nothing -> do
-      noTransmission re
+      removeTransmission re
       TJS.render re.renderer re.scene re.camera
     Just prog -> do
-      runProgram re p -- runs every frame
+      runProgram re (astToProgram p) -- runs every frame
       TJS.render re.renderer re.scene re.camera
-
 
 evaluate :: RenderEngine -> String -> Effect (Maybe String)
 evaluate re s = do
@@ -71,42 +71,36 @@ evaluate re s = do
     Left err -> pure $ Just err
 
 ----------------------------------------
--- change the name of AST --- maybe for Tranmission
--- Program = Tranmission, then use Program instead of AST
-runProgram :: RenderEngine -> AST -> Effect Unit --
-runProgram re (Just (TransmissionAST (LiteralTransmissionAST true))) = tranmissionOn re
-runProgram re (Just (TransmissionAST (LiteralTransmissionAST false))) = tranmissionOff re
-runProgram re _ = pure unit
 
--------- Tranmission Status --------
+type Program = Maybe Transmission
 
--- transmission on rodar (360)
+astToProgram :: AST -> Program
+astToProgram (Just (TransmissionAST (LiteralTransmissionAST b))) = Just (defTransmission {estado = b})
+-- ask abot defTransmission?? should be the def or the current transmission?
+astToProgram _ = Nothing
 
-noTransmission :: RenderEngine -> Effect Unit
-noTransmission re = do
+runProgram :: RenderEngine -> Program -> Effect Unit
+runProgram re Nothing = removeTransmission re
+runProgram re (Just t) = runTransmission re t
+
+runTransmission :: RenderEngine -> Transmission -> Effect Unit
+runTransmission re t = do
+  m <- read re.monitor -- Ref (Maybe Monitor)
+  m' <- case m of
+    Nothing -> defMonitor       -- :: Effect Monitor
+    Just x -> pure x            -- :: Effect Monitor
+  write (Just m') re.monitor           -- m' :: Monitor
+  updateMonitor re.scene m' t   -- :: Effect Unit
+  playVideoElement m'           -- :: Effect Unit
+
+removeTransmission :: RenderEngine -> Effect Unit
+removeTransmission re = do
   c <- read re.monitor
   case c of
-    Nothing -> do
-      pure unit
+    Nothing -> pure unit
     Just m -> do
-      noMonitor re.scene m
+      removeMonitor re.scene m
       write Nothing re.monitor
-
-tranmissionOn :: RenderEngine -> Effect Unit
-tranmissionOn re = transmission re monitorOn
-
-tranmissionOff :: RenderEngine -> Effect Unit
-tranmissionOff re = transmission re monitorOff
-
-transmission :: RenderEngine -> (TJS.Scene -> Monitor -> Effect Unit) -> Effect Unit
-transmission re mState = do
-  c <- read re.monitor -- :: Ref (Maybe Monitor)
-  case c of
-    Just m -> mState re.scene m
-    Nothing -> do
-      m <- defMonitor
-      mState re.scene m
-      write (Just m) re.monitor
 
 --- errores
 --- primera linea> lo que le doy

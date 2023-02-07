@@ -2,9 +2,9 @@ module MonitorState
 (
 Monitor(..),
 defMonitor,
-noMonitor,
-monitorOn,
-monitorOff
+removeMonitor,
+updateMonitor,
+playVideoElement
 ) where
 
 import Prelude (Unit, unit, bind, discard, pure, show, ($), (/), (/=), (==), (<>))
@@ -17,6 +17,8 @@ import Web.HTML.HTMLMediaElement as HTML2
 
 import ThreeJS as TJS
 
+import Transmission (Transmission)
+
 type Monitor = {
   -- texture
   currVidURL :: Ref String,
@@ -28,6 +30,7 @@ type Monitor = {
   -- material
   currMtlURL :: Ref String,
   material :: Ref (Maybe TJS.MTL)
+  -- should my monitor have other records? like position, for example?
   }
 
 ----------------------------------------
@@ -66,32 +69,28 @@ defVidTexture  v = do
 --------------------------------
 ---- monitor ---
 
-noMonitor :: TJS.Scene -> Monitor -> Effect Unit
-noMonitor sc mo = do
+removeMonitor :: TJS.Scene -> Monitor -> Effect Unit
+removeMonitor sc mo = do
   removeGeometry sc mo
   removeMaterial sc mo
 
-monitorOn :: TJS.Scene -> Monitor -> Effect Unit
-monitorOn sc mo = do
-  updateMonitor sc mo "textures/04.mov" "3dObjects/cubo.obj" "3dObjects/cubo.mtl" 0
-  TJS.setRotationOfAnything sc 0.0 1.0 0.5
-  playVideoElement mo
+-- playVideoElement mo
 
-monitorOff :: TJS.Scene -> Monitor -> Effect Unit
-monitorOff sc mo = do
-  updateMonitor sc mo "textures/static.mov" "3dObjects/cubo.obj" "3dObjects/cubo.mtl" 0
-  TJS.setRotationOfAnything sc 0.5 0.8 1.0
-  playVideoElement mo
+-- new updateMonitor function
+updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
+updateMonitor sc mo t = do
+  -- 1. change video url if necessary -- takes channel input info Transmission
+  updateURLfromVidElem mo t.channel
+  -- 2. change/load geometry url/object -- takes tv & tvZone info from Transmission
+  changeOrLoadGeoIfNecessary sc mo t.tv t.tvZone
+  -- 3. change/load material url/create new mesh -- takes mapping & tvZone info from Transmission
+  changeOrLoadMatIfNecessary sc mo t.mapping t.tvZone
+  -- TJS.setRotationOfAnything sc 0.5 0.8 1.0
+  -- 4. Maybe do other changes for position, rotation, etc...?
+  -- Also.. I think I couldn't change the position of the object, just the scene... check this!!!
 
-updateMonitor :: TJS.Scene -> Monitor -> String -> String -> String -> Int -> Effect Unit
-updateMonitor sc mo vURL objURL mtlURL z = do
-  -- 1. change video url if necessary
-  updateURLfromVidElem mo vURL
-  -- 2. change/load geometry url/object
-  changeOrLoadGeoIfNecessary sc mo objURL z
-  -- 3. change/load material url/create new mesh
-  changeOrLoadMatIfNecessary sc mo mtlURL z
-  -- ifVidStatement mo.video mo.vidTexture
+--- maybe...
+--- changeNupdatePosition, etc?
 
 ---- Geometry ---
 

@@ -611,6 +611,21 @@ var applicativeMaybe = /* @__PURE__ */ function() {
   };
 }();
 
+// output/Transmission/index.js
+var defPosition = {
+  x: 0,
+  y: 0,
+  z: 0
+};
+var defTransmission = {
+  estado: false,
+  tv: "3dObjects/cubo.obj",
+  mapping: "3dObjects/cubo.mtl",
+  tvZone: 0,
+  channel: "textures/static.mov",
+  position: defPosition
+};
+
 // output/AST/index.js
 var LiteralTransmissionAST = /* @__PURE__ */ function() {
   function LiteralTransmissionAST2(value0) {
@@ -908,7 +923,6 @@ var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
 var disposeAnything = (anything) => (anything2) => () => anything2.dispose();
 var removeObject3D = (parent) => (child) => () => parent.remove(child);
 var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
-var setRotationOfAnything = (thing) => (x) => (y) => (z) => () => thing.rotation.set(x, y, z);
 var preloadAnything = (elem3) => () => elem3.preload = "auto";
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
 var createElement = (name2) => () => document.createElement(name2);
@@ -1359,7 +1373,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 155, column 3 - line 160, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 154, column 3 - line 159, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -1377,20 +1391,20 @@ var removeGeometry = function(sc) {
         return write(Nothing.value)(mo.geometry)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 145, column 3 - line 150, column 32): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 144, column 3 - line 149, column 32): " + [g.constructor.name]);
     };
   };
 };
-var playVideoElement = function(mo) {
-  return play(mo.video);
-};
-var noMonitor = function(sc) {
+var removeMonitor = function(sc) {
   return function(mo) {
     return function __do3() {
       removeGeometry(sc)(mo)();
       return removeMaterial(sc)(mo)();
     };
   };
+};
+var playVideoElement = function(mo) {
+  return play(mo.video);
 };
 var makeMesh = function(sc) {
   return function(g) {
@@ -1426,10 +1440,10 @@ var tryToMakeMesh = function(sc) {
             return makeMesh(sc)(g.value0)(m.value0)(z)(mo.vidTexture)();
           }
           ;
-          throw new Error("Failed pattern match at MonitorState (line 138, column 7 - line 140, column 53): " + [m.constructor.name]);
+          throw new Error("Failed pattern match at MonitorState (line 137, column 7 - line 139, column 53): " + [m.constructor.name]);
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 134, column 3 - line 140, column 53): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 133, column 3 - line 139, column 53): " + [g.constructor.name]);
       };
     };
   };
@@ -1518,36 +1532,12 @@ var changeOrLoadGeoIfNecessary = function(sc) {
 };
 var updateMonitor = function(sc) {
   return function(mo) {
-    return function(vURL) {
-      return function(objURL) {
-        return function(mtlURL) {
-          return function(z) {
-            return function __do3() {
-              updateURLfromVidElem(mo)(vURL)();
-              changeOrLoadGeoIfNecessary(sc)(mo)(objURL)(z)();
-              return changeOrLoadMatIfNecessary(sc)(mo)(mtlURL)(z)();
-            };
-          };
-        };
+    return function(t) {
+      return function __do3() {
+        updateURLfromVidElem(mo)(t.channel)();
+        changeOrLoadGeoIfNecessary(sc)(mo)(t.tv)(t.tvZone)();
+        return changeOrLoadMatIfNecessary(sc)(mo)(t.mapping)(t.tvZone)();
       };
-    };
-  };
-};
-var monitorOff = function(sc) {
-  return function(mo) {
-    return function __do3() {
-      updateMonitor(sc)(mo)("textures/static.mov")("3dObjects/cubo.obj")("3dObjects/cubo.mtl")(0)();
-      setRotationOfAnything(sc)(0.5)(0.8)(1)();
-      return playVideoElement(mo)();
-    };
-  };
-};
-var monitorOn = function(sc) {
-  return function(mo) {
-    return function __do3() {
-      updateMonitor(sc)(mo)("textures/04.mov")("3dObjects/cubo.obj")("3dObjects/cubo.mtl")(0)();
-      setRotationOfAnything(sc)(0)(1)(0.5)();
-      return playVideoElement(mo)();
     };
   };
 };
@@ -25350,44 +25340,28 @@ var parseProgram = function(x) {
 };
 
 // output/RenderEngine/index.js
-var transmission = function(re) {
-  return function(mState) {
+var runTransmission = function(re) {
+  return function(t) {
     return function __do3() {
-      var c = read(re.monitor)();
-      if (c instanceof Just) {
-        return mState(re.scene)(c.value0)();
-      }
-      ;
-      if (c instanceof Nothing) {
-        var m = defMonitor();
-        mState(re.scene)(m)();
-        return write(new Just(m))(re.monitor)();
-      }
-      ;
-      throw new Error("Failed pattern match at RenderEngine (line 104, column 3 - line 109, column 32): " + [c.constructor.name]);
+      var m = read(re.monitor)();
+      var m$prime = function() {
+        if (m instanceof Nothing) {
+          return defMonitor();
+        }
+        ;
+        if (m instanceof Just) {
+          return m.value0;
+        }
+        ;
+        throw new Error("Failed pattern match at RenderEngine (line 89, column 9 - line 91, column 21): " + [m.constructor.name]);
+      }();
+      write(new Just(m$prime))(re.monitor)();
+      updateMonitor(re.scene)(m$prime)(t)();
+      return playVideoElement(m$prime)();
     };
   };
 };
-var tranmissionOn = function(re) {
-  return transmission(re)(monitorOn);
-};
-var tranmissionOff = function(re) {
-  return transmission(re)(monitorOff);
-};
-var runProgram = function(re) {
-  return function(v) {
-    if (v instanceof Just && (v.value0.value0 instanceof LiteralTransmissionAST && v.value0.value0.value0)) {
-      return tranmissionOn(re);
-    }
-    ;
-    if (v instanceof Just && (v.value0.value0 instanceof LiteralTransmissionAST && !v.value0.value0.value0)) {
-      return tranmissionOff(re);
-    }
-    ;
-    return pure(applicativeEffect)(unit);
-  };
-};
-var noTransmission = function(re) {
+var removeTransmission = function(re) {
   return function __do3() {
     var c = read(re.monitor)();
     if (c instanceof Nothing) {
@@ -25395,11 +25369,24 @@ var noTransmission = function(re) {
     }
     ;
     if (c instanceof Just) {
-      noMonitor(re.scene)(c.value0)();
+      removeMonitor(re.scene)(c.value0)();
       return write(Nothing.value)(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 88, column 3 - line 93, column 31): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 99, column 3 - line 103, column 31): " + [c.constructor.name]);
+  };
+};
+var runProgram = function(re) {
+  return function(v) {
+    if (v instanceof Nothing) {
+      return removeTransmission(re);
+    }
+    ;
+    if (v instanceof Just) {
+      return runTransmission(re)(v.value0);
+    }
+    ;
+    throw new Error("Failed pattern match at RenderEngine (line 82, column 1 - line 82, column 53): " + [re.constructor.name, v.constructor.name]);
   };
 };
 var launch = function(cvs) {
@@ -25444,21 +25431,35 @@ var evaluate = function(re) {
     throw new Error("Failed pattern match at RenderEngine (line 67, column 3 - line 71, column 32): " + [v.constructor.name]);
   };
 };
+var astToProgram = function(v) {
+  if (v instanceof Just && v.value0.value0 instanceof LiteralTransmissionAST) {
+    return new Just({
+      estado: v.value0.value0.value0,
+      channel: defTransmission.channel,
+      mapping: defTransmission.mapping,
+      position: defTransmission.position,
+      tv: defTransmission.tv,
+      tvZone: defTransmission.tvZone
+    });
+  }
+  ;
+  return Nothing.value;
+};
 var animate = function(re) {
   return function __do3() {
     var p = read(re.program)();
     log2(monadEffectEffect)("animate parser: " + show(showMaybe(showStatement))(p))();
     if (p instanceof Nothing) {
-      noTransmission(re)();
+      removeTransmission(re)();
       return render(re.renderer)(re.scene)(re.camera)();
     }
     ;
     if (p instanceof Just) {
-      runProgram(re)(p)();
+      runProgram(re)(astToProgram(p))();
       return render(re.renderer)(re.scene)(re.camera)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 56, column 3 - line 62, column 48): " + [p.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 57, column 3 - line 63, column 48): " + [p.constructor.name]);
   };
 };
 
