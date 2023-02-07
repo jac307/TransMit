@@ -1,6 +1,7 @@
 module Transmission
 (Transmission,
 defTransmission,
+defTransmissionOn,
 Vec3)
 where
 
@@ -23,6 +24,10 @@ defTransmission = {
   channel: "textures/static.mov", -- false statement
   position: defPosition
 }
+
+defTransmissionOn :: Transmission
+defTransmissionOn = defTransmission {estado = true, channel = "textures/04.mov"}
+----
 
 type Vec3 = {
   x :: Number,

@@ -625,6 +625,16 @@ var defTransmission = {
   channel: "textures/static.mov",
   position: defPosition
 };
+var defTransmissionOn = /* @__PURE__ */ function() {
+  return {
+    estado: true,
+    tv: defTransmission.tv,
+    mapping: defTransmission.mapping,
+    tvZone: defTransmission.tvZone,
+    channel: "textures/04.mov",
+    position: defTransmission.position
+  };
+}();
 
 // output/AST/index.js
 var LiteralTransmissionAST = /* @__PURE__ */ function() {
@@ -25353,7 +25363,7 @@ var runTransmission = function(re) {
           return m.value0;
         }
         ;
-        throw new Error("Failed pattern match at RenderEngine (line 89, column 9 - line 91, column 21): " + [m.constructor.name]);
+        throw new Error("Failed pattern match at RenderEngine (line 92, column 9 - line 94, column 21): " + [m.constructor.name]);
       }();
       write(new Just(m$prime))(re.monitor)();
       updateMonitor(re.scene)(m$prime)(t)();
@@ -25373,7 +25383,7 @@ var removeTransmission = function(re) {
       return write(Nothing.value)(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 99, column 3 - line 103, column 31): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 102, column 3 - line 106, column 31): " + [c.constructor.name]);
   };
 };
 var runProgram = function(re) {
@@ -25386,7 +25396,7 @@ var runProgram = function(re) {
       return runTransmission(re)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 82, column 1 - line 82, column 53): " + [re.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 85, column 1 - line 85, column 53): " + [re.constructor.name, v.constructor.name]);
   };
 };
 var launch = function(cvs) {
@@ -25432,15 +25442,12 @@ var evaluate = function(re) {
   };
 };
 var astToProgram = function(v) {
-  if (v instanceof Just && v.value0.value0 instanceof LiteralTransmissionAST) {
-    return new Just({
-      estado: v.value0.value0.value0,
-      channel: defTransmission.channel,
-      mapping: defTransmission.mapping,
-      position: defTransmission.position,
-      tv: defTransmission.tv,
-      tvZone: defTransmission.tvZone
-    });
+  if (v instanceof Just && (v.value0.value0 instanceof LiteralTransmissionAST && !v.value0.value0.value0)) {
+    return new Just(defTransmission);
+  }
+  ;
+  if (v instanceof Just && (v.value0.value0 instanceof LiteralTransmissionAST && v.value0.value0.value0)) {
+    return new Just(defTransmissionOn);
   }
   ;
   return Nothing.value;

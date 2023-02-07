@@ -20,7 +20,7 @@ import ThreeJS as TJS
 import AST (AST, Statement(..), TransmissionAST(..), defaultProgram)
 import Parser (parseProgram)
 import MonitorState (Monitor, defMonitor, removeMonitor, updateMonitor, playVideoElement)
-import Transmission (Transmission, defTransmission)
+import Transmission (Transmission, defTransmission, defTransmissionOn)
 
 -- python -m SimpleHTTPServer 8000
 
@@ -75,7 +75,10 @@ evaluate re s = do
 type Program = Maybe Transmission
 
 astToProgram :: AST -> Program
-astToProgram (Just (TransmissionAST (LiteralTransmissionAST b))) = Just (defTransmission {estado = b})
+astToProgram (Just (TransmissionAST (LiteralTransmissionAST false))) = Just (defTransmission)
+astToProgram (Just (TransmissionAST (LiteralTransmissionAST true))) = Just (defTransmissionOn)
+
+
 -- ask abot defTransmission?? should be the def or the current transmission?
 astToProgram _ = Nothing
 

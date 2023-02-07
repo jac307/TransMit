@@ -7,7 +7,7 @@ import Prim.Boolean
 import Data.Map
 import Data.Maybe
 
-import Transmission (Transmission, defTransmission, Vec3)
+import Transmission (Transmission, defTransmission, defTransmissionOn, Vec3)
 
 type AST = Maybe Statement
 
@@ -29,5 +29,6 @@ instance showTransmissionAST :: Show TransmissionAST where
   show (Movet v3 t) = "Movet " <> show v3 <> show t
 
 tASTtoT :: TransmissionAST -> Transmission
-tASTtoT (LiteralTransmissionAST b) = defTransmission {estado = b} -- what happens with the channel?
+tASTtoT (LiteralTransmissionAST false) = defTransmission
+tASTtoT (LiteralTransmissionAST true) = defTransmissionOn
 tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}

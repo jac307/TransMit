@@ -63,7 +63,7 @@ noTranmission = do
 --------------------
 
 -- transmission on;
--- transmission on movet 1 1 1;
+-- transmission off;
 transmissionParser :: P TransmissionAST
 transmissionParser = do
   _ <- pure unit
