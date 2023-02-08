@@ -932,7 +932,6 @@ var loadMTL = (loader) => (url) => (cb) => () => loader.load(url, (x) => cb(x)()
 var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
 var disposeAnything = (anything) => (anything2) => () => anything2.dispose();
 var removeObject3D = (parent) => (child) => () => parent.remove(child);
-var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
 var preloadAnything = (elem3) => () => elem3.preload = "auto";
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
 var createElement = (name2) => () => document.createElement(name2);
@@ -942,6 +941,14 @@ var repeatWrapping = THREE.RepeatWrapping;
 var mirroredRepeatWrapping = THREE.MirroredRepeatWrapping;
 var nearestFilter = THREE.NearestFilter;
 var linearFilter = THREE.LinearFilter;
+
+// output/ThreeJS.Unsafe/foreign.js
+var setPosition = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
+
+// output/ThreeJS/index.js
+var setPosition2 = function() {
+  return setPosition;
+};
 
 // output/Web.HTML.HTMLMediaElement/foreign.js
 function setSrc(src2) {
@@ -1383,7 +1390,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 154, column 3 - line 159, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 148, column 3 - line 153, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -1401,7 +1408,7 @@ var removeGeometry = function(sc) {
         return write(Nothing.value)(mo.geometry)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 144, column 3 - line 149, column 32): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 138, column 3 - line 143, column 32): " + [g.constructor.name]);
     };
   };
 };
@@ -1450,10 +1457,10 @@ var tryToMakeMesh = function(sc) {
             return makeMesh(sc)(g.value0)(m.value0)(z)(mo.vidTexture)();
           }
           ;
-          throw new Error("Failed pattern match at MonitorState (line 137, column 7 - line 139, column 53): " + [m.constructor.name]);
+          throw new Error("Failed pattern match at MonitorState (line 131, column 7 - line 133, column 53): " + [m.constructor.name]);
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 133, column 3 - line 139, column 53): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 127, column 3 - line 133, column 53): " + [g.constructor.name]);
       };
     };
   };
@@ -25363,7 +25370,7 @@ var runTransmission = function(re) {
           return m.value0;
         }
         ;
-        throw new Error("Failed pattern match at RenderEngine (line 92, column 9 - line 94, column 21): " + [m.constructor.name]);
+        throw new Error("Failed pattern match at RenderEngine (line 91, column 9 - line 93, column 21): " + [m.constructor.name]);
       }();
       write(new Just(m$prime))(re.monitor)();
       updateMonitor(re.scene)(m$prime)(t)();
@@ -25383,7 +25390,7 @@ var removeTransmission = function(re) {
       return write(Nothing.value)(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 102, column 3 - line 106, column 31): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 101, column 3 - line 105, column 31): " + [c.constructor.name]);
   };
 };
 var runProgram = function(re) {
@@ -25396,7 +25403,7 @@ var runProgram = function(re) {
       return runTransmission(re)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 85, column 1 - line 85, column 53): " + [re.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 84, column 1 - line 84, column 53): " + [re.constructor.name, v.constructor.name]);
   };
 };
 var launch = function(cvs) {
@@ -25404,7 +25411,7 @@ var launch = function(cvs) {
     log2(monadEffectEffect)("launch now with ineffective program")();
     var scene = newScene();
     var camera = newPerspectiveCamera(75)(16 / 9)(0.1)(100)();
-    setPositionOfAnything(camera)(0)(0)(5)();
+    setPosition2()(camera)(0)(0)(5)();
     var renderer = newWebGLRenderer({
       antialias: true,
       canvas: cvs

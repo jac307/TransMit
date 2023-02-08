@@ -40,7 +40,7 @@ launch cvs = do
   log "launch now with ineffective program"
   scene <- TJS.newScene
   camera <- TJS.newPerspectiveCamera 75.0 (16.0/9.0) 0.1 100.0
-  TJS.setPositionOfAnything camera 0.0 0.0 5.0
+  TJS.setPosition camera 0.0 0.0 5.0
   renderer <- TJS.newWebGLRenderer {antialias: true, canvas: cvs}
   TJS.setSize renderer 1250.0 720.0 false
   lights <- TJS.newHemisphereLight 0xffffbb 0x080820 1.0
@@ -77,9 +77,8 @@ type Program = Maybe Transmission
 astToProgram :: AST -> Program
 astToProgram (Just (TransmissionAST (LiteralTransmissionAST false))) = Just (defTransmission)
 astToProgram (Just (TransmissionAST (LiteralTransmissionAST true))) = Just (defTransmissionOn)
-
-
 -- ask abot defTransmission?? should be the def or the current transmission?
+-- astToProgram (Just (TransmissionAST (Movet v3 t))) = Just
 astToProgram _ = Nothing
 
 runProgram :: RenderEngine -> Program -> Effect Unit

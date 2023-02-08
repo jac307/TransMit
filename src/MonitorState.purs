@@ -30,7 +30,6 @@ type Monitor = {
   -- material
   currMtlURL :: Ref String,
   material :: Ref (Maybe TJS.MTL)
-  -- should my monitor have other records? like position, for example?
   }
 
 ----------------------------------------
@@ -57,10 +56,9 @@ defURL = ""
 defVidElem :: Effect HTML2.HTMLMediaElement
 defVidElem = do
   v <- TJS.createElement "video"
-  HTML2.setSrc defURL v -- later, the def url should be = "textures/static.mov"
+  HTML2.setSrc defURL v
   pure v
 
--- change to this other type
 defVidTexture :: HTML2.HTMLMediaElement -> Effect TJS.TextureLoader
 defVidTexture  v = do
   vidTexture <- TJS.videoTexture v
@@ -74,9 +72,6 @@ removeMonitor sc mo = do
   removeGeometry sc mo
   removeMaterial sc mo
 
--- playVideoElement mo
-
--- new updateMonitor function
 updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
 updateMonitor sc mo t = do
   -- 1. change video url if necessary -- takes channel input info Transmission
@@ -85,7 +80,6 @@ updateMonitor sc mo t = do
   changeOrLoadGeoIfNecessary sc mo t.tv t.tvZone
   -- 3. change/load material url/create new mesh -- takes mapping & tvZone info from Transmission
   changeOrLoadMatIfNecessary sc mo t.mapping t.tvZone
-  -- TJS.setRotationOfAnything sc 0.5 0.8 1.0
   -- 4. Maybe do other changes for position, rotation, etc...?
   -- Also.. I think I couldn't change the position of the object, just the scene... check this!!!
 
