@@ -22,13 +22,19 @@ instance showStatement :: Show Statement where
 
 data TransmissionAST =
   LiteralTransmissionAST Boolean |
-  Movet Vec3 TransmissionAST
+  Scalar Vec3 TransmissionAST |
+  Movet Vec3 TransmissionAST |
+  Rodar Vec3 TransmissionAST
 
 instance showTransmissionAST :: Show TransmissionAST where
   show (LiteralTransmissionAST b) = "LitTransmission " <> show b
+  show (Scalar v3 t) = "Scalar" <> show v3 <> show t
   show (Movet v3 t) = "Movet " <> show v3 <> show t
+  show (Rodar v3 t) = "Rodar" <> show v3 <> show t
 
 tASTtoT :: TransmissionAST -> Transmission
 tASTtoT (LiteralTransmissionAST false) = defTransmission
 tASTtoT (LiteralTransmissionAST true) = defTransmissionOn
+tASTtoT (Scalar v3 t) = (tASTtoT t) {size = v3}
 tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}
+tASTtoT (Rodar v3 t) = (tASTtoT t) {rotation = v3}

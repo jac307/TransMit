@@ -87,8 +87,15 @@ transformations :: P (TransmissionAST -> TransmissionAST)
 transformations = do
   _ <- pure unit
   choice [
-  movetParser
+  scalarParser
   ]
+
+scalarParser :: P (TransmissionAST -> TransmissionAST)
+scalarParser = do
+  (reserved "scalar")
+  v3 <- vec3Param
+  pure $ Scalar v3
+
 --                       x y z
 -- transmission on movet 1 1 1;
 -- transmission on movet 1;
@@ -99,13 +106,19 @@ transformations = do
 movetParser :: P (TransmissionAST -> TransmissionAST)
 movetParser = do
   (reserved "movet" <|> reserved "muvet" <|> reserved "muv" <|> reserved "move" <|> reserved "move it")
-  v3 <- vec3
+  v3 <- vec3Param
   pure $ Movet v3
+
+rodarParser :: P (TransmissionAST -> TransmissionAST)
+rodarParser = do
+  (reserved "rodar")
+  v3 <- vec3Param
+  pure $ Rodar v3
 
 ----------
 
-vec3 :: P Vec3
-vec3 = vec3x <|> vec3xy <|> vec3xyz <|> vec3y <|> vec3z
+vec3Param :: P Vec3
+vec3Param = try $ choice [vec3xyz, vec3xy, vec3x, vec3y, vec3z] --vec3xy, vec3x, vec3y, vec3z
 
 --Function 1 1 1 --> modifies x,y,z
 vec3xyz :: P Vec3
@@ -168,7 +181,7 @@ negativeNumber = do
 
 tokenParser :: GenTokenParser String Identity
 tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
-  reservedNames = ["transmission", "on", "off", "channel"],
+  reservedNames = ["transmission", "on", "off", "channel", "movet", "scalar", "rodar"],
   reservedOpNames = ["=", "\"", "\"", "_"]
   }
 

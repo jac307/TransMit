@@ -17,7 +17,7 @@ import Web.HTML.HTMLMediaElement as HTML2
 
 import ThreeJS as TJS
 
-import AST (AST, Statement(..), TransmissionAST(..), defaultProgram)
+import AST (AST, Statement(..), TransmissionAST(..), defaultProgram, tASTtoT)
 import Parser (parseProgram)
 import MonitorState (Monitor, defMonitor, removeMonitor, updateMonitor, playVideoElement)
 import Transmission (Transmission, defTransmission, defTransmissionOn)
@@ -78,8 +78,13 @@ astToProgram :: AST -> Program
 astToProgram (Just (TransmissionAST (LiteralTransmissionAST false))) = Just (defTransmission)
 astToProgram (Just (TransmissionAST (LiteralTransmissionAST true))) = Just (defTransmissionOn)
 -- ask abot defTransmission?? should be the def or the current transmission?
--- astToProgram (Just (TransmissionAST (Movet v3 t))) = Just
+astToProgram (Just (TransmissionAST (Scalar v3 (LiteralTransmissionAST false)))) = Just $ defTransmission {size = v3}
+astToProgram (Just (TransmissionAST (Scalar v3 (LiteralTransmissionAST true)))) = Just $ defTransmissionOn {size = v3}
+-- astToProgram (Just (TransmissionAST (Scalar v3 t))) = Just $ (tASTtoT t) {size = v3}
 astToProgram _ = Nothing
+
+
+-- (Just TransmissionAST Scalar{ x: 1.0, y: 1.0, z: 1.0 }LitTransmission false)
 
 runProgram :: RenderEngine -> Program -> Effect Unit
 runProgram re Nothing = removeTransmission re

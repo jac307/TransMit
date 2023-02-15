@@ -7,7 +7,7 @@ updateMonitor,
 playVideoElement
 ) where
 
-import Prelude (Unit, unit, bind, discard, pure, show, ($), (/), (/=), (==), (<>))
+import Prelude (Unit, unit, bind, discard, pure, show, negate, ($), (/), (/=), (==), (<>))
 import Effect (Effect)
 import Effect.Class.Console (log, error)
 import Effect.Ref (Ref, new, read, write)
@@ -17,19 +17,21 @@ import Web.HTML.HTMLMediaElement as HTML2
 
 import ThreeJS as TJS
 
-import Transmission (Transmission)
+import Transmission (Transmission, Vec3)
 
 type Monitor = {
   -- texture
   currVidURL :: Ref String,
   video :: HTML2.HTMLMediaElement,
-  vidTexture :: TJS.TextureLoader, -- create in the beginning
+  vidTexture :: TJS.TextureLoader,
   -- object
   currObjURL :: Ref String,
   geometry :: Ref (Maybe TJS.OBJ),
   -- material
   currMtlURL :: Ref String,
-  material :: Ref (Maybe TJS.MTL)
+  material :: Ref (Maybe TJS.MTL),
+  -- mesh
+  mesh :: Ref (Maybe TJS.Mesh)
   }
 
 ----------------------------------------
@@ -46,8 +48,9 @@ defMonitor = do
   -- material
   currMtlURL <- new defURL
   material <- new Nothing
-  --
-  let mo = {currVidURL, video, vidTexture, currObjURL, geometry, currMtlURL, material}
+  -- mesh
+  mesh <- new Nothing
+  let mo = {currVidURL, video, vidTexture, currObjURL, geometry, currMtlURL, material, mesh}
   pure mo
 
 defURL :: String
@@ -74,17 +77,14 @@ removeMonitor sc mo = do
 
 updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
 updateMonitor sc mo t = do
-  -- 1. change video url if necessary -- takes channel input info Transmission
+  -- 1. change video url if necessary
   updateURLfromVidElem mo t.channel
-  -- 2. change/load geometry url/object -- takes tv & tvZone info from Transmission
+  -- 2. change/load geometry url/object
   changeOrLoadGeoIfNecessary sc mo t.tv t.tvZone
-  -- 3. change/load material url/create new mesh -- takes mapping & tvZone info from Transmission
+  -- 3. change/load material url/create new mesh
   changeOrLoadMatIfNecessary sc mo t.mapping t.tvZone
-  -- 4. Maybe do other changes for position, rotation, etc...?
-  -- Also.. I think I couldn't change the position of the object, just the scene... check this!!!
-
---- maybe...
---- changeNupdatePosition, etc?
+  -- 4. transform Mesh
+  transformMesh sc mo t
 
 ---- Geometry ---
 
@@ -120,7 +120,6 @@ changeOrLoadMatIfNecessary sc mo url z = do
 
 ---- Mesh ---
 
--- note: only called if something has been just loaded
 tryToMakeMesh :: TJS.Scene -> Monitor -> Int -> Effect Unit
 tryToMakeMesh sc mo z = do
   g <- read mo.geometry
@@ -160,11 +159,29 @@ makeMesh sc g m z vt = do
   -- 2. add mesh to scene
   TJS.addAnythingToScene sc g
 
--- Imported Functions --
---foreign import ifVidStatement :: HTML2.HTMLMediaElement -> TJS.TextureLoader -> Effect Unit
-foreign import preloadMaterials :: TJS.MTL -> Effect Unit
-foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
-foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
+-------- Transform Mesh --------
+
+transformMesh :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
+transformMesh sc mo t = do
+  g <- read mo.geometry
+  case g of
+    Nothing -> pure unit
+    Just o -> transformMesh' o t
+
+transformMesh' :: TJS.OBJ -> Transmission -> Effect Unit
+transformMesh' g t = do
+  TJS.setScaleOfAnything g (v3ToX t.size) (v3ToY t.size) (v3ToZ t.size)
+  TJS.setPositionOfAnything g (v3ToX t.position) (v3ToY t.position) (v3ToZ t.position)
+  TJS.setRotationOfAnything g (v3ToX t.rotation) (v3ToY t.rotation) (v3ToZ t.rotation)
+
+v3ToX :: Vec3 -> Number
+v3ToX v3 = v3.x
+
+v3ToY :: Vec3 -> Number
+v3ToY v3 = v3.y
+
+v3ToZ :: Vec3 -> Number
+v3ToZ v3 = v3.z
 
 -------- vElem & currVidURL --------
 
@@ -187,3 +204,9 @@ updateURLfromVidElem mo url = do
       HTML2.setVolume 0.0 v
       write url mo.currVidURL -- write new info
     else (pure unit)
+
+------------------------
+-- Imported Functions --
+foreign import preloadMaterials :: TJS.MTL -> Effect Unit
+foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
+foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
