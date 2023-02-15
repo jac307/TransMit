@@ -87,7 +87,9 @@ transformations :: P (TransmissionAST -> TransmissionAST)
 transformations = do
   _ <- pure unit
   choice [
-  scalarParser
+  scalarParser,
+  movetParser,
+  rodarParser
   ]
 
 scalarParser :: P (TransmissionAST -> TransmissionAST)
@@ -96,13 +98,6 @@ scalarParser = do
   v3 <- vec3Param
   pure $ Scalar v3
 
---                       x y z
--- transmission on movet 1 1 1;
--- transmission on movet 1;
--- transmission on movet _ 1;
--- transmission on movet _ _ 1;
-
--- movet 1 1 1
 movetParser :: P (TransmissionAST -> TransmissionAST)
 movetParser = do
   (reserved "movet" <|> reserved "muvet" <|> reserved "muv" <|> reserved "move" <|> reserved "move it")
@@ -116,6 +111,12 @@ rodarParser = do
   pure $ Rodar v3
 
 ----------
+
+--                       x y z
+-- transmission on movet 1 1 1;
+-- transmission on movet 1;
+-- transmission on movet _ 1;
+-- transmission on movet _ _ 1;
 
 vec3Param :: P Vec3
 vec3Param = try $ choice [vec3xyz, vec3xy, vec3x, vec3y, vec3z] --vec3xy, vec3x, vec3y, vec3z

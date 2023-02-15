@@ -1482,7 +1482,7 @@ var transformMesh = function(sc) {
           return transformMesh$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 165, column 3 - line 167, column 33): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 167, column 3 - line 169, column 33): " + [g.constructor.name]);
       };
     };
   };
@@ -25425,13 +25425,23 @@ var vec3z = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ re
   });
 });
 var vec3Param = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([vec3xyz, vec3xy, vec3x, vec3y, vec3z]));
+var movetParser = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("movet"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("muvet"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("muv"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("move"))(/* @__PURE__ */ reserved("move it"))))))(function() {
+  return bind(bindParserT)(vec3Param)(function(v3) {
+    return pure(applicativeParserT)(Movet.create(v3));
+  });
+});
+var rodarParser = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reserved("rodar"))(function() {
+  return bind(bindParserT)(vec3Param)(function(v3) {
+    return pure(applicativeParserT)(Rodar.create(v3));
+  });
+});
 var scalarParser = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reserved("scalar"))(function() {
   return bind(bindParserT)(vec3Param)(function(v3) {
     return pure(applicativeParserT)(Scalar.create(v3));
   });
 });
 var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return choice(foldableArray)([scalarParser]);
+  return choice(foldableArray)([scalarParser, movetParser, rodarParser]);
 });
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(reserved("transmission"))(function() {
@@ -25484,7 +25494,7 @@ var runTransmission = function(re) {
           return m.value0;
         }
         ;
-        throw new Error("Failed pattern match at RenderEngine (line 96, column 9 - line 98, column 21): " + [m.constructor.name]);
+        throw new Error("Failed pattern match at RenderEngine (line 101, column 9 - line 103, column 21): " + [m.constructor.name]);
       }();
       write(new Just(m$prime))(re.monitor)();
       updateMonitor(re.scene)(m$prime)(t)();
@@ -25504,7 +25514,7 @@ var removeTransmission = function(re) {
       return write(Nothing.value)(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 106, column 3 - line 110, column 31): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 111, column 3 - line 115, column 31): " + [c.constructor.name]);
   };
 };
 var runProgram = function(re) {
@@ -25517,7 +25527,7 @@ var runProgram = function(re) {
       return runTransmission(re)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 89, column 1 - line 89, column 53): " + [re.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 94, column 1 - line 94, column 53): " + [re.constructor.name, v.constructor.name]);
   };
 };
 var launch = function(cvs) {
@@ -25592,6 +25602,58 @@ var astToProgram = function(v) {
       mapping: defTransmissionOn.mapping,
       position: defTransmissionOn.position,
       rotation: defTransmissionOn.rotation,
+      tv: defTransmissionOn.tv,
+      tvZone: defTransmissionOn.tvZone
+    });
+  }
+  ;
+  if (v instanceof Just && (v.value0.value0 instanceof Movet && (v.value0.value0.value1 instanceof LiteralTransmissionAST && !v.value0.value0.value1.value0))) {
+    return new Just({
+      position: v.value0.value0.value0,
+      channel: defTransmission.channel,
+      estado: defTransmission.estado,
+      mapping: defTransmission.mapping,
+      rotation: defTransmission.rotation,
+      size: defTransmission.size,
+      tv: defTransmission.tv,
+      tvZone: defTransmission.tvZone
+    });
+  }
+  ;
+  if (v instanceof Just && (v.value0.value0 instanceof Movet && (v.value0.value0.value1 instanceof LiteralTransmissionAST && v.value0.value0.value1.value0))) {
+    return new Just({
+      position: v.value0.value0.value0,
+      channel: defTransmissionOn.channel,
+      estado: defTransmissionOn.estado,
+      mapping: defTransmissionOn.mapping,
+      rotation: defTransmissionOn.rotation,
+      size: defTransmissionOn.size,
+      tv: defTransmissionOn.tv,
+      tvZone: defTransmissionOn.tvZone
+    });
+  }
+  ;
+  if (v instanceof Just && (v.value0.value0 instanceof Rodar && (v.value0.value0.value1 instanceof LiteralTransmissionAST && !v.value0.value0.value1.value0))) {
+    return new Just({
+      rotation: v.value0.value0.value0,
+      channel: defTransmission.channel,
+      estado: defTransmission.estado,
+      mapping: defTransmission.mapping,
+      position: defTransmission.position,
+      size: defTransmission.size,
+      tv: defTransmission.tv,
+      tvZone: defTransmission.tvZone
+    });
+  }
+  ;
+  if (v instanceof Just && (v.value0.value0 instanceof Rodar && (v.value0.value0.value1 instanceof LiteralTransmissionAST && v.value0.value0.value1.value0))) {
+    return new Just({
+      rotation: v.value0.value0.value0,
+      channel: defTransmissionOn.channel,
+      estado: defTransmissionOn.estado,
+      mapping: defTransmissionOn.mapping,
+      position: defTransmissionOn.position,
+      size: defTransmissionOn.size,
       tv: defTransmissionOn.tv,
       tvZone: defTransmissionOn.tvZone
     });

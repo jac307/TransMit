@@ -74,13 +74,18 @@ evaluate re s = do
 
 type Program = Maybe Transmission
 
+-- ask abot defTransmission?? should be the def or the current transmission?
+-- this sections most likely to change
+-- ask David
 astToProgram :: AST -> Program
 astToProgram (Just (TransmissionAST (LiteralTransmissionAST false))) = Just (defTransmission)
 astToProgram (Just (TransmissionAST (LiteralTransmissionAST true))) = Just (defTransmissionOn)
--- ask abot defTransmission?? should be the def or the current transmission?
 astToProgram (Just (TransmissionAST (Scalar v3 (LiteralTransmissionAST false)))) = Just $ defTransmission {size = v3}
 astToProgram (Just (TransmissionAST (Scalar v3 (LiteralTransmissionAST true)))) = Just $ defTransmissionOn {size = v3}
--- astToProgram (Just (TransmissionAST (Scalar v3 t))) = Just $ (tASTtoT t) {size = v3}
+astToProgram (Just (TransmissionAST (Movet v3 (LiteralTransmissionAST false)))) = Just $ defTransmission {position = v3}
+astToProgram (Just (TransmissionAST (Movet v3 (LiteralTransmissionAST true)))) = Just $ defTransmissionOn {position = v3}
+astToProgram (Just (TransmissionAST (Rodar v3 (LiteralTransmissionAST false)))) = Just $ defTransmission {rotation = v3}
+astToProgram (Just (TransmissionAST (Rodar v3 (LiteralTransmissionAST true)))) = Just $ defTransmissionOn {rotation = v3}
 astToProgram _ = Nothing
 
 
