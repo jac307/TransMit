@@ -710,6 +710,59 @@ var TransmissionAST = /* @__PURE__ */ function() {
   };
   return TransmissionAST2;
 }();
+var tASTtoT = function(v) {
+  if (v instanceof LiteralTransmissionAST && !v.value0) {
+    return defTransmission;
+  }
+  ;
+  if (v instanceof LiteralTransmissionAST && v.value0) {
+    return defTransmissionOn;
+  }
+  ;
+  if (v instanceof Scalar) {
+    var v1 = tASTtoT(v.value1);
+    return {
+      estado: v1.estado,
+      tv: v1.tv,
+      mapping: v1.mapping,
+      tvZone: v1.tvZone,
+      channel: v1.channel,
+      size: v.value0,
+      position: v1.position,
+      rotation: v1.rotation
+    };
+  }
+  ;
+  if (v instanceof Movet) {
+    var v1 = tASTtoT(v.value1);
+    return {
+      estado: v1.estado,
+      tv: v1.tv,
+      mapping: v1.mapping,
+      tvZone: v1.tvZone,
+      channel: v1.channel,
+      size: v1.size,
+      position: v.value0,
+      rotation: v1.rotation
+    };
+  }
+  ;
+  if (v instanceof Rodar) {
+    var v1 = tASTtoT(v.value1);
+    return {
+      estado: v1.estado,
+      tv: v1.tv,
+      mapping: v1.mapping,
+      tvZone: v1.tvZone,
+      channel: v1.channel,
+      size: v1.size,
+      position: v1.position,
+      rotation: v.value0
+    };
+  }
+  ;
+  throw new Error("Failed pattern match at AST (line 35, column 1 - line 35, column 43): " + [v.constructor.name]);
+};
 var showTransmissionAST = {
   show: function(v) {
     if (v instanceof LiteralTransmissionAST) {
@@ -1460,7 +1513,7 @@ var updateURLfromVidElem = function(mo) {
     };
   };
 };
-var transformMesh$prime = function(g) {
+var transformTransmission$prime = function(g) {
   return function(t) {
     return function __do3() {
       setScaleOfAnything(g)(v3ToX(t.size))(v3ToY(t.size))(v3ToZ(t.size))();
@@ -1469,21 +1522,39 @@ var transformMesh$prime = function(g) {
     };
   };
 };
-var transformMesh = function(sc) {
+var transformTransmission = function(sc) {
   return function(mo) {
     return function(t) {
       return function __do3() {
-        var g = read(mo.geometry)();
+        var g = read(mo.obj)();
         if (g instanceof Nothing) {
           return unit;
         }
         ;
         if (g instanceof Just) {
-          return transformMesh$prime(g.value0)(t)();
+          return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 167, column 3 - line 169, column 33): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 163, column 3 - line 165, column 41): " + [g.constructor.name]);
       };
+    };
+  };
+};
+var removeObj = function(sc) {
+  return function(mo) {
+    return function __do3() {
+      var g = read(mo.obj)();
+      if (g instanceof Nothing) {
+        return unit;
+      }
+      ;
+      if (g instanceof Just) {
+        disposeAnything(g.value0)();
+        removeObject3D(sc)(g.value0)();
+        return write(Nothing.value)(mo.obj)();
+      }
+      ;
+      throw new Error("Failed pattern match at MonitorState (line 133, column 3 - line 138, column 27): " + [g.constructor.name]);
     };
   };
 };
@@ -1501,32 +1572,14 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 147, column 3 - line 152, column 32): " + [m.constructor.name]);
-    };
-  };
-};
-var removeGeometry = function(sc) {
-  return function(mo) {
-    return function __do3() {
-      var g = read(mo.geometry)();
-      if (g instanceof Nothing) {
-        return unit;
-      }
-      ;
-      if (g instanceof Just) {
-        disposeAnything(g.value0)();
-        removeObject3D(sc)(g.value0)();
-        return write(Nothing.value)(mo.geometry)();
-      }
-      ;
-      throw new Error("Failed pattern match at MonitorState (line 137, column 3 - line 142, column 32): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 143, column 3 - line 148, column 32): " + [m.constructor.name]);
     };
   };
 };
 var removeMonitor = function(sc) {
   return function(mo) {
     return function __do3() {
-      removeGeometry(sc)(mo)();
+      removeObj(sc)(mo)();
       return removeMaterial(sc)(mo)();
     };
   };
@@ -1534,7 +1587,7 @@ var removeMonitor = function(sc) {
 var playVideoElement = function(mo) {
   return play(mo.video);
 };
-var makeMesh = function(sc) {
+var makeTransmission = function(sc) {
   return function(g) {
     return function(m) {
       return function(z) {
@@ -1549,11 +1602,11 @@ var makeMesh = function(sc) {
     };
   };
 };
-var tryToMakeMesh = function(sc) {
+var tryToMakeTransmission = function(sc) {
   return function(mo) {
     return function(z) {
       return function __do3() {
-        var g = read(mo.geometry)();
+        var g = read(mo.obj)();
         if (g instanceof Nothing) {
           return unit;
         }
@@ -1565,13 +1618,13 @@ var tryToMakeMesh = function(sc) {
           }
           ;
           if (m instanceof Just) {
-            return makeMesh(sc)(g.value0)(m.value0)(z)(mo.vidTexture)();
+            return makeTransmission(sc)(g.value0)(m.value0)(z)(mo.vidTexture)();
           }
           ;
-          throw new Error("Failed pattern match at MonitorState (line 130, column 7 - line 132, column 53): " + [m.constructor.name]);
+          throw new Error("Failed pattern match at MonitorState (line 126, column 7 - line 128, column 61): " + [m.constructor.name]);
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 126, column 3 - line 132, column 53): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 122, column 3 - line 128, column 61): " + [g.constructor.name]);
       };
     };
   };
@@ -1593,21 +1646,44 @@ var defMonitor = function __do2() {
   var video = defVidElem();
   var vidTexture = defVidTexture(video)();
   var currObjURL = $$new(defURL)();
-  var geometry = $$new(Nothing.value)();
+  var obj = $$new(Nothing.value)();
   var currMtlURL = $$new(defURL)();
   var material = $$new(Nothing.value)();
-  var mesh = $$new(Nothing.value)();
   var mo = {
     currVidURL,
     video,
     vidTexture,
     currObjURL,
-    geometry,
+    obj,
     currMtlURL,
-    material,
-    mesh
+    material
   };
   return mo;
+};
+var changeOrLoadObjIfNecessary = function(sc) {
+  return function(mo) {
+    return function(url) {
+      return function(z) {
+        return function __do3() {
+          var currURL = read(mo.currObjURL)();
+          var $11 = url === currURL;
+          if ($11) {
+            return unit;
+          }
+          ;
+          removeObj(sc)(mo)();
+          var loader = newOBJLoader();
+          loadOBJ(loader)(url)(function(o) {
+            return function __do4() {
+              write(new Just(o))(mo.obj)();
+              return tryToMakeTransmission(sc)(mo)(z)();
+            };
+          })();
+          return write(url)(mo.currObjURL)();
+        };
+      };
+    };
+  };
 };
 var changeOrLoadMatIfNecessary = function(sc) {
   return function(mo) {
@@ -1615,8 +1691,8 @@ var changeOrLoadMatIfNecessary = function(sc) {
       return function(z) {
         return function __do3() {
           var currURL = read(mo.currMtlURL)();
-          var $11 = url === currURL;
-          if ($11) {
+          var $12 = url === currURL;
+          if ($12) {
             return unit;
           }
           ;
@@ -1626,35 +1702,10 @@ var changeOrLoadMatIfNecessary = function(sc) {
             return function __do4() {
               preloadMaterials(m)();
               write(new Just(m))(mo.material)();
-              return tryToMakeMesh(sc)(mo)(z)();
+              return tryToMakeTransmission(sc)(mo)(z)();
             };
           })();
           return write(url)(mo.currMtlURL)();
-        };
-      };
-    };
-  };
-};
-var changeOrLoadGeoIfNecessary = function(sc) {
-  return function(mo) {
-    return function(url) {
-      return function(z) {
-        return function __do3() {
-          var currURL = read(mo.currObjURL)();
-          var $12 = url === currURL;
-          if ($12) {
-            return unit;
-          }
-          ;
-          removeGeometry(sc)(mo)();
-          var loader = newOBJLoader();
-          loadOBJ(loader)(url)(function(o) {
-            return function __do4() {
-              write(new Just(o))(mo.geometry)();
-              return tryToMakeMesh(sc)(mo)(z)();
-            };
-          })();
-          return write(url)(mo.currObjURL)();
         };
       };
     };
@@ -1665,9 +1716,9 @@ var updateMonitor = function(sc) {
     return function(t) {
       return function __do3() {
         updateURLfromVidElem(mo)(t.channel)();
-        changeOrLoadGeoIfNecessary(sc)(mo)(t.tv)(t.tvZone)();
+        changeOrLoadObjIfNecessary(sc)(mo)(t.tv)(t.tvZone)();
         changeOrLoadMatIfNecessary(sc)(mo)(t.mapping)(t.tvZone)();
-        return transformMesh(sc)(mo)(t)();
+        return transformTransmission(sc)(mo)(t)();
       };
     };
   };
@@ -25416,15 +25467,17 @@ var vec3y = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ re
   });
 });
 var vec3z = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reservedOp("_"))(function() {
-  return bind(bindParserT)(number)(function(z) {
-    return pure(applicativeParserT)({
-      x: 0,
-      y: 0,
-      z
+  return discard(discardUnit)(bindParserT)(reservedOp("_"))(function() {
+    return bind(bindParserT)(number)(function(z) {
+      return pure(applicativeParserT)({
+        x: 0,
+        y: 0,
+        z
+      });
     });
   });
 });
-var vec3Param = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([vec3xyz, vec3xy, vec3x, vec3y, vec3z]));
+var vec3Param = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(vec3xyz), vec3xy, /* @__PURE__ */ $$try(vec3z), /* @__PURE__ */ $$try(vec3y), /* @__PURE__ */ $$try(vec3x)]);
 var movetParser = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("movet"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("muvet"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("muv"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("move"))(/* @__PURE__ */ reserved("move it"))))))(function() {
   return bind(bindParserT)(vec3Param)(function(v3) {
     return pure(applicativeParserT)(Movet.create(v3));
@@ -25481,6 +25534,9 @@ var parseProgram = function(x) {
 };
 
 // output/RenderEngine/index.js
+var statementToTransmission = function(v) {
+  return tASTtoT(v.value0);
+};
 var runTransmission = function(re) {
   return function(t) {
     return function __do3() {
@@ -25494,7 +25550,7 @@ var runTransmission = function(re) {
           return m.value0;
         }
         ;
-        throw new Error("Failed pattern match at RenderEngine (line 101, column 9 - line 103, column 21): " + [m.constructor.name]);
+        throw new Error("Failed pattern match at RenderEngine (line 91, column 9 - line 93, column 21): " + [m.constructor.name]);
       }();
       write(new Just(m$prime))(re.monitor)();
       updateMonitor(re.scene)(m$prime)(t)();
@@ -25514,7 +25570,7 @@ var removeTransmission = function(re) {
       return write(Nothing.value)(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 111, column 3 - line 115, column 31): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 101, column 3 - line 105, column 31): " + [c.constructor.name]);
   };
 };
 var runProgram = function(re) {
@@ -25527,7 +25583,7 @@ var runProgram = function(re) {
       return runTransmission(re)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 94, column 1 - line 94, column 53): " + [re.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 84, column 1 - line 84, column 53): " + [re.constructor.name, v.constructor.name]);
   };
 };
 var launch = function(cvs) {
@@ -25573,93 +25629,15 @@ var evaluate = function(re) {
   };
 };
 var astToProgram = function(v) {
-  if (v instanceof Just && (v.value0.value0 instanceof LiteralTransmissionAST && !v.value0.value0.value0)) {
-    return new Just(defTransmission);
+  if (v instanceof Just) {
+    return new Just(statementToTransmission(v.value0));
   }
   ;
-  if (v instanceof Just && (v.value0.value0 instanceof LiteralTransmissionAST && v.value0.value0.value0)) {
-    return new Just(defTransmissionOn);
+  if (v instanceof Nothing) {
+    return Nothing.value;
   }
   ;
-  if (v instanceof Just && (v.value0.value0 instanceof Scalar && (v.value0.value0.value1 instanceof LiteralTransmissionAST && !v.value0.value0.value1.value0))) {
-    return new Just({
-      size: v.value0.value0.value0,
-      channel: defTransmission.channel,
-      estado: defTransmission.estado,
-      mapping: defTransmission.mapping,
-      position: defTransmission.position,
-      rotation: defTransmission.rotation,
-      tv: defTransmission.tv,
-      tvZone: defTransmission.tvZone
-    });
-  }
-  ;
-  if (v instanceof Just && (v.value0.value0 instanceof Scalar && (v.value0.value0.value1 instanceof LiteralTransmissionAST && v.value0.value0.value1.value0))) {
-    return new Just({
-      size: v.value0.value0.value0,
-      channel: defTransmissionOn.channel,
-      estado: defTransmissionOn.estado,
-      mapping: defTransmissionOn.mapping,
-      position: defTransmissionOn.position,
-      rotation: defTransmissionOn.rotation,
-      tv: defTransmissionOn.tv,
-      tvZone: defTransmissionOn.tvZone
-    });
-  }
-  ;
-  if (v instanceof Just && (v.value0.value0 instanceof Movet && (v.value0.value0.value1 instanceof LiteralTransmissionAST && !v.value0.value0.value1.value0))) {
-    return new Just({
-      position: v.value0.value0.value0,
-      channel: defTransmission.channel,
-      estado: defTransmission.estado,
-      mapping: defTransmission.mapping,
-      rotation: defTransmission.rotation,
-      size: defTransmission.size,
-      tv: defTransmission.tv,
-      tvZone: defTransmission.tvZone
-    });
-  }
-  ;
-  if (v instanceof Just && (v.value0.value0 instanceof Movet && (v.value0.value0.value1 instanceof LiteralTransmissionAST && v.value0.value0.value1.value0))) {
-    return new Just({
-      position: v.value0.value0.value0,
-      channel: defTransmissionOn.channel,
-      estado: defTransmissionOn.estado,
-      mapping: defTransmissionOn.mapping,
-      rotation: defTransmissionOn.rotation,
-      size: defTransmissionOn.size,
-      tv: defTransmissionOn.tv,
-      tvZone: defTransmissionOn.tvZone
-    });
-  }
-  ;
-  if (v instanceof Just && (v.value0.value0 instanceof Rodar && (v.value0.value0.value1 instanceof LiteralTransmissionAST && !v.value0.value0.value1.value0))) {
-    return new Just({
-      rotation: v.value0.value0.value0,
-      channel: defTransmission.channel,
-      estado: defTransmission.estado,
-      mapping: defTransmission.mapping,
-      position: defTransmission.position,
-      size: defTransmission.size,
-      tv: defTransmission.tv,
-      tvZone: defTransmission.tvZone
-    });
-  }
-  ;
-  if (v instanceof Just && (v.value0.value0 instanceof Rodar && (v.value0.value0.value1 instanceof LiteralTransmissionAST && v.value0.value0.value1.value0))) {
-    return new Just({
-      rotation: v.value0.value0.value0,
-      channel: defTransmissionOn.channel,
-      estado: defTransmissionOn.estado,
-      mapping: defTransmissionOn.mapping,
-      position: defTransmissionOn.position,
-      size: defTransmissionOn.size,
-      tv: defTransmissionOn.tv,
-      tvZone: defTransmissionOn.tvZone
-    });
-  }
-  ;
-  return Nothing.value;
+  throw new Error("Failed pattern match at RenderEngine (line 77, column 1 - line 77, column 31): " + [v.constructor.name]);
 };
 var animate = function(re) {
   return function __do3() {

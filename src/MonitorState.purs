@@ -26,12 +26,10 @@ type Monitor = {
   vidTexture :: TJS.TextureLoader,
   -- object
   currObjURL :: Ref String,
-  geometry :: Ref (Maybe TJS.OBJ),
+  obj :: Ref (Maybe TJS.OBJ),
   -- material
   currMtlURL :: Ref String,
-  material :: Ref (Maybe TJS.MTL),
-  -- mesh
-  mesh :: Ref (Maybe TJS.Mesh)
+  material :: Ref (Maybe TJS.MTL)
   }
 
 ----------------------------------------
@@ -44,13 +42,11 @@ defMonitor = do
   vidTexture <- defVidTexture video
   -- object
   currObjURL <- new defURL
-  geometry <- new Nothing
+  obj <- new Nothing
   -- material
   currMtlURL <- new defURL
   material <- new Nothing
-  -- mesh
-  mesh <- new Nothing
-  let mo = {currVidURL, video, vidTexture, currObjURL, geometry, currMtlURL, material, mesh}
+  let mo = {currVidURL, video, vidTexture, currObjURL, obj, currMtlURL, material}
   pure mo
 
 defURL :: String
@@ -72,33 +68,33 @@ defVidTexture  v = do
 
 removeMonitor :: TJS.Scene -> Monitor -> Effect Unit
 removeMonitor sc mo = do
-  removeGeometry sc mo
+  removeObj sc mo
   removeMaterial sc mo
 
 updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
 updateMonitor sc mo t = do
   -- 1. change video url if necessary
   updateURLfromVidElem mo t.channel
-  -- 2. change/load geometry url/object
-  changeOrLoadGeoIfNecessary sc mo t.tv t.tvZone
+  -- 2. change/load obj url/object
+  changeOrLoadObjIfNecessary sc mo t.tv t.tvZone
   -- 3. change/load material url/create new mesh
   changeOrLoadMatIfNecessary sc mo t.mapping t.tvZone
-  -- 4. transform Mesh
-  transformMesh sc mo t
+  -- 4. transform Transmission
+  transformTransmission sc mo t
 
----- Geometry ---
+---- Obj ---
 
-changeOrLoadGeoIfNecessary :: TJS.Scene -> Monitor -> String -> Int -> Effect Unit
-changeOrLoadGeoIfNecessary sc mo url z = do
+changeOrLoadObjIfNecessary :: TJS.Scene -> Monitor -> String -> Int -> Effect Unit
+changeOrLoadObjIfNecessary sc mo url z = do
   currURL <- read mo.currObjURL
   if url == currURL
     then (pure unit)
     else do -- if the load is triggered:
-      removeGeometry sc mo -- remove and dispose geometry
+      removeObj sc mo -- remove and dispose obj
       loader <- TJS.newOBJLoader
       TJS.loadOBJ loader url $ \o -> do
-        write (Just o) mo.geometry
-        tryToMakeMesh sc mo z
+        write (Just o) mo.obj
+        tryToMakeTransmission sc mo z
       write url mo.currObjURL
 
 ---- Material ---
@@ -115,31 +111,31 @@ changeOrLoadMatIfNecessary sc mo url z = do
         preloadMaterials m
         --TJS.printAnything m
         write (Just m) mo.material
-        tryToMakeMesh sc mo z
+        tryToMakeTransmission sc mo z
       write url mo.currMtlURL
 
 ---- Mesh ---
 
-tryToMakeMesh :: TJS.Scene -> Monitor -> Int -> Effect Unit
-tryToMakeMesh sc mo z = do
-  g <- read mo.geometry
+tryToMakeTransmission :: TJS.Scene -> Monitor -> Int -> Effect Unit
+tryToMakeTransmission sc mo z = do
+  g <- read mo.obj
   case g of
     Nothing -> pure unit
     Just g' -> do
       m <- read mo.material
       case m of
         Nothing -> pure unit
-        Just m' -> makeMesh sc g' m' z mo.vidTexture
+        Just m' -> makeTransmission sc g' m' z mo.vidTexture
 
-removeGeometry :: TJS.Scene -> Monitor -> Effect Unit
-removeGeometry sc mo = do
-  g <- read mo.geometry
+removeObj :: TJS.Scene -> Monitor -> Effect Unit
+removeObj sc mo = do
+  g <- read mo.obj
   case g of
     Nothing -> pure unit
     Just g' -> do
       TJS.disposeAnything g'
       TJS.removeObject3D sc g'
-      write Nothing mo.geometry
+      write Nothing mo.obj
 
 removeMaterial :: TJS.Scene -> Monitor -> Effect Unit
 removeMaterial sc mo = do
@@ -151,25 +147,25 @@ removeMaterial sc mo = do
       TJS.removeObject3D sc m'
       write Nothing mo.material
 
-makeMesh :: TJS.Scene -> TJS.OBJ -> TJS.MTL -> Int -> TJS.TextureLoader -> Effect Unit
-makeMesh sc g m z vt = do
+-------- Transmission --------
+
+makeTransmission :: TJS.Scene -> TJS.OBJ -> TJS.MTL -> Int -> TJS.TextureLoader -> Effect Unit
+makeTransmission sc g m z vt = do
   -- 1. combine the three things to make a mesh
   mapVidTextToMat m vt
   mapMatToObj g z m
   -- 2. add mesh to scene
   TJS.addAnythingToScene sc g
 
--------- Transform Mesh --------
-
-transformMesh :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
-transformMesh sc mo t = do
-  g <- read mo.geometry
+transformTransmission :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
+transformTransmission sc mo t = do
+  g <- read mo.obj -- call it: obj
   case g of
     Nothing -> pure unit
-    Just o -> transformMesh' o t
+    Just o -> transformTransmission' o t
 
-transformMesh' :: TJS.OBJ -> Transmission -> Effect Unit
-transformMesh' g t = do
+transformTransmission' :: TJS.OBJ -> Transmission -> Effect Unit
+transformTransmission' g t = do
   TJS.setScaleOfAnything g (v3ToX t.size) (v3ToY t.size) (v3ToZ t.size)
   TJS.setPositionOfAnything g (v3ToX t.position) (v3ToY t.position) (v3ToZ t.position)
   TJS.setRotationOfAnything g (v3ToX t.rotation) (v3ToY t.rotation) (v3ToZ t.rotation)

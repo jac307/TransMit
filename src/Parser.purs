@@ -114,12 +114,13 @@ rodarParser = do
 
 --                       x y z
 -- transmission on movet 1 1 1;
--- transmission on movet 1;
+-- transmission on movet 1;  -- vec3x not working
+-- transmission on movet 1 1;
 -- transmission on movet _ 1;
 -- transmission on movet _ _ 1;
 
 vec3Param :: P Vec3
-vec3Param = try $ choice [vec3xyz, vec3xy, vec3x, vec3y, vec3z] --vec3xy, vec3x, vec3y, vec3z
+vec3Param = choice [ try vec3xyz, vec3xy, try vec3z, try vec3y, try vec3x ]
 
 --Function 1 1 1 --> modifies x,y,z
 vec3xyz :: P Vec3
@@ -132,6 +133,7 @@ vec3xyz = do
 --Function _ _ 1 --> modifies z    defX / defY=0
 vec3z :: P Vec3
 vec3z = do
+  reservedOp "_"
   reservedOp "_"
   let x = 0.0
   let y = 0.0
