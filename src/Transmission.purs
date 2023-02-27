@@ -27,7 +27,7 @@ defTransmission = {
 }
 
 defTransmissionOn :: Transmission
-defTransmissionOn = defTransmission {estado = true, channel = "textures/Test-2.mp4"}
+defTransmissionOn = defTransmission {estado = true, channel = "textures/01.mov"}
 
 ----
 

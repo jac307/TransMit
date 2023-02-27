@@ -644,7 +644,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
     tvZone: defTransmission.tvZone,
-    channel: "textures/Test-2.mp4",
+    channel: "textures/01.mov",
     channelReapeater: defTransmission.channelReapeater,
     size: defTransmission.size,
     position: defTransmission.position,
@@ -1088,7 +1088,6 @@ var $$new = _new;
 var preloadMaterials = (m) => () => m.preload();
 var mapVidTextToMat = (m) => (vt) => () => m.materials.Material.map = vt;
 var mapMatToObj = (o) => (n) => (m) => () => o.children[n].material = m.materials.Material;
-var setVidTextOpacity = (vt) => (o) => () => vt.opacity = o;
 
 // output/ThreeJS/foreign.js
 var newScene = () => new THREE.Scene();
@@ -1582,8 +1581,7 @@ var transformVidTexture = function(vt) {
   return function(t) {
     return function __do3() {
       setRepeatOfAnything(vt)(v2ToX(t.channelReapeater))(v2ToY(t.channelReapeater))();
-      format(vt)(rgbaFormat)();
-      return setVidTextOpacity(vt)(0.5)();
+      return format(vt)(rgbaFormat)();
     };
   };
 };
