@@ -17,7 +17,7 @@ import Web.HTML.HTMLMediaElement as HTML2
 
 import ThreeJS as TJS
 
-import Transmission (Transmission, Vec3)
+import Transmission (Transmission, Vec3, Vec2)
 
 type Monitor = {
   -- texture
@@ -81,6 +81,7 @@ updateMonitor sc mo t = do
   changeOrLoadMatIfNecessary sc mo t.mapping t.tvZone
   -- 4. transform Transmission
   transformTransmission sc mo t
+  transformVidTexture mo.vidTexture t
 
 ---- Obj ---
 
@@ -170,14 +171,13 @@ transformTransmission' g t = do
   TJS.setPositionOfAnything g (v3ToX t.position) (v3ToY t.position) (v3ToZ t.position)
   TJS.setRotationOfAnything g (v3ToX t.rotation) (v3ToY t.rotation) (v3ToZ t.rotation)
 
-v3ToX :: Vec3 -> Number
-v3ToX v3 = v3.x
+-------- vidTexture --------
 
-v3ToY :: Vec3 -> Number
-v3ToY v3 = v3.y
-
-v3ToZ :: Vec3 -> Number
-v3ToZ v3 = v3.z
+transformVidTexture :: TJS.TextureLoader -> Transmission -> Effect Unit
+transformVidTexture vt t = do
+  TJS.setRepeatOfAnything vt (v2ToX t.channelReapeater) (v2ToY t.channelReapeater)
+  TJS.format vt TJS.rgbaFormat
+  -- def rgbaFormat, other options: alphaFormat, redFormat, rgFormat, luminanceFormat, luminanceAlphaFormat
 
 -------- vElem & currVidURL --------
 
@@ -206,3 +206,20 @@ updateURLfromVidElem mo url = do
 foreign import preloadMaterials :: TJS.MTL -> Effect Unit
 foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
 foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
+
+----- General -----
+
+v2ToX :: Vec2 -> Number
+v2ToX v2 = v2.x
+
+v2ToY :: Vec2 -> Number
+v2ToY v2 = v2.y
+
+v3ToX :: Vec3 -> Number
+v3ToX v3 = v3.x
+
+v3ToY :: Vec3 -> Number
+v3ToY v3 = v3.y
+
+v3ToZ :: Vec3 -> Number
+v3ToZ v3 = v3.z

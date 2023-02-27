@@ -43,7 +43,7 @@ launch cvs = do
   TJS.setPosition camera 0.0 0.0 5.0
   renderer <- TJS.newWebGLRenderer {antialias: true, canvas: cvs}
   TJS.setSize renderer 1250.0 720.0 false
-  lights <- TJS.newHemisphereLight 0xffffbb 0x080820 1.0
+  lights <- TJS.newHemisphereLight 0xffffff 0xffffff 3.0
   TJS.addAnythingToScene scene lights
   monitor <- new Nothing
   program <- new defaultProgram

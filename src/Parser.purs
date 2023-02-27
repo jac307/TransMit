@@ -15,7 +15,7 @@ import Parsing.Combinators (choice, lookAhead, try, (<|>), many)
 import Parsing.String (eof)
 
 import AST (AST, Statement(..), TransmissionAST(..))
-import Transmission (Vec3)
+import Transmission (Vec3, Vec2)
 
 parseProgram :: String -> Either String AST
 parseProgram x = case (runParser x ast) of
@@ -87,30 +87,31 @@ transformations :: P (TransmissionAST -> TransmissionAST)
 transformations = do
   _ <- pure unit
   choice [
-  scalarParser,
-  movetParser,
-  rodarParser
+  functionWithV2 "repet" ChannelRepeater,
+  functionWithV3 "scalar" Scalar,
+  functionWithV3 "movet" Movet,
+  functionWithV3 "rodar" Rodar
   ]
 
-scalarParser :: P (TransmissionAST -> TransmissionAST)
-scalarParser = do
-  (reserved "scalar")
+functionWithV3 :: String -> (Vec3 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithV3 functionName constructor = try $ do
+  reserved functionName
   v3 <- vec3Param
-  pure $ Scalar v3
+  pure $ constructor v3
 
-movetParser :: P (TransmissionAST -> TransmissionAST)
-movetParser = do
-  (reserved "movet" <|> reserved "muvet" <|> reserved "muv" <|> reserved "move" <|> reserved "move it")
-  v3 <- vec3Param
-  pure $ Movet v3
-
-rodarParser :: P (TransmissionAST -> TransmissionAST)
-rodarParser = do
-  (reserved "rodar")
-  v3 <- vec3Param
-  pure $ Rodar v3
+functionWithV2 :: String -> (Vec2 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithV2 functionName constructor = try $ do
+  reserved functionName
+  v2 <- vec2xy
+  pure $ constructor v2
 
 ----------
+
+vec2xy :: P Vec2
+vec2xy = do
+  x <- number
+  y <- number
+  pure $ {x,y}
 
 --                       x y z
 -- transmission on movet 1 1 1;

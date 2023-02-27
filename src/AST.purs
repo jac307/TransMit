@@ -1,15 +1,17 @@
 module AST where
 
 import Prelude
+import Data.List (List(..))
 import Effect (Effect)
 import Data.Number
 import Prim.Boolean
 import Data.Map
 import Data.Maybe
 
-import Transmission (Transmission, defTransmission, defTransmissionOn, Vec3)
+import Transmission (Transmission, defTransmission, defTransmissionOn, Vec3, Vec2)
 
 type AST = Maybe Statement
+--type AST = Maybe (List Statement)
 
 defaultProgram :: AST
 defaultProgram = Nothing
@@ -22,12 +24,14 @@ instance showStatement :: Show Statement where
 
 data TransmissionAST =
   LiteralTransmissionAST Boolean |
+  ChannelRepeater Vec2 TransmissionAST |
   Scalar Vec3 TransmissionAST |
   Movet Vec3 TransmissionAST |
   Rodar Vec3 TransmissionAST
 
 instance showTransmissionAST :: Show TransmissionAST where
   show (LiteralTransmissionAST b) = "LitTransmission " <> show b
+  show (ChannelRepeater v2 t) = "Repit" <> show v2 <> show t
   show (Scalar v3 t) = "Scalar" <> show v3 <> show t
   show (Movet v3 t) = "Movet " <> show v3 <> show t
   show (Rodar v3 t) = "Rodar" <> show v3 <> show t
@@ -35,6 +39,7 @@ instance showTransmissionAST :: Show TransmissionAST where
 tASTtoT :: TransmissionAST -> Transmission
 tASTtoT (LiteralTransmissionAST false) = defTransmission
 tASTtoT (LiteralTransmissionAST true) = defTransmissionOn
+tASTtoT (ChannelRepeater v2 t) = (tASTtoT t) {channelReapeater = v2}
 tASTtoT (Scalar v3 t) = (tASTtoT t) {size = v3}
 tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}
 tASTtoT (Rodar v3 t) = (tASTtoT t) {rotation = v3}

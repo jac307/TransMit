@@ -612,30 +612,31 @@ var applicativeMaybe = /* @__PURE__ */ function() {
 }();
 
 // output/Transmission/index.js
-var defSize = {
-  x: 1,
-  y: 1,
-  z: 1
-};
-var defRotation = {
-  x: 0,
-  y: 0,
-  z: 0
-};
-var defPosition = {
-  x: 0,
-  y: 0,
-  z: 0
-};
 var defTransmission = {
   estado: false,
   tv: "3dObjects/cubo.obj",
   mapping: "3dObjects/cubo.mtl",
   tvZone: 0,
   channel: "textures/static.mov",
-  size: defSize,
-  position: defPosition,
-  rotation: defRotation
+  channelReapeater: {
+    x: 1,
+    y: 1
+  },
+  size: {
+    x: 1.5,
+    y: 1.5,
+    z: 1.5
+  },
+  position: {
+    x: 0,
+    y: 0,
+    z: 0
+  },
+  rotation: {
+    x: 0.5,
+    y: 0,
+    z: 0
+  }
 };
 var defTransmissionOn = /* @__PURE__ */ function() {
   return {
@@ -643,7 +644,8 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
     tvZone: defTransmission.tvZone,
-    channel: "textures/04.mov",
+    channel: "textures/Test-2.mp4",
+    channelReapeater: defTransmission.channelReapeater,
     size: defTransmission.size,
     position: defTransmission.position,
     rotation: defTransmission.rotation
@@ -660,6 +662,19 @@ var LiteralTransmissionAST = /* @__PURE__ */ function() {
     return new LiteralTransmissionAST2(value0);
   };
   return LiteralTransmissionAST2;
+}();
+var ChannelRepeater = /* @__PURE__ */ function() {
+  function ChannelRepeater2(value0, value1) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+  ;
+  ChannelRepeater2.create = function(value0) {
+    return function(value1) {
+      return new ChannelRepeater2(value0, value1);
+    };
+  };
+  return ChannelRepeater2;
 }();
 var Scalar = /* @__PURE__ */ function() {
   function Scalar2(value0, value1) {
@@ -719,6 +734,21 @@ var tASTtoT = function(v) {
     return defTransmissionOn;
   }
   ;
+  if (v instanceof ChannelRepeater) {
+    var v1 = tASTtoT(v.value1);
+    return {
+      estado: v1.estado,
+      tv: v1.tv,
+      mapping: v1.mapping,
+      tvZone: v1.tvZone,
+      channel: v1.channel,
+      channelReapeater: v.value0,
+      size: v1.size,
+      position: v1.position,
+      rotation: v1.rotation
+    };
+  }
+  ;
   if (v instanceof Scalar) {
     var v1 = tASTtoT(v.value1);
     return {
@@ -727,6 +757,7 @@ var tASTtoT = function(v) {
       mapping: v1.mapping,
       tvZone: v1.tvZone,
       channel: v1.channel,
+      channelReapeater: v1.channelReapeater,
       size: v.value0,
       position: v1.position,
       rotation: v1.rotation
@@ -741,6 +772,7 @@ var tASTtoT = function(v) {
       mapping: v1.mapping,
       tvZone: v1.tvZone,
       channel: v1.channel,
+      channelReapeater: v1.channelReapeater,
       size: v1.size,
       position: v.value0,
       rotation: v1.rotation
@@ -755,18 +787,31 @@ var tASTtoT = function(v) {
       mapping: v1.mapping,
       tvZone: v1.tvZone,
       channel: v1.channel,
+      channelReapeater: v1.channelReapeater,
       size: v1.size,
       position: v1.position,
       rotation: v.value0
     };
   }
   ;
-  throw new Error("Failed pattern match at AST (line 35, column 1 - line 35, column 43): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at AST (line 39, column 1 - line 39, column 43): " + [v.constructor.name]);
 };
 var showTransmissionAST = {
   show: function(v) {
     if (v instanceof LiteralTransmissionAST) {
       return "LitTransmission " + show(showBoolean)(v.value0);
+    }
+    ;
+    if (v instanceof ChannelRepeater) {
+      return "Repit" + (show(showRecord()()(showRecordFieldsCons({
+        reflectSymbol: function() {
+          return "x";
+        }
+      })(showRecordFieldsCons({
+        reflectSymbol: function() {
+          return "y";
+        }
+      })(showRecordFieldsNil)(showNumber))(showNumber)))(v.value0) + show(showTransmissionAST)(v.value1));
     }
     ;
     if (v instanceof Scalar) {
@@ -817,7 +862,7 @@ var showTransmissionAST = {
       })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber)))(v.value0) + show(showTransmissionAST)(v.value1));
     }
     ;
-    throw new Error("Failed pattern match at AST (line 29, column 1 - line 33, column 51): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at AST (line 32, column 1 - line 37, column 51): " + [v.constructor.name]);
   }
 };
 var showStatement = {
@@ -1043,6 +1088,7 @@ var $$new = _new;
 var preloadMaterials = (m) => () => m.preload();
 var mapVidTextToMat = (m) => (vt) => () => m.materials.Material.map = vt;
 var mapMatToObj = (o) => (n) => (m) => () => o.children[n].material = m.materials.Material;
+var setVidTextOpacity = (vt) => (o) => () => vt.opacity = o;
 
 // output/ThreeJS/foreign.js
 var newScene = () => new THREE.Scene();
@@ -1060,6 +1106,7 @@ var removeObject3D = (parent) => (child) => () => parent.remove(child);
 var setRotationOfAnything = (thing) => (x) => (y) => (z) => () => thing.rotation.set(x, y, z);
 var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
 var setScaleOfAnything = (thing) => (x) => (y) => (z) => () => thing.scale.set(x, y, z);
+var setRepeatOfAnything = (thing) => (u) => (v) => () => thing.repeat.set(u, v);
 var preloadAnything = (elem3) => () => elem3.preload = "auto";
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
 var createElement = (name2) => () => document.createElement(name2);
@@ -1069,6 +1116,18 @@ var repeatWrapping = THREE.RepeatWrapping;
 var mirroredRepeatWrapping = THREE.MirroredRepeatWrapping;
 var nearestFilter = THREE.NearestFilter;
 var linearFilter = THREE.LinearFilter;
+var alphaFormat = THREE.AlphaFormat;
+var redFormat = THREE.RedFormat;
+var redIntegerFormat = THREE.RedIntegerFormat;
+var rgFormat = THREE.RGFormat;
+var rgIntegerFormat = THREE.RGIntegerFormat;
+var rgbaFormat = THREE.RGBAFormat;
+var rgbaIntegerFormat = THREE.RGBAIntegerFormat;
+var luminanceFormat = THREE.LuminanceFormat;
+var luminanceAlphaFormat = THREE.LuminanceAlphaFormat;
+var depthFormat = THREE.DepthFormat;
+var depthStencilFormat = THREE.DepthStencilFormat;
+var format = (texture) => (formatID) => () => texture.format = formatID;
 
 // output/ThreeJS.Unsafe/foreign.js
 var setPosition = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
@@ -1494,6 +1553,12 @@ var v3ToY = function(v3) {
 var v3ToX = function(v3) {
   return v3.x;
 };
+var v2ToY = function(v2) {
+  return v2.y;
+};
+var v2ToX = function(v2) {
+  return v2.x;
+};
 var updateURLfromVidElem = function(mo) {
   return function(url) {
     return function __do3() {
@@ -1510,6 +1575,15 @@ var updateURLfromVidElem = function(mo) {
       }
       ;
       return unit;
+    };
+  };
+};
+var transformVidTexture = function(vt) {
+  return function(t) {
+    return function __do3() {
+      setRepeatOfAnything(vt)(v2ToX(t.channelReapeater))(v2ToY(t.channelReapeater))();
+      format(vt)(rgbaFormat)();
+      return setVidTextOpacity(vt)(0.5)();
     };
   };
 };
@@ -1535,7 +1609,7 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 163, column 3 - line 165, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 164, column 3 - line 166, column 41): " + [g.constructor.name]);
       };
     };
   };
@@ -1554,7 +1628,7 @@ var removeObj = function(sc) {
         return write(Nothing.value)(mo.obj)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 133, column 3 - line 138, column 27): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 134, column 3 - line 139, column 27): " + [g.constructor.name]);
     };
   };
 };
@@ -1572,7 +1646,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 143, column 3 - line 148, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 144, column 3 - line 149, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -1621,10 +1695,10 @@ var tryToMakeTransmission = function(sc) {
             return makeTransmission(sc)(g.value0)(m.value0)(z)(mo.vidTexture)();
           }
           ;
-          throw new Error("Failed pattern match at MonitorState (line 126, column 7 - line 128, column 61): " + [m.constructor.name]);
+          throw new Error("Failed pattern match at MonitorState (line 127, column 7 - line 129, column 61): " + [m.constructor.name]);
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 122, column 3 - line 128, column 61): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 123, column 3 - line 129, column 61): " + [g.constructor.name]);
       };
     };
   };
@@ -1718,7 +1792,8 @@ var updateMonitor = function(sc) {
         updateURLfromVidElem(mo)(t.channel)();
         changeOrLoadObjIfNecessary(sc)(mo)(t.tv)(t.tvZone)();
         changeOrLoadMatIfNecessary(sc)(mo)(t.mapping)(t.tvZone)();
-        return transformTransmission(sc)(mo)(t)();
+        transformTransmission(sc)(mo)(t)();
+        return transformVidTexture(mo.vidTexture)(t)();
       };
     };
   };
@@ -25430,6 +25505,23 @@ var negativeNumber = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PUR
   return map(functorParserT)(mul(semiringNumber)(-1))($$float);
 });
 var number = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(negativeNumber), /* @__PURE__ */ $$try($$float), /* @__PURE__ */ map(functorParserT)(toNumber)(integer)]);
+var vec2xy = /* @__PURE__ */ bind(bindParserT)(number)(function(x) {
+  return bind(bindParserT)(number)(function(y) {
+    return pure(applicativeParserT)({
+      x,
+      y
+    });
+  });
+});
+var functionWithV2 = function(functionName) {
+  return function(constructor) {
+    return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
+      return bind(bindParserT)(vec2xy)(function(v2) {
+        return pure(applicativeParserT)(constructor(v2));
+      });
+    }));
+  };
+};
 var vec3x = /* @__PURE__ */ bind(bindParserT)(number)(function(x) {
   return pure(applicativeParserT)({
     x,
@@ -25478,23 +25570,17 @@ var vec3z = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ re
   });
 });
 var vec3Param = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(vec3xyz), vec3xy, /* @__PURE__ */ $$try(vec3z), /* @__PURE__ */ $$try(vec3y), /* @__PURE__ */ $$try(vec3x)]);
-var movetParser = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("movet"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("muvet"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("muv"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("move"))(/* @__PURE__ */ reserved("move it"))))))(function() {
-  return bind(bindParserT)(vec3Param)(function(v3) {
-    return pure(applicativeParserT)(Movet.create(v3));
-  });
-});
-var rodarParser = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reserved("rodar"))(function() {
-  return bind(bindParserT)(vec3Param)(function(v3) {
-    return pure(applicativeParserT)(Rodar.create(v3));
-  });
-});
-var scalarParser = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reserved("scalar"))(function() {
-  return bind(bindParserT)(vec3Param)(function(v3) {
-    return pure(applicativeParserT)(Scalar.create(v3));
-  });
-});
+var functionWithV3 = function(functionName) {
+  return function(constructor) {
+    return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
+      return bind(bindParserT)(vec3Param)(function(v3) {
+        return pure(applicativeParserT)(constructor(v3));
+      });
+    }));
+  };
+};
 var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return choice(foldableArray)([scalarParser, movetParser, rodarParser]);
+  return choice(foldableArray)([functionWithV2("repet")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithV3("rodar")(Rodar.create)]);
 });
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(reserved("transmission"))(function() {
@@ -25597,7 +25683,7 @@ var launch = function(cvs) {
       canvas: cvs
     })();
     setSize(renderer)(1250)(720)(false)();
-    var lights = newHemisphereLight(16777147)(526368)(1)();
+    var lights = newHemisphereLight(16777215)(16777215)(3)();
     addAnythingToScene(scene)(lights)();
     var monitor = $$new(Nothing.value)();
     var program = $$new(defaultProgram)();
