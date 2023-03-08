@@ -10,17 +10,16 @@ import Data.Maybe
 
 import Transmission (Transmission, defTransmission, defTransmissionOn, Vec3, Vec2)
 
-type AST = Maybe Statement
---type AST = Maybe (List Statement)
+type AST = List Statement
 
-defaultProgram :: AST
-defaultProgram = Nothing
-
+-- if I want to have an empty statement it should be reflected here
 data Statement =
+  EmptyStatement |
   TransmissionAST TransmissionAST
 
 instance showStatement :: Show Statement where
   show (TransmissionAST s) = "TransmissionAST " <> show s
+  show (EmptyStatement) = "EmptyStatement"
 
 data TransmissionAST =
   LiteralTransmissionAST Boolean |

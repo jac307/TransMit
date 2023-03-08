@@ -6,7 +6,8 @@ animate,
 evaluate
 ) where
 
-import Prelude (Unit, bind, discard, pure, show, unit, ($), (/), (<>))
+import Prelude (Unit, bind, discard, pure, show, unit, ($), (/), (<>), (<$>))
+import Data.List (List(..), singleton, head, (:))
 import Effect (Effect)
 import Effect.Class.Console (log)
 import Effect.Ref (Ref, new, read, write)
@@ -17,8 +18,8 @@ import Web.HTML.HTMLMediaElement as HTML2
 
 import ThreeJS as TJS
 
-import AST (AST, Statement(..), TransmissionAST(..), defaultProgram, tASTtoT)
-import Parser (parseProgram)
+import AST (AST, Statement(..), TransmissionAST(..), tASTtoT)
+import Parser (Program, parseProgram)
 import MonitorState (Monitor, defMonitor, removeMonitor, updateMonitor, playVideoElement)
 import Transmission (Transmission, defTransmission, defTransmissionOn)
 
@@ -29,8 +30,8 @@ type RenderEngine =
   scene :: TJS.Scene,
   camera :: TJS.PerspectiveCamera,
   renderer :: TJS.Renderer,
-  monitor :: Ref (Maybe Monitor),
-  program :: Ref AST
+  monitor :: Ref (Maybe Monitor), -- List Monitor
+  program :: Ref Program -- :: List Statement
   }
 
 ----------------------------------------
@@ -46,21 +47,15 @@ launch cvs = do
   lights <- TJS.newHemisphereLight 0xffffff 0xffffff 3.0
   TJS.addAnythingToScene scene lights
   monitor <- new Nothing
-  program <- new defaultProgram
+  program <- new Nil
   let re = {scene, camera, renderer, monitor, program}
   pure re
 
 animate :: RenderEngine -> Effect Unit
 animate re = do
-  p <- read re.program -- :: AST = Maybe Statement
-  log $ "animate parser: " <> (show p)
-  case p of
-    Nothing -> do
-      removeTransmission re
-      TJS.render re.renderer re.scene re.camera
-    Just prog -> do
-      runProgram re (astToProgram p) -- runs every frame
-      TJS.render re.renderer re.scene re.camera
+  p <- read re.program
+  runProgram re p
+  TJS.render re.renderer re.scene re.camera
 
 evaluate :: RenderEngine -> String -> Effect (Maybe String)
 evaluate re s = do
@@ -72,18 +67,9 @@ evaluate re s = do
 
 ----------------------------------------
 
-type Program = Maybe Transmission
-
-astToProgram :: AST -> Program
-astToProgram (Just s) = Just (statementToTransmission s)
-astToProgram Nothing = Nothing
-
-statementToTransmission :: Statement -> Transmission
-statementToTransmission (TransmissionAST tAST) = tASTtoT tAST
-
 runProgram :: RenderEngine -> Program -> Effect Unit
-runProgram re Nothing = removeTransmission re
-runProgram re (Just t) = runTransmission re t
+runProgram re (x:_) = runTransmission re x
+runProgram re _ = removeTransmission re
 
 runTransmission :: RenderEngine -> Transmission -> Effect Unit
 runTransmission re t = do

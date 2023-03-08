@@ -1,9 +1,9 @@
 module Parser where
 
-import Prelude (Unit, bind, discard, negate, pure, show, identity, ($), ($>), (*), (<$>), (<>), (+), unit)
+import Prelude (Unit, bind, discard, negate, pure, show, identity, ($), ($>), (*), (<$>), (<>), (+), unit, map)
 import Control.Semigroupoid ((<<<))
 import Data.Identity (Identity)
-import Data.List (List, foldl)
+import Data.List (List(..), foldl, (:), catMaybes)
 import Data.List.NonEmpty (NonEmptyList)
 import Data.Either (Either(..))
 import Data.Int (toNumber)
@@ -11,14 +11,18 @@ import Data.Maybe (Maybe(..))
 import Parsing (ParseError(..), ParserT, Position(..), runParser)
 import Parsing.Language (emptyDef)
 import Parsing.Token (GenLanguageDef(..), GenTokenParser, makeTokenParser, unGenLanguageDef)
-import Parsing.Combinators (choice, lookAhead, try, (<|>), many)
+import Parsing.Combinators (choice, lookAhead, try, (<|>), many, sepBy)
 import Parsing.String (eof)
 
-import AST (AST, Statement(..), TransmissionAST(..))
-import Transmission (Vec3, Vec2)
+import AST (AST, Statement(..), TransmissionAST(..), tASTtoT)
+import Transmission (Transmission, Vec3, Vec2)
 
-parseProgram :: String -> Either String AST
-parseProgram x = case (runParser x ast) of
+parseProgram :: String -> Either String Program
+parseProgram x = do
+  ast <- parseAST x
+  pure $ astToProgram ast
+
+parseAST x = case (runParser x ast) of
   Left err -> Left $ showParseError err
   Right prog -> Right prog
 
@@ -30,34 +34,42 @@ type P a = ParserT String Identity a
 ast :: P AST
 ast = do
   whiteSpace
-  x <- choice [
-    justAStatement,
-    justWhiteSpace,
-    noTranmission
-    ]
+  x <- statements
   eof
   pure x
 
-justAStatement :: P AST
-justAStatement = do
-  s <- statement
-  pure $ Just s
+statements :: P (List Statement)
+statements = sepBy statement (reservedOp ";")
 
 statement :: P Statement
 statement = choice [
   --try $ assignment,
-  TransmissionAST <$> transmissionParser
+  TransmissionAST <$> transmissionParser,
+  onlySemiColon,
+  onlyEOF
 ]
 
-justWhiteSpace :: P AST
-justWhiteSpace = do
-  lookAhead eof
-  pure $ Nothing
+onlySemiColon :: P Statement
+onlySemiColon = do
+    lookAhead $ reservedOp ";"
+    pure $ EmptyStatement
 
-noTranmission :: P AST
-noTranmission = do
-  reserved "turn off"
-  pure Nothing
+onlyEOF :: P Statement
+onlyEOF = do
+    lookAhead $ eof
+    pure $ EmptyStatement
+
+
+
+-- justWhiteSpace :: P AST
+-- justWhiteSpace = do
+--   lookAhead eof
+--   pure $ Nothing
+
+-- noTranmission :: P AST
+-- noTranmission = do
+--   reserved "turn off"
+--   pure Nothing
 
 --- Transmission ---
 --------------------
@@ -113,8 +125,9 @@ vec2xy = do
   y <- number
   pure $ {x,y}
 
+-- channel = 1 "";
 --                       x y z
--- transmission on movet 1 1 1;
+-- transmission on movet 1 1 1 (channel 1);
 -- transmission on movet 1;  -- vec3x not working
 -- transmission on movet 1 1;
 -- transmission on movet _ 1;
@@ -186,7 +199,7 @@ negativeNumber = do
 tokenParser :: GenTokenParser String Identity
 tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
   reservedNames = ["transmission", "on", "off", "channel", "movet", "scalar", "rodar"],
-  reservedOpNames = ["=", "\"", "\"", "_"]
+  reservedOpNames = ["=", "\"", "\"", "_", ";"]
   }
 
 ---------------------
@@ -274,3 +287,18 @@ symbol = tokenParser.symbol
 
 whiteSpace :: P Unit
 whiteSpace = tokenParser.whiteSpace
+
+type Program = List Transmission
+
+-- we want a list that gives all the Just
+-- catMaybes :: forall a. List (Maybe a) -> List a
+
+astToProgram :: AST -> Program
+astToProgram xs = catMaybes $ map statementToTransmission xs
+
+-- statementsToTransmissionList :: (List Statement) -> (List Transmission)
+-- statementsToTransmissionList xs = statementToTransmission <$> xs
+
+statementToTransmission :: Statement -> Maybe Transmission
+statementToTransmission EmptyStatement = Nothing
+statementToTransmission (TransmissionAST tAST) = Just (tASTtoT tAST)
