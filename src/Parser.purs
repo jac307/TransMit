@@ -1,9 +1,9 @@
 module Parser where
 
-import Prelude (Unit, bind, discard, negate, pure, show, identity, ($), ($>), (*), (<$>), (<>), (+), unit, map)
+import Prelude (Unit, bind, discard, negate, pure, show, identity, ($), ($>), (*), (<$>), (<>), unit, map)
 import Control.Semigroupoid ((<<<))
 import Data.Identity (Identity)
-import Data.List (List(..), foldl, (:), catMaybes)
+import Data.List (List, catMaybes, foldl)
 import Data.List.NonEmpty (NonEmptyList)
 import Data.Either (Either(..))
 import Data.Int (toNumber)
@@ -22,6 +22,7 @@ parseProgram x = do
   ast <- parseAST x
   pure $ astToProgram ast
 
+parseAST :: String -> Either String (List Statement)
 parseAST x = case (runParser x ast) of
   Left err -> Left $ showParseError err
   Right prog -> Right prog
@@ -43,10 +44,10 @@ statements = sepBy statement (reservedOp ";")
 
 statement :: P Statement
 statement = choice [
-  --try $ assignment,
   TransmissionAST <$> transmissionParser,
   onlySemiColon,
-  onlyEOF
+  onlyEOF,
+  noTranmission
 ]
 
 onlySemiColon :: P Statement
@@ -59,17 +60,10 @@ onlyEOF = do
     lookAhead $ eof
     pure $ EmptyStatement
 
-
-
--- justWhiteSpace :: P AST
--- justWhiteSpace = do
---   lookAhead eof
---   pure $ Nothing
-
--- noTranmission :: P AST
--- noTranmission = do
---   reserved "turn off"
---   pure Nothing
+noTranmission :: P Statement
+noTranmission = do
+  reserved "turn off"
+  pure $ EmptyStatement
 
 --- Transmission ---
 --------------------

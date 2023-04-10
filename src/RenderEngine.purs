@@ -6,22 +6,20 @@ animate,
 evaluate
 ) where
 
-import Prelude (Unit, bind, discard, pure, show, unit, ($), (/), (<>), (<$>))
-import Data.List (List(..), singleton, head, (:))
+import Prelude (Unit, bind, discard, pure, unit, ($), (/))
+import Data.List (List(..), (:))
 import Effect (Effect)
 import Effect.Class.Console (log)
 import Effect.Ref (Ref, new, read, write)
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..))
 import Web.HTML.HTMLCanvasElement as HTML
-import Web.HTML.HTMLMediaElement as HTML2
 
 import ThreeJS as TJS
 
-import AST (AST, Statement(..), TransmissionAST(..), tASTtoT)
 import Parser (Program, parseProgram)
 import MonitorState (Monitor, defMonitor, removeMonitor, updateMonitor, playVideoElement)
-import Transmission (Transmission, defTransmission, defTransmissionOn)
+import Transmission (Transmission)
 
 -- python -m SimpleHTTPServer 8000
 
@@ -33,6 +31,20 @@ type RenderEngine =
   monitor :: Ref (Maybe Monitor), -- List Monitor
   program :: Ref Program -- :: List Statement
   }
+
+--Look in Locomotion on runElements to check how to remove the elements that are not longer there by looking at the list and comparing the list... dropping what is not there anymore and storing what is left.
+
+-- tangentemente... look at Arrays. And the difference between List vs Array
+
+
+-- runElement
+--create - update
+-- or
+-- remove - create - update
+
+-- look at Plane
+-- newPlane, updatePlane, removePlane
+--- maybe newPlace :: Scene -> Transmission? -> Effect Monitor
 
 ----------------------------------------
 

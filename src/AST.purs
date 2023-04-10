@@ -12,7 +12,6 @@ import Transmission (Transmission, defTransmission, defTransmissionOn, Vec3, Vec
 
 type AST = List Statement
 
--- if I want to have an empty statement it should be reflected here
 data Statement =
   EmptyStatement |
   TransmissionAST TransmissionAST

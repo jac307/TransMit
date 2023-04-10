@@ -1866,7 +1866,7 @@ var tASTtoT = function(v) {
     };
   }
   ;
-  throw new Error("Failed pattern match at AST (line 38, column 1 - line 38, column 43): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at AST (line 37, column 1 - line 37, column 43): " + [v.constructor.name]);
 };
 
 // output/Data.Int/foreign.js
@@ -25483,7 +25483,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 302, column 1 - line 302, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 297, column 1 - line 297, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -25501,6 +25501,9 @@ var onlyEOF = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ 
   return pure(applicativeParserT)(EmptyStatement.value);
 });
 var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ reserved("onnn"))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ reserved("offf"))))(false)]));
+var noTranmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reserved("turn off"))(function() {
+  return pure(applicativeParserT)(EmptyStatement.value);
+});
 var integer = /* @__PURE__ */ function() {
   return tokenParser.integer;
 }();
@@ -25600,7 +25603,7 @@ var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(
   });
 });
 var statement = /* @__PURE__ */ function() {
-  return choice(foldableArray)([map(functorParserT)(TransmissionAST.create)(transmissionParser), onlySemiColon, onlyEOF]);
+  return choice(foldableArray)([map(functorParserT)(TransmissionAST.create)(transmissionParser), onlySemiColon, onlyEOF, noTranmission]);
 }();
 var statements = /* @__PURE__ */ sepBy(statement)(/* @__PURE__ */ reservedOp(";"));
 var astToProgram = function(xs) {
@@ -25623,7 +25626,7 @@ var parseAST = function(x) {
     return new Right(v.value0);
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 25, column 14 - line 27, column 27): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 26, column 14 - line 28, column 27): " + [v.constructor.name]);
 };
 var parseProgram = function(x) {
   return bind(bindEither)(parseAST(x))(function(ast1) {
@@ -25645,7 +25648,7 @@ var runTransmission = function(re) {
           return m.value0;
         }
         ;
-        throw new Error("Failed pattern match at RenderEngine (line 77, column 9 - line 79, column 21): " + [m.constructor.name]);
+        throw new Error("Failed pattern match at RenderEngine (line 89, column 9 - line 91, column 21): " + [m.constructor.name]);
       }();
       write(new Just(m$prime))(re.monitor)();
       updateMonitor(re.scene)(m$prime)(t)();
@@ -25665,7 +25668,7 @@ var removeTransmission = function(re) {
       return write(Nothing.value)(re.monitor)();
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 87, column 3 - line 91, column 31): " + [c.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 99, column 3 - line 103, column 31): " + [c.constructor.name]);
   };
 };
 var runProgram = function(re) {
@@ -25716,7 +25719,7 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 62, column 3 - line 66, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 74, column 3 - line 78, column 32): " + [v.constructor.name]);
   };
 };
 var animate = function(re) {
