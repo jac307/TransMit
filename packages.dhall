@@ -4,12 +4,3 @@ let upstream =
 
 in  upstream
   with purescript-threejs = ../purescript-threejs/spago.dhall as Location
-
-{-
-in  upstream
-  with purescript-threejs =
-    { dependencies = [ "prelude", "effect" ]
-    , repo = "https://github.com/jac307/purescript-threejs"
-    , version = "69c4a4f696d5d7666c9263e9f932cb84ea942f0f"
-    }
--}

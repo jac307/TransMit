@@ -9,11 +9,14 @@ playVideoElement
 
 import Prelude (Unit, unit, bind, discard, pure, show, negate, ($), (/), (/=), (==), (<>))
 import Effect (Effect)
+import Data.Eq (class Eq)
+import Data.Ord (class Ord)
 import Effect.Class.Console (log, error)
 import Effect.Ref (Ref, new, read, write)
 import Data.Maybe
 import Web.HTML.HTMLCanvasElement as HTML
 import Web.HTML.HTMLMediaElement as HTML2
+import Web.HTML.HTMLMediaElement (HTMLMediaElement)
 
 import ThreeJS as TJS
 
@@ -22,7 +25,7 @@ import Transmission (Transmission, Vec3, Vec2)
 type Monitor = {
   -- texture
   currVidURL :: Ref String,
-  video :: HTML2.HTMLMediaElement,
+  video :: HTMLMediaElement,
   vidTexture :: TJS.TextureLoader,
   -- object
   currObjURL :: Ref String,
