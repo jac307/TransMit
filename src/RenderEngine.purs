@@ -121,9 +121,8 @@ removeTransmission re = do
 -- or
   -- remove, then create/update elements
 
-
-runTranmission :: Int -> RenderEngine -> List Transmission -> Effect Unit
-runTranmission i re ts = do
+runTransmission' :: Int -> RenderEngine -> List Transmission -> Effect Unit
+runTransmission' i re ts = do
   ms <- read re.monitors -- :: List Monitor
   dm <- defMonitor -- :: Monitor
   let isListEmpty = null ms -- :: Boolean
