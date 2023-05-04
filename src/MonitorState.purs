@@ -74,6 +74,7 @@ removeMonitor sc mo = do
   removeObj sc mo
   removeMaterial sc mo
 
+--should this function be renamed alignMonitor?
 updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
 updateMonitor sc mo t = do
   -- 1. change video url if necessary

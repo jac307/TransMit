@@ -6,8 +6,8 @@ animate,
 evaluate
 ) where
 
-import Prelude (Unit, bind, discard, pure, unit, ($), (/), (>=), (<$>), (<*>), otherwise)
-import Data.List (List(..), (:), updateAt, length, snoc, null, foldMap)
+import Prelude (Unit, bind, discard, pure, unit, ($), (/), (>=), (<$>), (<*>), (==), (>), otherwise, show)
+import Data.List (List(..), (:), updateAt, length, snoc, null, foldMap, drop, length, zipWithA)
 import Data.Maybe (fromMaybe)
 import Effect (Effect)
 import Effect.Class.Console (log)
@@ -19,7 +19,6 @@ import Web.HTML.HTMLCanvasElement as HTML
 
 import ThreeJS as TJS
 
-import AST (Statement)
 import Parser (Program, parseProgram)
 import MonitorState (Monitor, defMonitor, removeMonitor, updateMonitor, playVideoElement)
 import Transmission (Transmission)
@@ -31,11 +30,8 @@ type RenderEngine =
   scene :: TJS.Scene,
   camera :: TJS.PerspectiveCamera,
   renderer :: TJS.Renderer,
-  monitor :: Ref (Maybe Monitor), -- List Monitor
   program :: Ref Program, -- :: List Statement
-  --
-  monitors :: Ref (List Monitor),
-  program2 :: Ref (List Statement)
+  monitors :: Ref (List Monitor)
   }
 
 
@@ -51,102 +47,78 @@ launch cvs = do
   TJS.setSize renderer 1250.0 720.0 false
   lights <- TJS.newHemisphereLight 0xffffff 0xffffff 3.0
   TJS.addAnythingToScene scene lights
-  monitor <- new Nothing
   program <- new Nil
   monitors <- new Nil
-  program2 <- new Nil
-  let re = {scene, camera, renderer, monitor, program, monitors, program2}
+  let re = {scene, camera, renderer, program, monitors}
   pure re
 
 animate :: RenderEngine -> Effect Unit
 animate re = do
-  p <- read re.program
-  runProgram re p
+  --p <- read re.program
+  --runProgram re p
   TJS.render re.renderer re.scene re.camera
 
 evaluate :: RenderEngine -> String -> Effect (Maybe String)
 evaluate re s = do
   case parseProgram s of
     Right p -> do
+      log (show p)
       write p re.program
       pure Nothing
     Left err -> pure $ Just err
 
 ----------------------------------------
 
-runProgram :: RenderEngine -> Program -> Effect Unit
-runProgram re (x:_) = runTransmission re x
-runProgram re _ = removeTransmission re
-
-runTransmission :: RenderEngine -> Transmission -> Effect Unit
-runTransmission re t = do
-  m <- read re.monitor -- Ref (Maybe Monitor)
-  m' <- case m of
-    Nothing -> defMonitor       -- :: Effect Monitor
-    Just x -> pure x            -- :: Effect Monitor
-  write (Just m') re.monitor           -- m' :: Monitor
-  updateMonitor re.scene m' t   -- :: Effect Unit
-  playVideoElement m'           -- :: Effect Unit
-
-removeTransmission :: RenderEngine -> Effect Unit
-removeTransmission re = do
-  c <- read re.monitor
-  case c of
-    Nothing -> pure unit
-    Just m -> do
-      removeMonitor re.scene m
-      write Nothing re.monitor
-
-
+-- runProgram :: RenderEngine -> Program -> Effect Unit
+-- runProgram re p = do
 -----
 
---Look in Locomotion on runElements to check how to remove the elements that are not longer there by looking at the list and comparing the list... dropping what is not there anymore and storing what is left.
-
--- runElements :: Array (Tuple ElementType ValueMap) -> R Unit
--- runElements xs = do
---   _ <- traverseWithIndex runElement xs
---   let nElements = length xs
---   -- remove any deleted elements
---   s <- get
---   traverse_ removeElement $ drop nElements s.elements
---   modify_ $ \x -> x { elements = take nElements x.elements }
-
--- tangentemente... look at Arrays. And the difference between List vs Array
-
--- runTranmissions :: List Monitor -> Effect Unit
--- runTranmissions xs = do
--- check list?, then:
--- either
-  -- create / update elements
--- or
-  -- remove, then create/update elements
-
-runTransmission' :: Int -> RenderEngine -> List Transmission -> Effect Unit
-runTransmission' i re ts = do
+alignNumberOfMonitors :: RenderEngine -> Program ->  Effect Unit
+alignNumberOfMonitors re p = do
+  let tLen = length p -- :: Int
   ms <- read re.monitors -- :: List Monitor
-  dm <- defMonitor -- :: Monitor
-  let isListEmpty = null ms -- :: Boolean
-  let ms' = case isListEmpty of
-           true -> replaceAt i dm ms -- :: List Monitor
-           false -> replaceAt i dm ms -- :: List Monitor
-  -- re.monitors :: Ref (List Monitor)
-  write ms' re.monitors        -- :: Effect Unit
-  -- apply updateMonitor to each item on List Monitor
-  -- give a List Tramission? since each Monitor = Transmission?
-  -- updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
-  foldMap (foldMap (updateMonitor re.scene) ms) ts
-  -- playVideoElement in each item on List Monitor
-  -- playVideoElement :: Monitor -> Effect Unit
-  -- foldMap :: forall f m a. Foldable f => Monoid m => (a -> m) -> f a -> m
-  foldMap playVideoElement ms -- Effect Unit
+  let mLen = length ms -- :: Int
+  case mLen == tLen of
+    true -> pure unit -- if same length, do nothing
+    false -> do -- if different length, then:
+      case mLen > tLen of
+        -- if mLen is longer than tLen, then remove excess monitors
+        true -> do
+          let ms' = drop tLen ms -- :: List Monitor
+          foldMap (removeMonitor re.scene) ms'
+          write ms' re.monitors
+        -- if mLen is shorter than tLen, then add new monitors
+        false -> addNewMonitors re p -- incomplete?
 
--- updateMonitors :: TJS.Scene -> List Monitor -> Transmission -> Effect Unit
--- updateMonitors sc ms t = foldMap (\m -> (updateMonitor sc m t)) ms
+
+addNewMonitors :: RenderEngine -> Program -> Effect Unit
+addNewMonitors re p = do
+  -- p :: List Transmission
+  ms <- read re.monitors -- :: List Monitor
+  -- zipWithA :: (a -> b -> m c) -> List a -> List b -> m (List c)
+  -- updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
+  _ <- zipWithA (updateMonitor re.scene) ms p
+  pure unit
+
+
+--
+newTranmission :: Int -> RenderEngine -> Effect Unit
+newTranmission i re = do
+  m <- read re.monitors -- :: List Monitor
+  dm <- defMonitor -- :: Monitor
+  let m' = replaceAt i dm m -- :: List Monitor
+  write m' re.monitors
 
 replaceAt :: forall a. Int -> a -> List a -> List a
 replaceAt i v a
   | i >= length a = snoc a v
   | otherwise = fromMaybe a $ updateAt i v a
+
+-- updateMonitors :: TJS.Scene -> List Monitor -> Transmission -> Effect Unit
+-- updateMonitors sc ms t = foldMap (\m -> (updateMonitor sc m t)) ms
+
+playVideoElementsInMonitors :: List Monitor -> Effect Unit
+playVideoElementsInMonitors ms = foldMap playVideoElement ms -- Effect Unit
 
 
 --- errores
