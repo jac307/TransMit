@@ -146,6 +146,15 @@ var applySecond = function(dictApply) {
     };
   };
 };
+var lift2 = function(dictApply) {
+  return function(f) {
+    return function(a) {
+      return function(b) {
+        return apply(dictApply)(map(dictApply.Functor0())(f)(a))(b);
+      };
+    };
+  };
+};
 
 // output/Control.Applicative/index.js
 var pure = function(dict) {
@@ -870,6 +879,18 @@ var unwrap = coerce;
 var foldr = function(dict) {
   return dict.foldr;
 };
+var traverse_ = function(dictApplicative) {
+  return function(dictFoldable) {
+    return function(f) {
+      return foldr(dictFoldable)(function() {
+        var $316 = applySecond(dictApplicative.Apply0());
+        return function($317) {
+          return $316(f($317));
+        };
+      }())(pure(dictApplicative)(unit));
+    };
+  };
+};
 var foldl = function(dict) {
   return dict.foldl;
 };
@@ -1199,6 +1220,14 @@ var traverseArrayImpl = function() {
   };
 }();
 
+// output/Data.Traversable/index.js
+var traverse = function(dict) {
+  return dict.traverse;
+};
+var sequence = function(dict) {
+  return dict.sequence;
+};
+
 // output/Data.Unfoldable/foreign.js
 var unfoldrArrayImpl = function(isNothing2) {
   return function(fromJust2) {
@@ -1453,8 +1482,50 @@ var showList = function(dictShow) {
     }
   };
 };
+var traversableList = {
+  traverse: function(dictApplicative) {
+    return function(f) {
+      var $222 = map(dictApplicative.Apply0().Functor0())(foldl(foldableList)(flip(Cons.create))(Nil.value));
+      var $223 = foldl(foldableList)(function(acc) {
+        var $225 = lift2(dictApplicative.Apply0())(flip(Cons.create))(acc);
+        return function($226) {
+          return $225(f($226));
+        };
+      })(pure(dictApplicative)(Nil.value));
+      return function($224) {
+        return $222($223($224));
+      };
+    };
+  },
+  sequence: function(dictApplicative) {
+    return traverse(traversableList)(dictApplicative)(identity(categoryFn));
+  },
+  Functor0: function() {
+    return functorList;
+  },
+  Foldable1: function() {
+    return foldableList;
+  }
+};
 
 // output/Data.List/index.js
+var updateAt = function(v) {
+  return function(v1) {
+    return function(v2) {
+      if (v === 0 && v2 instanceof Cons) {
+        return new Just(new Cons(v1, v2.value1));
+      }
+      ;
+      if (v2 instanceof Cons) {
+        return map(functorMaybe)(function(v3) {
+          return new Cons(v2.value0, v3);
+        })(updateAt(v - 1 | 0)(v1)(v2.value1));
+      }
+      ;
+      return Nothing.value;
+    };
+  };
+};
 var uncons = function(v) {
   if (v instanceof Nil) {
     return Nothing.value;
@@ -1475,6 +1546,14 @@ var toUnfoldable = function(dictUnfoldable) {
       return new Tuple(rec.head, rec.tail);
     })(uncons(xs));
   });
+};
+var snoc = function(xs) {
+  return function(x) {
+    return foldr(foldableList)(Cons.create)(new Cons(x, Nil.value))(xs);
+  };
+};
+var singleton3 = function(a) {
+  return new Cons(a, Nil.value);
 };
 var reverse = /* @__PURE__ */ function() {
   var go = function($copy_acc) {
@@ -1506,6 +1585,152 @@ var reverse = /* @__PURE__ */ function() {
   };
   return go(Nil.value);
 }();
+var take = /* @__PURE__ */ function() {
+  var go = function($copy_acc) {
+    return function($copy_v) {
+      return function($copy_v1) {
+        var $tco_var_acc = $copy_acc;
+        var $tco_var_v = $copy_v;
+        var $tco_done = false;
+        var $tco_result;
+        function $tco_loop(acc, v, v1) {
+          if (v < 1) {
+            $tco_done = true;
+            return reverse(acc);
+          }
+          ;
+          if (v1 instanceof Nil) {
+            $tco_done = true;
+            return reverse(acc);
+          }
+          ;
+          if (v1 instanceof Cons) {
+            $tco_var_acc = new Cons(v1.value0, acc);
+            $tco_var_v = v - 1 | 0;
+            $copy_v1 = v1.value1;
+            return;
+          }
+          ;
+          throw new Error("Failed pattern match at Data.List (line 513, column 3 - line 513, column 35): " + [acc.constructor.name, v.constructor.name, v1.constructor.name]);
+        }
+        ;
+        while (!$tco_done) {
+          $tco_result = $tco_loop($tco_var_acc, $tco_var_v, $copy_v1);
+        }
+        ;
+        return $tco_result;
+      };
+    };
+  };
+  return go(Nil.value);
+}();
+var zipWith = function(f) {
+  return function(xs) {
+    return function(ys) {
+      var go = function($copy_v) {
+        return function($copy_v1) {
+          return function($copy_acc) {
+            var $tco_var_v = $copy_v;
+            var $tco_var_v1 = $copy_v1;
+            var $tco_done = false;
+            var $tco_result;
+            function $tco_loop(v, v1, acc) {
+              if (v instanceof Nil) {
+                $tco_done = true;
+                return acc;
+              }
+              ;
+              if (v1 instanceof Nil) {
+                $tco_done = true;
+                return acc;
+              }
+              ;
+              if (v instanceof Cons && v1 instanceof Cons) {
+                $tco_var_v = v.value1;
+                $tco_var_v1 = v1.value1;
+                $copy_acc = new Cons(f(v.value0)(v1.value0), acc);
+                return;
+              }
+              ;
+              throw new Error("Failed pattern match at Data.List (line 779, column 3 - line 779, column 21): " + [v.constructor.name, v1.constructor.name, acc.constructor.name]);
+            }
+            ;
+            while (!$tco_done) {
+              $tco_result = $tco_loop($tco_var_v, $tco_var_v1, $copy_acc);
+            }
+            ;
+            return $tco_result;
+          };
+        };
+      };
+      return reverse(go(xs)(ys)(Nil.value));
+    };
+  };
+};
+var zipWithA = function(dictApplicative) {
+  return function(f) {
+    return function(xs) {
+      return function(ys) {
+        return sequence(traversableList)(dictApplicative)(zipWith(f)(xs)(ys));
+      };
+    };
+  };
+};
+var range2 = function(start) {
+  return function(end) {
+    if (start === end) {
+      return singleton3(start);
+    }
+    ;
+    if (otherwise) {
+      var go = function($copy_s) {
+        return function($copy_e) {
+          return function($copy_step) {
+            return function($copy_rest) {
+              var $tco_var_s = $copy_s;
+              var $tco_var_e = $copy_e;
+              var $tco_var_step = $copy_step;
+              var $tco_done = false;
+              var $tco_result;
+              function $tco_loop(s, e, step2, rest) {
+                if (s === e) {
+                  $tco_done = true;
+                  return new Cons(s, rest);
+                }
+                ;
+                if (otherwise) {
+                  $tco_var_s = s + step2 | 0;
+                  $tco_var_e = e;
+                  $tco_var_step = step2;
+                  $copy_rest = new Cons(s, rest);
+                  return;
+                }
+                ;
+                throw new Error("Failed pattern match at Data.List (line 148, column 3 - line 149, column 65): " + [s.constructor.name, e.constructor.name, step2.constructor.name, rest.constructor.name]);
+              }
+              ;
+              while (!$tco_done) {
+                $tco_result = $tco_loop($tco_var_s, $tco_var_e, $tco_var_step, $copy_rest);
+              }
+              ;
+              return $tco_result;
+            };
+          };
+        };
+      };
+      return go(end)(start)(function() {
+        var $223 = start > end;
+        if ($223) {
+          return 1;
+        }
+        ;
+        return -1 | 0;
+      }())(Nil.value);
+    }
+    ;
+    throw new Error("Failed pattern match at Data.List (line 144, column 1 - line 144, column 32): " + [start.constructor.name, end.constructor.name]);
+  };
+};
 var mapMaybe = function(f) {
   var go = function($copy_acc) {
     return function($copy_v) {
@@ -1577,6 +1802,43 @@ var many = function(dictAlternative) {
     return function(v) {
       return alt(dictAlternative.Plus1().Alt0())(some(dictAlternative)(dictLazy)(v))(pure(dictAlternative.Applicative0())(Nil.value));
     };
+  };
+};
+var length = /* @__PURE__ */ foldl(foldableList)(function(acc) {
+  return function(v) {
+    return acc + 1 | 0;
+  };
+})(0);
+var drop = function($copy_v) {
+  return function($copy_v1) {
+    var $tco_var_v = $copy_v;
+    var $tco_done = false;
+    var $tco_result;
+    function $tco_loop(v, v1) {
+      if (v < 1) {
+        $tco_done = true;
+        return v1;
+      }
+      ;
+      if (v1 instanceof Nil) {
+        $tco_done = true;
+        return Nil.value;
+      }
+      ;
+      if (v1 instanceof Cons) {
+        $tco_var_v = v - 1 | 0;
+        $copy_v1 = v1.value1;
+        return;
+      }
+      ;
+      throw new Error("Failed pattern match at Data.List (line 536, column 1 - line 536, column 42): " + [v.constructor.name, v1.constructor.name]);
+    }
+    ;
+    while (!$tco_done) {
+      $tco_result = $tco_loop($tco_var_v, $copy_v1);
+    }
+    ;
+    return $tco_result;
   };
 };
 var catMaybes = /* @__PURE__ */ mapMaybe(/* @__PURE__ */ identity(categoryFn));
@@ -1844,7 +2106,7 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 167, column 3 - line 169, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 168, column 3 - line 170, column 41): " + [g.constructor.name]);
       };
     };
   };
@@ -1863,7 +2125,7 @@ var removeObj = function(sc) {
         return write(Nothing.value)(mo.obj)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 137, column 3 - line 142, column 27): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 138, column 3 - line 143, column 27): " + [g.constructor.name]);
     };
   };
 };
@@ -1881,7 +2143,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 147, column 3 - line 152, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 148, column 3 - line 153, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -1930,10 +2192,10 @@ var tryToMakeTransmission = function(sc) {
             return makeTransmission(sc)(g.value0)(m.value0)(z)(mo.vidTexture)();
           }
           ;
-          throw new Error("Failed pattern match at MonitorState (line 130, column 7 - line 132, column 61): " + [m.constructor.name]);
+          throw new Error("Failed pattern match at MonitorState (line 131, column 7 - line 133, column 61): " + [m.constructor.name]);
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 126, column 3 - line 132, column 61): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 127, column 3 - line 133, column 61): " + [g.constructor.name]);
       };
     };
   };
@@ -3083,14 +3345,14 @@ var _codePointAt = function(fallback) {
     };
   };
 };
-var _fromCodePointArray = function(singleton7) {
+var _fromCodePointArray = function(singleton8) {
   return hasFromCodePoint ? function(cps) {
     if (cps.length < 1e4) {
       return String.fromCodePoint.apply(String, cps);
     }
-    return cps.map(singleton7).join("");
+    return cps.map(singleton8).join("");
   } : function(cps) {
-    return cps.map(singleton7).join("");
+    return cps.map(singleton8).join("");
   };
 };
 var _toCodePointArray = function(fallback) {
@@ -3111,7 +3373,7 @@ var fromCharArray = function(a) {
 var toCharArray = function(s) {
   return s.split("");
 };
-var singleton5 = function(c) {
+var singleton6 = function(c) {
   return c;
 };
 var _toChar = function(just) {
@@ -3265,7 +3527,7 @@ var toCodePointArray = /* @__PURE__ */ _toCodePointArray(toCodePointArrayFallbac
 var fromCharCode2 = /* @__PURE__ */ function() {
   var $53 = toEnumWithDefaults(boundedEnumChar)(bottom(boundedChar))(top(boundedChar));
   return function($54) {
-    return singleton5($53($54));
+    return singleton6($53($54));
   };
 }();
 var singletonFallback = function(v) {
@@ -25236,7 +25498,7 @@ var makeTokenParser = function(v) {
   var oper = function() {
     var go = bind(bindParserT)(v.opStart)(function(c) {
       return bind(bindParserT)(many3(alternativeParserT)(lazyParserT)(v.opLetter))(function(cs) {
-        return pure(applicativeParserT)(singleton5(c) + fromCharArray(cs));
+        return pure(applicativeParserT)(singleton6(c) + fromCharArray(cs));
       });
     });
     return withErrorMessage(go)("operator");
@@ -25303,7 +25565,7 @@ var makeTokenParser = function(v) {
   var ident = function() {
     var go = bind(bindParserT)(v.identStart)(function(c) {
       return bind(bindParserT)(many3(alternativeParserT)(lazyParserT)(v.identLetter))(function(cs) {
-        return pure(applicativeParserT)(singleton5(c) + fromCharArray(cs));
+        return pure(applicativeParserT)(singleton6(c) + fromCharArray(cs));
       });
     });
     return withErrorMessage(go)("identifier");
@@ -25463,9 +25725,9 @@ var makeTokenParser = function(v) {
         };
         var $82 = isAlpha(codePointFromChar(c));
         if ($82) {
-          var $83 = toChar(toLowerSimple2(singleton5(c)));
+          var $83 = toChar(toLowerSimple2(singleton6(c)));
           if ($83 instanceof Just) {
-            var $84 = toChar(toUpperSimple2(singleton5(c)));
+            var $84 = toChar(toUpperSimple2(singleton6(c)));
             if ($84 instanceof Just) {
               return alt(altParserT)($$char($83.value0))($$char($84.value0));
             }
@@ -25780,49 +26042,35 @@ var parseProgram = function(x) {
 };
 
 // output/RenderEngine/index.js
-var runTransmission = function(re) {
-  return function(t) {
-    return function __do3() {
-      var m = read(re.monitor)();
-      var m$prime = function() {
-        if (m instanceof Nothing) {
-          return defMonitor();
-        }
-        ;
-        if (m instanceof Just) {
-          return m.value0;
-        }
-        ;
-        throw new Error("Failed pattern match at RenderEngine (line 83, column 9 - line 85, column 21): " + [m.constructor.name]);
-      }();
-      write(new Just(m$prime))(re.monitor)();
-      updateMonitor(re.scene)(m$prime)(t)();
-      return playVideoElement(m$prime)();
+var replaceAt = function(i) {
+  return function(v) {
+    return function(a) {
+      if (i >= length(a)) {
+        return snoc(a)(v);
+      }
+      ;
+      if (otherwise) {
+        return fromMaybe(a)(updateAt(i)(v)(a));
+      }
+      ;
+      throw new Error("Failed pattern match at RenderEngine (line 113, column 1 - line 113, column 52): " + [i.constructor.name, v.constructor.name, a.constructor.name]);
     };
   };
 };
-var removeTransmission = function(re) {
+var playVideoElementsInMonitors = function(re) {
   return function __do3() {
-    var c = read(re.monitor)();
-    if (c instanceof Nothing) {
-      return unit;
-    }
-    ;
-    if (c instanceof Just) {
-      removeMonitor(re.scene)(c.value0)();
-      return write(Nothing.value)(re.monitor)();
-    }
-    ;
-    throw new Error("Failed pattern match at RenderEngine (line 93, column 3 - line 97, column 31): " + [c.constructor.name]);
+    var ms = read(re.monitors)();
+    return traverse_(applicativeEffect)(foldableList)(playVideoElement)(ms)();
   };
 };
-var runProgram = function(re) {
-  return function(v) {
-    if (v instanceof Cons) {
-      return runTransmission(re)(v.value0);
-    }
-    ;
-    return removeTransmission(re);
+var newMonitor = function(re) {
+  return function(i) {
+    return function __do3() {
+      var m = read(re.monitors)();
+      var dm = defMonitor();
+      var m$prime = replaceAt(i)(dm)(m);
+      return write(m$prime)(re.monitors)();
+    };
   };
 };
 var launch = function(cvs) {
@@ -25838,14 +26086,12 @@ var launch = function(cvs) {
     setSize(renderer)(1250)(720)(false)();
     var lights = newHemisphereLight(16777215)(16777215)(3)();
     addAnythingToScene(scene)(lights)();
-    var monitor = $$new(Nothing.value)();
     var program = $$new(Nil.value)();
     var monitors = $$new(Nil.value)();
     var re = {
       scene,
       camera,
       renderer,
-      monitor,
       program,
       monitors
     };
@@ -25947,7 +26193,53 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 67, column 3 - line 72, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 64, column 3 - line 69, column 32): " + [v.constructor.name]);
+  };
+};
+var alignMonitors = function(re) {
+  return function(p) {
+    var tLen = length(p);
+    return function __do3() {
+      var ms = read(re.monitors)();
+      var mLen = length(ms);
+      (function() {
+        var v = mLen === tLen;
+        if (v) {
+          return unit;
+        }
+        ;
+        if (!v) {
+          var v1 = mLen > tLen;
+          if (v1) {
+            var keptMonitors = take(tLen)(ms);
+            var droppedMonitors = drop(tLen)(ms);
+            traverse_(applicativeEffect)(foldableList)(removeMonitor(re.scene))(droppedMonitors)();
+            return write(keptMonitors)(re.monitors)();
+          }
+          ;
+          if (!v1) {
+            var howManyMonitorsAreMissing = tLen - mLen | 0;
+            var indicesOfNewMonitors = range2(mLen + 1 | 0)(mLen + howManyMonitorsAreMissing | 0);
+            return traverse_(applicativeEffect)(foldableList)(newMonitor(re))(indicesOfNewMonitors)();
+          }
+          ;
+          throw new Error("Failed pattern match at RenderEngine (line 87, column 7 - line 98, column 57): " + [v1.constructor.name]);
+        }
+        ;
+        throw new Error("Failed pattern match at RenderEngine (line 84, column 3 - line 98, column 57): " + [v.constructor.name]);
+      })();
+      var ms$prime = read(re.monitors)();
+      zipWithA(applicativeEffect)(updateMonitor(re.scene))(ms$prime)(p)();
+      return unit;
+    };
+  };
+};
+var runProgram = function(re) {
+  return function(p) {
+    return function __do3() {
+      alignMonitors(re)(p)();
+      return playVideoElementsInMonitors(re)();
+    };
   };
 };
 var animate = function(re) {

@@ -4,6 +4,7 @@
   , "console"
   , "effect"
   , "either"
+  , "foldable-traversable"
   , "identity"
   , "integers"
   , "lists"

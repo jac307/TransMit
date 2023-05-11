@@ -6,14 +6,15 @@ animate,
 evaluate
 ) where
 
-import Prelude (Unit, bind, discard, pure, unit, ($), (/), (>=), (<$>), (<*>), (==), (>), otherwise, show)
-import Data.List (List(..), (:), updateAt, length, snoc, null, foldMap, drop, length, zipWithA)
+import Prelude (Unit, bind, discard, pure, unit, ($), (+), (/), (>=), (<$>), (<*>), (==), (>), (-), otherwise, show, map)
+import Data.List (List(..), (:), updateAt, length, snoc, null, foldMap, drop, length, zipWithA, range, take)
 import Data.Maybe (fromMaybe)
 import Effect (Effect)
 import Effect.Class.Console (log)
 import Effect.Ref (Ref, new, read, write)
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..))
+import Data.Traversable (traverse_)
 import Prim.Boolean
 import Web.HTML.HTMLCanvasElement as HTML
 
@@ -54,8 +55,8 @@ launch cvs = do
 
 animate :: RenderEngine -> Effect Unit
 animate re = do
-  --p <- read re.program
-  --runProgram re p
+  p <- read re.program
+  runProgram re p
   TJS.render re.renderer re.scene re.camera
 
 evaluate :: RenderEngine -> String -> Effect (Maybe String)
@@ -69,41 +70,41 @@ evaluate re s = do
 
 ----------------------------------------
 
--- runProgram :: RenderEngine -> Program -> Effect Unit
--- runProgram re p = do
------
+runProgram :: RenderEngine -> Program -> Effect Unit
+runProgram re p = do
+  alignMonitors re p
+  playVideoElementsInMonitors re
 
-alignNumberOfMonitors :: RenderEngine -> Program ->  Effect Unit
-alignNumberOfMonitors re p = do
+alignMonitors :: RenderEngine -> Program ->  Effect Unit
+alignMonitors re p = do
   let tLen = length p -- :: Int
   ms <- read re.monitors -- :: List Monitor
   let mLen = length ms -- :: Int
+  -- stage 1: align the number of monitors
   case mLen == tLen of
     true -> pure unit -- if same length, do nothing
     false -> do -- if different length, then:
       case mLen > tLen of
         -- if mLen is longer than tLen, then remove excess monitors
         true -> do
-          let ms' = drop tLen ms -- :: List Monitor
-          foldMap (removeMonitor re.scene) ms'
-          write ms' re.monitors
+          let keptMonitors = take tLen ms -- monitors we keep
+          let droppedMonitors = drop tLen ms -- monitors we drop
+          traverse_ (removeMonitor re.scene) droppedMonitors
+          write keptMonitors re.monitors
         -- if mLen is shorter than tLen, then add new monitors
-        false -> addNewMonitors re p -- incomplete?
-
-
-addNewMonitors :: RenderEngine -> Program -> Effect Unit
-addNewMonitors re p = do
-  -- p :: List Transmission
-  ms <- read re.monitors -- :: List Monitor
-  -- zipWithA :: (a -> b -> m c) -> List a -> List b -> m (List c)
-  -- updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
-  _ <- zipWithA (updateMonitor re.scene) ms p
+        false -> do
+          let howManyMonitorsAreMissing = tLen - mLen -- :: Int
+          let indicesOfNewMonitors = range (mLen + 1) (mLen + howManyMonitorsAreMissing)
+          traverse_ (newMonitor re) indicesOfNewMonitors
+  -- stage 2: align each monitor with each tranmissions
+  ms' <- read re.monitors
+  _ <- zipWithA (updateMonitor re.scene) ms' p
   pure unit
 
-
 --
-newTranmission :: Int -> RenderEngine -> Effect Unit
-newTranmission i re = do
+
+newMonitor :: RenderEngine -> Int -> Effect Unit
+newMonitor re i = do
   m <- read re.monitors -- :: List Monitor
   dm <- defMonitor -- :: Monitor
   let m' = replaceAt i dm m -- :: List Monitor
@@ -114,11 +115,10 @@ replaceAt i v a
   | i >= length a = snoc a v
   | otherwise = fromMaybe a $ updateAt i v a
 
--- updateMonitors :: TJS.Scene -> List Monitor -> Transmission -> Effect Unit
--- updateMonitors sc ms t = foldMap (\m -> (updateMonitor sc m t)) ms
-
-playVideoElementsInMonitors :: List Monitor -> Effect Unit
-playVideoElementsInMonitors ms = foldMap playVideoElement ms -- Effect Unit
+playVideoElementsInMonitors :: RenderEngine -> Effect Unit
+playVideoElementsInMonitors re = do
+  ms <- read re.monitors
+  traverse_ playVideoElement ms -- :: Effect Unit
 
 
 --- errores
