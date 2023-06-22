@@ -1,12 +1,13 @@
 module Transmission where
 
 type Transmission = {
-  estado :: Boolean,
-  tv :: String,
-  mapping :: String,
+  estado :: Boolean, -- transmission on (channel) or off (static)
+  tv :: String, -- geometry of the monitor obj file
+  mapping :: String, -- how video envolves monitor mtl file
   tvZone :: Int,
-  channel :: String,
-  channelReapeater :: Vec2,
+  channel :: String, -- video playing
+  channelReapeater :: Vec2, -- how many times the video repeats on the monitor
+  format :: String,
   size :: Vec3,
   position :: Vec3,
   rotation :: Vec3
@@ -19,15 +20,16 @@ defTransmission = {
   tv:                 "3dObjects/cubo.obj",
   mapping:            "3dObjects/cubo.mtl",
   tvZone:             0,
-  channel:            "textures/static.mov",
+  channel:            "channels/static.mov",
   channelReapeater:   {x: 1.0, y: 1.0},
+  format:             "rgbaFormat",
   size:               {x: 1.5, y: 1.5,z: 1.5},
   position:           {x: 0.0, y: 0.0,z: 0.0},
   rotation:           {x: 0.5, y: 0.0,z: 0.0}
 }
 
 defTransmissionOn :: Transmission
-defTransmissionOn = defTransmission {estado = true, channel = "textures/01.mov"}
+defTransmissionOn = defTransmission {estado = true, channel = "channels/01.mov"}
 
 ----
 

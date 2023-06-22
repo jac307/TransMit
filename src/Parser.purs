@@ -96,8 +96,25 @@ transformations = do
   functionWithV2 "repet" ChannelRepeater,
   functionWithV3 "scalar" Scalar,
   functionWithV3 "movet" Movet,
-  functionWithV3 "rodar" Rodar
+  functionWithV3 "rodar" Rodar,
+  functionWithString "format" Format,
+  switchFunction
   ]
+
+switchFunction :: P (TransmissionAST -> TransmissionAST)
+switchFunction = do
+  _ <- pure unit
+  reserved "switch"
+  s <- stringLiteral
+  pure $ Switch ("channels/" <> s)
+  -- should remove the empty spaces at the beginning of s
+  -- this function can only be use with transmission on
+
+functionWithString :: String -> (String -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithString functionName constructor = try $ do
+  reserved functionName
+  s <- identifier
+  pure $ constructor s
 
 functionWithV3 :: String -> (Vec3 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
 functionWithV3 functionName constructor = try $ do
@@ -282,7 +299,10 @@ symbol = tokenParser.symbol
 whiteSpace :: P Unit
 whiteSpace = tokenParser.whiteSpace
 
-type Program = List Transmission
+-- channel 1 "url";
+-- transmission on switch 1
+
+type Program = List Transmission --- This has to change if I add the camera ---- must be Transmission plus operation of the camera (record), plus,.... channel
 
 -- we want a list that gives all the Just
 -- catMaybes :: forall a. List (Maybe a) -> List a

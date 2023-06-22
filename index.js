@@ -2061,8 +2061,8 @@ var updateURLfromVidElem = function(mo) {
   return function(url) {
     return function __do3() {
       var currURL = read(mo.currVidURL)();
-      var $0 = url !== currURL;
-      if ($0) {
+      var $1 = url !== currURL;
+      if ($1) {
         setSrc(url)(mo.video)();
         preloadAnything(mo.video)();
         load(mo.video)();
@@ -2073,14 +2073,6 @@ var updateURLfromVidElem = function(mo) {
       }
       ;
       return unit;
-    };
-  };
-};
-var transformVidTexture = function(vt) {
-  return function(t) {
-    return function __do3() {
-      setRepeatOfAnything(vt)(v2ToX(t.channelReapeater))(v2ToY(t.channelReapeater))();
-      return format(vt)(rgbaFormat)();
     };
   };
 };
@@ -2106,8 +2098,43 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 168, column 3 - line 170, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 169, column 3 - line 171, column 41): " + [g.constructor.name]);
       };
+    };
+  };
+};
+var stringToEffectFormat = function(v) {
+  if (v === "rgbaFormat") {
+    return rgbaFormat;
+  }
+  ;
+  if (v === "alphaFormat") {
+    return alphaFormat;
+  }
+  ;
+  if (v === "redFormat") {
+    return redFormat;
+  }
+  ;
+  if (v === "rgFormat") {
+    return rgFormat;
+  }
+  ;
+  if (v === "luminanceFormat") {
+    return luminanceFormat;
+  }
+  ;
+  if (v === "luminanceAlphaFormat") {
+    return luminanceAlphaFormat;
+  }
+  ;
+  return rgbaFormat;
+};
+var transformVidTexture = function(vt) {
+  return function(t) {
+    return function __do3() {
+      setRepeatOfAnything(vt)(v2ToX(t.channelReapeater))(v2ToY(t.channelReapeater))();
+      return format(vt)(stringToEffectFormat(t.format))();
     };
   };
 };
@@ -2125,7 +2152,7 @@ var removeObj = function(sc) {
         return write(Nothing.value)(mo.obj)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 138, column 3 - line 143, column 27): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 139, column 3 - line 144, column 27): " + [g.constructor.name]);
     };
   };
 };
@@ -2143,7 +2170,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 148, column 3 - line 153, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 149, column 3 - line 154, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -2192,10 +2219,10 @@ var tryToMakeTransmission = function(sc) {
             return makeTransmission(sc)(g.value0)(m.value0)(z)(mo.vidTexture)();
           }
           ;
-          throw new Error("Failed pattern match at MonitorState (line 131, column 7 - line 133, column 61): " + [m.constructor.name]);
+          throw new Error("Failed pattern match at MonitorState (line 132, column 7 - line 134, column 61): " + [m.constructor.name]);
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 127, column 3 - line 133, column 61): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 128, column 3 - line 134, column 61): " + [g.constructor.name]);
       };
     };
   };
@@ -2237,8 +2264,8 @@ var changeOrLoadObjIfNecessary = function(sc) {
       return function(z) {
         return function __do3() {
           var currURL = read(mo.currObjURL)();
-          var $11 = url === currURL;
-          if ($11) {
+          var $13 = url === currURL;
+          if ($13) {
             return unit;
           }
           ;
@@ -2262,8 +2289,8 @@ var changeOrLoadMatIfNecessary = function(sc) {
       return function(z) {
         return function __do3() {
           var currURL = read(mo.currMtlURL)();
-          var $12 = url === currURL;
-          if ($12) {
+          var $14 = url === currURL;
+          if ($14) {
             return unit;
           }
           ;
@@ -2302,11 +2329,12 @@ var defTransmission = {
   tv: "3dObjects/cubo.obj",
   mapping: "3dObjects/cubo.mtl",
   tvZone: 0,
-  channel: "textures/static.mov",
+  channel: "channels/static.mov",
   channelReapeater: {
     x: 1,
     y: 1
   },
+  format: "rgbaFormat",
   size: {
     x: 1.5,
     y: 1.5,
@@ -2329,8 +2357,9 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
     tvZone: defTransmission.tvZone,
-    channel: "textures/01.mov",
+    channel: "channels/01.mov",
     channelReapeater: defTransmission.channelReapeater,
+    format: defTransmission.format,
     size: defTransmission.size,
     position: defTransmission.position,
     rotation: defTransmission.rotation
@@ -2400,6 +2429,32 @@ var Rodar = /* @__PURE__ */ function() {
   };
   return Rodar2;
 }();
+var Format = /* @__PURE__ */ function() {
+  function Format2(value0, value1) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+  ;
+  Format2.create = function(value0) {
+    return function(value1) {
+      return new Format2(value0, value1);
+    };
+  };
+  return Format2;
+}();
+var Switch = /* @__PURE__ */ function() {
+  function Switch2(value0, value1) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+  ;
+  Switch2.create = function(value0) {
+    return function(value1) {
+      return new Switch2(value0, value1);
+    };
+  };
+  return Switch2;
+}();
 var EmptyStatement = /* @__PURE__ */ function() {
   function EmptyStatement2() {
   }
@@ -2435,6 +2490,7 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v1.channel,
       channelReapeater: v.value0,
+      format: v1.format,
       size: v1.size,
       position: v1.position,
       rotation: v1.rotation
@@ -2450,6 +2506,7 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v1.channel,
       channelReapeater: v1.channelReapeater,
+      format: v1.format,
       size: v.value0,
       position: v1.position,
       rotation: v1.rotation
@@ -2465,6 +2522,7 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v1.channel,
       channelReapeater: v1.channelReapeater,
+      format: v1.format,
       size: v1.size,
       position: v.value0,
       rotation: v1.rotation
@@ -2480,13 +2538,46 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v1.channel,
       channelReapeater: v1.channelReapeater,
+      format: v1.format,
       size: v1.size,
       position: v1.position,
       rotation: v.value0
     };
   }
   ;
-  throw new Error("Failed pattern match at AST (line 37, column 1 - line 37, column 43): " + [v.constructor.name]);
+  if (v instanceof Format) {
+    var v1 = tASTtoT(v.value1);
+    return {
+      estado: v1.estado,
+      tv: v1.tv,
+      mapping: v1.mapping,
+      tvZone: v1.tvZone,
+      channel: v1.channel,
+      channelReapeater: v1.channelReapeater,
+      format: v.value0,
+      size: v1.size,
+      position: v1.position,
+      rotation: v1.rotation
+    };
+  }
+  ;
+  if (v instanceof Switch) {
+    var v1 = tASTtoT(v.value1);
+    return {
+      estado: v1.estado,
+      tv: v1.tv,
+      mapping: v1.mapping,
+      tvZone: v1.tvZone,
+      channel: v.value0,
+      channelReapeater: v1.channelReapeater,
+      format: v1.format,
+      size: v1.size,
+      position: v1.position,
+      rotation: v1.rotation
+    };
+  }
+  ;
+  throw new Error("Failed pattern match at AST (line 48, column 1 - line 48, column 43): " + [v.constructor.name]);
 };
 
 // output/Data.Int/foreign.js
@@ -25570,7 +25661,7 @@ var makeTokenParser = function(v) {
     });
     return withErrorMessage(go)("identifier");
   }();
-  var identifier = function() {
+  var identifier2 = function() {
     var go = bind(bindParserT)(ident)(function(name2) {
       var $66 = isReservedName(v)(name2);
       if ($66) {
@@ -25789,7 +25880,7 @@ var makeTokenParser = function(v) {
     return alt(altParserT)(voidLeft(functorParserT)(escapeGap)(Nothing.value))(alt(altParserT)(voidLeft(functorParserT)(escapeEmpty)(Nothing.value))(map(functorParserT)(Just.create)(escapeCode)));
   });
   var stringChar = alt(altParserT)(map(functorParserT)(Just.create)(stringLetter))(withErrorMessage(stringEscape)("string character"));
-  var stringLiteral = function() {
+  var stringLiteral2 = function() {
     var folder = function(v1) {
       return function(chars) {
         if (v1 instanceof Nothing) {
@@ -25812,12 +25903,12 @@ var makeTokenParser = function(v) {
     return between(symbol("<"))(symbol(">"))(p);
   };
   return {
-    identifier,
+    identifier: identifier2,
     reserved: reserved2,
     operator,
     reservedOp: reservedOp2,
     charLiteral,
-    stringLiteral,
+    stringLiteral: stringLiteral2,
     natural,
     integer: integer2,
     "float": $$float2,
@@ -25881,6 +25972,9 @@ var tokenParser = /* @__PURE__ */ makeTokenParser(/* @__PURE__ */ function() {
 var whiteSpace = /* @__PURE__ */ function() {
   return tokenParser.whiteSpace;
 }();
+var stringLiteral = /* @__PURE__ */ function() {
+  return tokenParser.stringLiteral;
+}();
 var statementToTransmission = function(v) {
   if (v instanceof EmptyStatement) {
     return Nothing.value;
@@ -25890,7 +25984,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 296, column 1 - line 296, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 316, column 1 - line 316, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -25901,6 +25995,13 @@ var reservedOp = /* @__PURE__ */ function() {
 var reserved = /* @__PURE__ */ function() {
   return tokenParser.reserved;
 }();
+var switchFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return discard(discardUnit)(bindParserT)(reserved("switch"))(function() {
+    return bind(bindParserT)(stringLiteral)(function(s) {
+      return pure(applicativeParserT)(Switch.create("channels/" + s));
+    });
+  });
+});
 var onlySemiColon = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ lookAhead(/* @__PURE__ */ reservedOp(";")))(function() {
   return pure(applicativeParserT)(EmptyStatement.value);
 });
@@ -25914,6 +26015,18 @@ var noTranmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE
 var integer = /* @__PURE__ */ function() {
   return tokenParser.integer;
 }();
+var identifier = /* @__PURE__ */ function() {
+  return tokenParser.identifier;
+}();
+var functionWithString = function(functionName) {
+  return function(constructor) {
+    return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
+      return bind(bindParserT)(identifier)(function(s) {
+        return pure(applicativeParserT)(constructor(s));
+      });
+    }));
+  };
+};
 var $$float = /* @__PURE__ */ function() {
   return tokenParser["float"];
 }();
@@ -25996,7 +26109,7 @@ var functionWithV3 = function(functionName) {
   };
 };
 var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return choice(foldableArray)([functionWithV2("repet")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithV3("rodar")(Rodar.create)]);
+  return choice(foldableArray)([functionWithV2("repet")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithV3("rodar")(Rodar.create), functionWithString("format")(Format.create), switchFunction]);
 });
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(reserved("transmission"))(function() {
@@ -26117,6 +26230,10 @@ var evaluate = function(re) {
           }
         })(showRecordFieldsCons({
           reflectSymbol: function() {
+            return "format";
+          }
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
             return "mapping";
           }
         })(showRecordFieldsCons({
@@ -26175,7 +26292,7 @@ var evaluate = function(re) {
           reflectSymbol: function() {
             return "z";
           }
-        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showString))(showBoolean))(showRecord()()(showRecordFieldsCons({
+        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showString))(showString))(showBoolean))(showRecord()()(showRecordFieldsCons({
           reflectSymbol: function() {
             return "x";
           }

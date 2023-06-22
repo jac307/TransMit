@@ -18,6 +18,7 @@ import Web.HTML.HTMLCanvasElement as HTML
 import Web.HTML.HTMLMediaElement as HTML2
 import Web.HTML.HTMLMediaElement (HTMLMediaElement)
 
+import Effect (Effect)
 import ThreeJS as TJS
 
 import Transmission (Transmission, Vec3, Vec2)
@@ -180,8 +181,16 @@ transformTransmission' g t = do
 transformVidTexture :: TJS.TextureLoader -> Transmission -> Effect Unit
 transformVidTexture vt t = do
   TJS.setRepeatOfAnything vt (v2ToX t.channelReapeater) (v2ToY t.channelReapeater)
-  TJS.format vt TJS.rgbaFormat
-  -- def rgbaFormat, other options: alphaFormat, redFormat, rgFormat, luminanceFormat, luminanceAlphaFormat
+  TJS.format vt (stringToEffectFormat t.format)
+
+stringToEffectFormat :: String -> Effect TJS.FormatID
+stringToEffectFormat "rgbaFormat" = TJS.rgbaFormat
+stringToEffectFormat "alphaFormat" = TJS.alphaFormat
+stringToEffectFormat "redFormat" = TJS.redFormat
+stringToEffectFormat "rgFormat" = TJS.rgFormat
+stringToEffectFormat "luminanceFormat" = TJS.luminanceFormat
+stringToEffectFormat "luminanceAlphaFormat" = TJS.luminanceAlphaFormat
+stringToEffectFormat _ = TJS.rgbaFormat
 
 -------- vElem & currVidURL --------
 
