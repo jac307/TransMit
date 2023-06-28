@@ -97,7 +97,7 @@ transformations = do
   functionWithV3 "scalar" Scalar,
   functionWithV3 "movet" Movet,
   functionWithV3 "rodar" Rodar,
-  functionWithString "format" Format,
+  functionWithString "fulcober" Fulcober,
   switchFunction
   ]
 

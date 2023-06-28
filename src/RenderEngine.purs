@@ -35,17 +35,18 @@ type RenderEngine =
   monitors :: Ref (List Monitor)
   }
 
-
 ----------------------------------------
 
 launch :: HTML.HTMLCanvasElement -> Effect RenderEngine
 launch cvs = do
   log "launch now with ineffective program"
   scene <- TJS.newScene
-  camera <- TJS.newPerspectiveCamera 75.0 (16.0/9.0) 0.1 100.0
-  TJS.setPosition camera 0.0 0.0 5.0
+  iWidth <- TJS.windowInnerWidth
+  iHeight <- TJS.windowInnerHeight
+  camera <- TJS.newPerspectiveCamera 45.0 (iWidth/iHeight) 0.1 100.0
+  TJS.setPosition camera 0.0 0.0 15.0
   renderer <- TJS.newWebGLRenderer {antialias: true, canvas: cvs}
-  TJS.setSize renderer 1250.0 720.0 false
+  TJS.setSize renderer iHeight iWidth false
   lights <- TJS.newHemisphereLight 0xffffff 0xffffff 3.0
   TJS.addAnythingToScene scene lights
   program <- new Nil

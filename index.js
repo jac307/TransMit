@@ -1873,6 +1873,8 @@ var log2 = function(dictMonadEffect) {
 var preloadMaterials = (m) => () => m.preload();
 var mapVidTextToMat = (m) => (vt) => () => m.materials.Material.map = vt;
 var mapMatToObj = (o) => (n) => (m) => () => o.children[n].material = m.materials.Material;
+var matTransparency = (o) => (n) => () => o.children[n].material.transparent = true;
+var matOpacity = (o) => (n) => () => o.children[n].material.opacity = 0.5;
 
 // output/ThreeJS/foreign.js
 var newScene = () => new THREE.Scene();
@@ -1892,7 +1894,10 @@ var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position
 var setScaleOfAnything = (thing) => (x) => (y) => (z) => () => thing.scale.set(x, y, z);
 var setRepeatOfAnything = (thing) => (u) => (v) => () => thing.repeat.set(u, v);
 var preloadAnything = (elem3) => () => elem3.preload = "auto";
+var printAnything = (thing) => () => console.log(thing);
 var newHemisphereLight = (skyColor) => (groundColor) => (intensity) => () => new THREE.HemisphereLight(skyColor, groundColor, intensity);
+var windowInnerWidth = () => window.innerWidth;
+var windowInnerHeight = () => window.innerHeight;
 var createElement = (name2) => () => document.createElement(name2);
 var videoTexture = (videoElem) => () => new THREE.VideoTexture(videoElem);
 var clampToEdgeWrapping = THREE.ClampToEdgeWrapping;
@@ -2098,33 +2103,33 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 169, column 3 - line 171, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 183, column 3 - line 185, column 41): " + [g.constructor.name]);
       };
     };
   };
 };
 var stringToEffectFormat = function(v) {
-  if (v === "rgbaFormat") {
+  if (v === "rgba") {
     return rgbaFormat;
   }
   ;
-  if (v === "alphaFormat") {
+  if (v === "alpha") {
     return alphaFormat;
   }
   ;
-  if (v === "redFormat") {
+  if (v === "red") {
     return redFormat;
   }
   ;
-  if (v === "rgFormat") {
+  if (v === "redgreen") {
     return rgFormat;
   }
   ;
-  if (v === "luminanceFormat") {
+  if (v === "luminance") {
     return luminanceFormat;
   }
   ;
-  if (v === "luminanceAlphaFormat") {
+  if (v === "luminancealpha") {
     return luminanceAlphaFormat;
   }
   ;
@@ -2134,7 +2139,7 @@ var transformVidTexture = function(vt) {
   return function(t) {
     return function __do3() {
       setRepeatOfAnything(vt)(v2ToX(t.channelReapeater))(v2ToY(t.channelReapeater))();
-      return format(vt)(stringToEffectFormat(t.format))();
+      return format(vt)(stringToEffectFormat(t.fulcober))();
     };
   };
 };
@@ -2193,6 +2198,9 @@ var makeTransmission = function(sc) {
           return function __do3() {
             mapVidTextToMat(m)(vt)();
             mapMatToObj(g)(z)(m)();
+            matTransparency(g)(z)();
+            matOpacity(g)(z)();
+            printAnything(m)();
             return addAnythingToScene(sc)(g)();
           };
         };
@@ -2334,7 +2342,7 @@ var defTransmission = {
     x: 1,
     y: 1
   },
-  format: "rgbaFormat",
+  fulcober: "rgbaFormat",
   size: {
     x: 1.5,
     y: 1.5,
@@ -2359,7 +2367,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     tvZone: defTransmission.tvZone,
     channel: "channels/01.mov",
     channelReapeater: defTransmission.channelReapeater,
-    format: defTransmission.format,
+    fulcober: defTransmission.fulcober,
     size: defTransmission.size,
     position: defTransmission.position,
     rotation: defTransmission.rotation
@@ -2429,18 +2437,18 @@ var Rodar = /* @__PURE__ */ function() {
   };
   return Rodar2;
 }();
-var Format = /* @__PURE__ */ function() {
-  function Format2(value0, value1) {
+var Fulcober = /* @__PURE__ */ function() {
+  function Fulcober2(value0, value1) {
     this.value0 = value0;
     this.value1 = value1;
   }
   ;
-  Format2.create = function(value0) {
+  Fulcober2.create = function(value0) {
     return function(value1) {
-      return new Format2(value0, value1);
+      return new Fulcober2(value0, value1);
     };
   };
-  return Format2;
+  return Fulcober2;
 }();
 var Switch = /* @__PURE__ */ function() {
   function Switch2(value0, value1) {
@@ -2490,7 +2498,7 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v1.channel,
       channelReapeater: v.value0,
-      format: v1.format,
+      fulcober: v1.fulcober,
       size: v1.size,
       position: v1.position,
       rotation: v1.rotation
@@ -2506,7 +2514,7 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v1.channel,
       channelReapeater: v1.channelReapeater,
-      format: v1.format,
+      fulcober: v1.fulcober,
       size: v.value0,
       position: v1.position,
       rotation: v1.rotation
@@ -2522,7 +2530,7 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v1.channel,
       channelReapeater: v1.channelReapeater,
-      format: v1.format,
+      fulcober: v1.fulcober,
       size: v1.size,
       position: v.value0,
       rotation: v1.rotation
@@ -2538,14 +2546,14 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v1.channel,
       channelReapeater: v1.channelReapeater,
-      format: v1.format,
+      fulcober: v1.fulcober,
       size: v1.size,
       position: v1.position,
       rotation: v.value0
     };
   }
   ;
-  if (v instanceof Format) {
+  if (v instanceof Fulcober) {
     var v1 = tASTtoT(v.value1);
     return {
       estado: v1.estado,
@@ -2554,7 +2562,7 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v1.channel,
       channelReapeater: v1.channelReapeater,
-      format: v.value0,
+      fulcober: v.value0,
       size: v1.size,
       position: v1.position,
       rotation: v1.rotation
@@ -2570,7 +2578,7 @@ var tASTtoT = function(v) {
       tvZone: v1.tvZone,
       channel: v.value0,
       channelReapeater: v1.channelReapeater,
-      format: v1.format,
+      fulcober: v1.fulcober,
       size: v1.size,
       position: v1.position,
       rotation: v1.rotation
@@ -26109,7 +26117,7 @@ var functionWithV3 = function(functionName) {
   };
 };
 var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return choice(foldableArray)([functionWithV2("repet")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithV3("rodar")(Rodar.create), functionWithString("format")(Format.create), switchFunction]);
+  return choice(foldableArray)([functionWithV2("repet")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithV3("rodar")(Rodar.create), functionWithString("fulcober")(Fulcober.create), switchFunction]);
 });
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(reserved("transmission"))(function() {
@@ -26166,7 +26174,7 @@ var replaceAt = function(i) {
         return fromMaybe(a)(updateAt(i)(v)(a));
       }
       ;
-      throw new Error("Failed pattern match at RenderEngine (line 113, column 1 - line 113, column 52): " + [i.constructor.name, v.constructor.name, a.constructor.name]);
+      throw new Error("Failed pattern match at RenderEngine (line 114, column 1 - line 114, column 52): " + [i.constructor.name, v.constructor.name, a.constructor.name]);
     };
   };
 };
@@ -26190,13 +26198,15 @@ var launch = function(cvs) {
   return function __do3() {
     log2(monadEffectEffect)("launch now with ineffective program")();
     var scene = newScene();
-    var camera = newPerspectiveCamera(75)(16 / 9)(0.1)(100)();
-    setPosition2()(camera)(0)(0)(5)();
+    var iWidth = windowInnerWidth();
+    var iHeight = windowInnerHeight();
+    var camera = newPerspectiveCamera(45)(iWidth / iHeight)(0.1)(100)();
+    setPosition2()(camera)(0)(0)(15)();
     var renderer = newWebGLRenderer({
       antialias: true,
       canvas: cvs
     })();
-    setSize(renderer)(1250)(720)(false)();
+    setSize(renderer)(iHeight)(iWidth)(false)();
     var lights = newHemisphereLight(16777215)(16777215)(3)();
     addAnythingToScene(scene)(lights)();
     var program = $$new(Nil.value)();
@@ -26230,7 +26240,7 @@ var evaluate = function(re) {
           }
         })(showRecordFieldsCons({
           reflectSymbol: function() {
-            return "format";
+            return "fulcober";
           }
         })(showRecordFieldsCons({
           reflectSymbol: function() {
@@ -26310,7 +26320,7 @@ var evaluate = function(re) {
       return pure(applicativeEffect)(new Just(v.value0));
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 64, column 3 - line 69, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 65, column 3 - line 70, column 32): " + [v.constructor.name]);
   };
 };
 var alignMonitors = function(re) {
@@ -26340,10 +26350,10 @@ var alignMonitors = function(re) {
             return traverse_(applicativeEffect)(foldableList)(newMonitor(re))(indicesOfNewMonitors)();
           }
           ;
-          throw new Error("Failed pattern match at RenderEngine (line 87, column 7 - line 98, column 57): " + [v1.constructor.name]);
+          throw new Error("Failed pattern match at RenderEngine (line 88, column 7 - line 99, column 57): " + [v1.constructor.name]);
         }
         ;
-        throw new Error("Failed pattern match at RenderEngine (line 84, column 3 - line 98, column 57): " + [v.constructor.name]);
+        throw new Error("Failed pattern match at RenderEngine (line 85, column 3 - line 99, column 57): " + [v.constructor.name]);
       })();
       var ms$prime = read(re.monitors)();
       zipWithA(applicativeEffect)(updateMonitor(re.scene))(ms$prime)(p)();

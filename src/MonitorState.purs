@@ -160,8 +160,22 @@ makeTransmission sc g m z vt = do
   -- 1. combine the three things to make a mesh
   mapVidTextToMat m vt
   mapMatToObj g z m
+  -- new
+  matTransparency g z
+  matOpacity g z
+  --matOpacity2 m
+  TJS.printAnything m
   -- 2. add mesh to scene
   TJS.addAnythingToScene sc g
+
+-- Imported Functions --
+foreign import preloadMaterials :: TJS.MTL -> Effect Unit
+foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
+foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
+foreign import matTransparency :: TJS.OBJ -> Int -> Effect Unit
+foreign import matOpacity :: TJS.OBJ -> Int -> Effect Unit
+foreign import matOpacity2 :: TJS.MTL -> Effect Unit
+
 
 transformTransmission :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
 transformTransmission sc mo t = do
@@ -181,16 +195,17 @@ transformTransmission' g t = do
 transformVidTexture :: TJS.TextureLoader -> Transmission -> Effect Unit
 transformVidTexture vt t = do
   TJS.setRepeatOfAnything vt (v2ToX t.channelReapeater) (v2ToY t.channelReapeater)
-  TJS.format vt (stringToEffectFormat t.format)
+  TJS.format vt (stringToEffectFormat t.fulcober)
 
 stringToEffectFormat :: String -> Effect TJS.FormatID
-stringToEffectFormat "rgbaFormat" = TJS.rgbaFormat
-stringToEffectFormat "alphaFormat" = TJS.alphaFormat
-stringToEffectFormat "redFormat" = TJS.redFormat
-stringToEffectFormat "rgFormat" = TJS.rgFormat
-stringToEffectFormat "luminanceFormat" = TJS.luminanceFormat
-stringToEffectFormat "luminanceAlphaFormat" = TJS.luminanceAlphaFormat
+stringToEffectFormat "rgba" = TJS.rgbaFormat
+stringToEffectFormat "alpha" = TJS.alphaFormat
+stringToEffectFormat "red" = TJS.redFormat
+stringToEffectFormat "redgreen" = TJS.rgFormat
+stringToEffectFormat "luminance" = TJS.luminanceFormat
+stringToEffectFormat "luminancealpha" = TJS.luminanceAlphaFormat
 stringToEffectFormat _ = TJS.rgbaFormat
+
 
 -------- vElem & currVidURL --------
 
@@ -215,10 +230,6 @@ updateURLfromVidElem mo url = do
     else (pure unit)
 
 ------------------------
--- Imported Functions --
-foreign import preloadMaterials :: TJS.MTL -> Effect Unit
-foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
-foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
 
 ----- General -----
 

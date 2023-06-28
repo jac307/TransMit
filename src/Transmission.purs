@@ -7,10 +7,10 @@ type Transmission = {
   tvZone :: Int,
   channel :: String, -- video playing
   channelReapeater :: Vec2, -- how many times the video repeats on the monitor
-  format :: String,
+  fulcober :: String,
   size :: Vec3,
   position :: Vec3,
-  rotation :: Vec3
+  rotation :: Vec3 -- Either Vec3 Vec3 --- Left absolute values, Right dynamic values (addition like in the Three.js value: rotation.x += 1 * 0.010;)
   }
 
 -- add video material for ico - [0], ico2 needs element [1], globe nees the element [0]
@@ -22,7 +22,7 @@ defTransmission = {
   tvZone:             0,
   channel:            "channels/static.mov",
   channelReapeater:   {x: 1.0, y: 1.0},
-  format:             "rgbaFormat",
+  fulcober:           "rgbaFormat",
   size:               {x: 1.5, y: 1.5,z: 1.5},
   position:           {x: 0.0, y: 0.0,z: 0.0},
   rotation:           {x: 0.5, y: 0.0,z: 0.0}
