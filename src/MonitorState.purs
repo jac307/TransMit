@@ -18,7 +18,6 @@ import Web.HTML.HTMLCanvasElement as HTML
 import Web.HTML.HTMLMediaElement as HTML2
 import Web.HTML.HTMLMediaElement (HTMLMediaElement)
 
-import Effect (Effect)
 import ThreeJS as TJS
 
 import Transmission (Transmission, Vec3, Vec2)
@@ -81,17 +80,17 @@ updateMonitor sc mo t = do
   -- 1. change video url if necessary
   updateURLfromVidElem mo t.channel
   -- 2. change/load obj url/object
-  changeOrLoadObjIfNecessary sc mo t.tv t.tvZone
+  changeOrLoadObjIfNecessary sc mo t.tv t.brillo
   -- 3. change/load material url/create new mesh
-  changeOrLoadMatIfNecessary sc mo t.mapping t.tvZone
+  changeOrLoadMatIfNecessary sc mo t.mapping t.brillo
   -- 4. transform Transmission
   transformTransmission sc mo t
   transformVidTexture mo.vidTexture t
 
 ---- Obj ---
 
-changeOrLoadObjIfNecessary :: TJS.Scene -> Monitor -> String -> Int -> Effect Unit
-changeOrLoadObjIfNecessary sc mo url z = do
+changeOrLoadObjIfNecessary :: TJS.Scene -> Monitor -> String -> Number -> Effect Unit
+changeOrLoadObjIfNecessary sc mo url n = do
   currURL <- read mo.currObjURL
   if url == currURL
     then (pure unit)
@@ -100,13 +99,13 @@ changeOrLoadObjIfNecessary sc mo url z = do
       loader <- TJS.newOBJLoader
       TJS.loadOBJ loader url $ \o -> do
         write (Just o) mo.obj
-        tryToMakeTransmission sc mo z
+        tryToMakeTransmission sc mo n
       write url mo.currObjURL
 
 ---- Material ---
 
-changeOrLoadMatIfNecessary :: TJS.Scene -> Monitor -> String -> Int -> Effect Unit
-changeOrLoadMatIfNecessary sc mo url z = do
+changeOrLoadMatIfNecessary :: TJS.Scene -> Monitor -> String -> Number -> Effect Unit
+changeOrLoadMatIfNecessary sc mo url n = do
   currURL <- read mo.currMtlURL
   if url == currURL
     then (pure unit)
@@ -117,13 +116,14 @@ changeOrLoadMatIfNecessary sc mo url z = do
         preloadMaterials m
         --TJS.printAnything m
         write (Just m) mo.material
-        tryToMakeTransmission sc mo z
+        tryToMakeTransmission sc mo n
       write url mo.currMtlURL
 
 ---- Mesh ---
 
-tryToMakeTransmission :: TJS.Scene -> Monitor -> Int -> Effect Unit
-tryToMakeTransmission sc mo z = do
+tryToMakeTransmission :: TJS.Scene -> Monitor -> Number -> Effect Unit
+tryToMakeTransmission sc mo n = do
+  currURL <- read mo.currObjURL
   g <- read mo.obj
   case g of
     Nothing -> pure unit
@@ -131,7 +131,7 @@ tryToMakeTransmission sc mo z = do
       m <- read mo.material
       case m of
         Nothing -> pure unit
-        Just m' -> makeTransmission sc g' m' z mo.vidTexture
+        Just m' -> makeTransmission currURL sc g' m' mo.vidTexture n
 
 removeObj :: TJS.Scene -> Monitor -> Effect Unit
 removeObj sc mo = do
@@ -155,27 +155,101 @@ removeMaterial sc mo = do
 
 -------- Transmission --------
 
-makeTransmission :: TJS.Scene -> TJS.OBJ -> TJS.MTL -> Int -> TJS.TextureLoader -> Effect Unit
-makeTransmission sc g m z vt = do
+makeTransmission :: String -> TJS.Scene -> TJS.OBJ -> TJS.MTL -> TJS.TextureLoader -> Number -> Effect Unit
+makeTransmission url sc g m vt n = do
   -- 1. combine the three things to make a mesh
-  mapVidTextToMat m vt
-  mapMatToObj g z m
-  -- new
-  matTransparency g z
-  matOpacity g z
-  --matOpacity2 m
+  selectMapVidToMat url m vt
+  selectMapToObj url g m
+  -- Transform Material
+  selectMatTrans url g
+  selectMatOpacity url g n
+  --
   TJS.printAnything m
   -- 2. add mesh to scene
   TJS.addAnythingToScene sc g
 
 -- Imported Functions --
 foreign import preloadMaterials :: TJS.MTL -> Effect Unit
-foreign import mapVidTextToMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
-foreign import mapMatToObj :: TJS.OBJ -> Int -> TJS.MTL -> Effect Unit
-foreign import matTransparency :: TJS.OBJ -> Int -> Effect Unit
-foreign import matOpacity :: TJS.OBJ -> Int -> Effect Unit
-foreign import matOpacity2 :: TJS.MTL -> Effect Unit
+--
 
+selectMapVidToMat :: String -> TJS.MTL -> TJS.TextureLoader -> Effect Unit
+-- Material 0
+selectMapVidToMat "monitors/cubo.obj" m vt = mapVidToMatMat m vt
+selectMapVidToMat "monitors/cubo-1.obj" m vt = mapVidToMatMat m vt
+selectMapVidToMat "monitors/cubo-2.obj" m vt = mapVidToMatMat m vt
+-- None 0
+selectMapVidToMat "monitors/cubo-3.obj" m vt = mapVidToMatNone m vt
+selectMapVidToMat "monitors/cubo-4.obj" m vt = mapVidToMatNone m vt
+selectMapVidToMat "monitors/ico.obj" m vt = mapVidToMatNone m vt
+selectMapVidToMat "monitors/globe.obj" m vt = mapVidToMatNone m vt
+-- None 1
+selectMapVidToMat "monitors/ico2.obj" m vt = mapVidToMatNone m vt
+selectMapVidToMat "monitors/exp.obj" m vt = mapVidToMatNone m vt
+--
+selectMapVidToMat _ m vt = mapVidToMatMat m vt
+
+foreign import mapVidToMatMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
+foreign import mapVidToMatNone :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
+--
+
+selectMapToObj :: String -> TJS.OBJ -> TJS.MTL -> Effect Unit
+-- Material 0
+selectMapToObj "monitors/cubo.obj" g m = mapChildrenToMatMat g m
+selectMapToObj "monitors/cubo-1.obj" g m = mapChildrenToMatMat g m
+selectMapToObj "monitors/cubo-2.obj" g m = mapChildrenToMatMat g m
+-- None 0
+selectMapToObj "monitors/cubo-3.obj" g m = mapChildrenToMatNone0 g m
+selectMapToObj "monitors/cubo-4.obj" g m = mapChildrenToMatNone0 g m
+selectMapToObj "monitors/ico.obj" g m = mapChildrenToMatNone0 g m
+selectMapToObj "monitors/globe.obj" g m = mapChildrenToMatNone0 g m
+-- None 1
+selectMapToObj "monitors/ico2.obj" g m = mapChildrenToMatNone1 g m
+selectMapToObj "monitors/exp.obj" g m = mapChildrenToMatNone1 g m
+--
+selectMapToObj _ g m = mapChildrenToMatMat g m
+
+foreign import mapChildrenToMatMat :: TJS.OBJ -> TJS.MTL -> Effect Unit
+foreign import mapChildrenToMatNone0 :: TJS.OBJ -> TJS.MTL -> Effect Unit
+foreign import mapChildrenToMatNone1 :: TJS.OBJ -> TJS.MTL -> Effect Unit
+--
+
+selectMatTrans :: String -> TJS.OBJ -> Effect Unit
+-- 0
+selectMatTrans "monitors/cubo.obj" g = matTransparency0 g
+selectMatTrans "monitors/cubo-1.obj" g = matTransparency0 g
+selectMatTrans "monitors/cubo-2.obj" g = matTransparency0 g
+selectMatTrans "monitors/cubo-3.obj" g = matTransparency0 g
+selectMatTrans "monitors/cubo-4.obj" g = matTransparency0 g
+selectMatTrans "monitors/ico.obj" g = matTransparency0 g
+selectMatTrans "monitors/globe.obj" g = matTransparency0 g
+-- 1
+selectMatTrans "monitors/ico2.obj" g = matTransparency1 g
+selectMatTrans "monitors/exp.obj" g = matTransparency1 g
+--
+selectMatTrans _ g = matTransparency0 g
+
+foreign import matTransparency0 :: TJS.OBJ -> Effect Unit
+foreign import matTransparency1 :: TJS.OBJ -> Effect Unit
+--
+
+selectMatOpacity :: String -> TJS.OBJ -> Number -> Effect Unit
+-- 0
+selectMatOpacity "monitors/cubo.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/cubo-1.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/cubo-2.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/cubo-3.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/cubo-4.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/ico.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/globe.obj" g n = matOpacity0 g n
+-- 1
+selectMatOpacity "monitors/ico2.obj" g n = matOpacity1 g n
+selectMatOpacity "monitors/exp.obj" g n = matOpacity1 g n
+--
+selectMatOpacity _ g n = matOpacity0 g n
+
+foreign import matOpacity0 :: TJS.OBJ -> Number -> Effect Unit
+foreign import matOpacity1 :: TJS.OBJ -> Number -> Effect Unit
+---
 
 transformTransmission :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
 transformTransmission sc mo t = do
@@ -195,16 +269,16 @@ transformTransmission' g t = do
 transformVidTexture :: TJS.TextureLoader -> Transmission -> Effect Unit
 transformVidTexture vt t = do
   TJS.setRepeatOfAnything vt (v2ToX t.channelReapeater) (v2ToY t.channelReapeater)
-  TJS.format vt (stringToEffectFormat t.fulcober)
+  TJS.format vt (stringToFormatID t.fulcober)
 
-stringToEffectFormat :: String -> Effect TJS.FormatID
-stringToEffectFormat "rgba" = TJS.rgbaFormat
-stringToEffectFormat "alpha" = TJS.alphaFormat
-stringToEffectFormat "red" = TJS.redFormat
-stringToEffectFormat "redgreen" = TJS.rgFormat
-stringToEffectFormat "luminance" = TJS.luminanceFormat
-stringToEffectFormat "luminancealpha" = TJS.luminanceAlphaFormat
-stringToEffectFormat _ = TJS.rgbaFormat
+stringToFormatID :: String -> TJS.FormatID
+stringToFormatID "rgba" = TJS.rgbaFormat
+stringToFormatID "alpha" = TJS.alphaFormat
+stringToFormatID "red" = TJS.redFormat
+stringToFormatID "redgreen" = TJS.rgFormat
+stringToFormatID "luminance" = TJS.luminanceFormat
+stringToFormatID "luminancealpha" = TJS.luminanceAlphaFormat
+stringToFormatID _ = TJS.rgbaFormat
 
 
 -------- vElem & currVidURL --------

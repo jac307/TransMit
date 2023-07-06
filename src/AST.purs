@@ -32,8 +32,9 @@ data TransmissionAST =
   Movet Vec3 TransmissionAST |
   Rodar Vec3 TransmissionAST |
   Fulcober String TransmissionAST |
-  Switch String TransmissionAST -- |
-  --Monitor String TransmissionAST -- |
+  Switch String TransmissionAST |
+  Monitor String TransmissionAST |
+  Brillo Number TransmissionAST
   --Volume Float TransmissionAST
 
 instance showTransmissionAST :: Show TransmissionAST where
@@ -44,6 +45,8 @@ instance showTransmissionAST :: Show TransmissionAST where
   show (Rodar v3 t) = "Rodar" <> show v3 <> show t
   show (Fulcober f t) = "Fulcober" <> show f <> show t
   show (Switch s t) = "Switch" <> show s <> show t
+  show (Monitor s t) = "Monitor" <> show s <> show t
+  show (Brillo n t) = "Brillo" <> show n <> show t
 
 tASTtoT :: TransmissionAST -> Transmission
 tASTtoT (LiteralTransmissionAST false) = defTransmission
@@ -54,3 +57,5 @@ tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}
 tASTtoT (Rodar v3 t) = (tASTtoT t) {rotation = v3}
 tASTtoT (Fulcober f t) = (tASTtoT t) {fulcober = f}
 tASTtoT (Switch s t) = (tASTtoT t) {channel = s}
+tASTtoT (Monitor s t) = (tASTtoT t) {tv = (s <> ".obj"), mapping = s <> ".mtl"}
+tASTtoT (Brillo n t) = (tASTtoT t) {brillo = n}

@@ -1,17 +1,34 @@
 
-// export const ifVidStatement = v = vt = () => {if( v.readyState === video.HAVE_ENOUGH_DATA ) vt.needsUpdate	= true;}
+// General
 
 export const preloadMaterials = m => () => m.preload()
 
-export const mapVidTextToMat = m => vt => () => m.materials.Material.map = vt;
+// Mapping Materials
 
-export const mapMatToObj = o => n => m => () => o.children[n].material = m.materials.Material;
+// Material
 
-export const matTransparency = o => n => () => o.children[n].material.transparent = true;
+export const mapVidToMatMat = m => vt => () => m.materials.Material.map = vt;
 
-export const matOpacity = o => n => () => o.children[n].material.opacity = 0.5;
+export const mapChildrenToMatMat = o => m => () => o.children[0].material = m.materials.Material;
 
-export const matOpacity2 = m => () => m.materials.Material.opacity = 0.5;
+// None
+
+export const mapVidToMatNone = m => vt => () => m.materials.None.map = vt;
+
+export const mapChildrenToMatNone0 = o => m => () => o.children[0].material = m.materials.None;
+
+export const mapChildrenToMatNone1 = o => m => () => o.children[1].material = m.materials.None;
+
+// Opacity
+
+
+export const matTransparency0 = o => () => o.children[0].material.transparent = true;
+
+export const matTransparency1 = o => () => o.children[1].material.transparent = true;
+
+export const matOpacity0 = o => n => () => o.children[0].material.opacity = n;
+
+export const matOpacity1 = o => n => () => o.children[1].material.opacity = n;
 
 
 // object.children[0].material.transparent = true;

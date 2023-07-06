@@ -98,7 +98,9 @@ transformations = do
   functionWithV3 "movet" Movet,
   functionWithV3 "rodar" Rodar,
   functionWithString "fulcober" Fulcober,
-  switchFunction
+  functionWithNumber "brillo" Brillo,
+  switchFunction,
+  monitorFunction
   ]
 
 switchFunction :: P (TransmissionAST -> TransmissionAST)
@@ -109,6 +111,14 @@ switchFunction = do
   pure $ Switch ("channels/" <> s)
   -- should remove the empty spaces at the beginning of s
   -- this function can only be use with transmission on
+
+monitorFunction :: P (TransmissionAST -> TransmissionAST)
+monitorFunction = do
+  _ <- pure unit
+  reserved "monitor"
+  s <- stringLiteral
+  pure $ Monitor ("monitors/" <> s)
+-- check empty spaces
 
 functionWithString :: String -> (String -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
 functionWithString functionName constructor = try $ do
@@ -127,6 +137,12 @@ functionWithV2 functionName constructor = try $ do
   reserved functionName
   v2 <- vec2xy
   pure $ constructor v2
+
+functionWithNumber :: String -> (Number -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithNumber functionName constructor = try $ do
+  reserved functionName
+  n <- number
+  pure $ constructor n
 
 ----------
 
