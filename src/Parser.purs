@@ -112,6 +112,7 @@ switchFunction = do
   -- should remove the empty spaces at the beginning of s
   -- this function can only be use with transmission on
 
+-- get rid of the quotation marks
 monitorFunction :: P (TransmissionAST -> TransmissionAST)
 monitorFunction = do
   _ <- pure unit

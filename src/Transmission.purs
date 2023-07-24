@@ -8,6 +8,9 @@ type Transmission = {
   channelReapeater :: Vec2, -- how many times the video repeats on the monitor
   fulcober :: String,
   brillo :: Number,
+  colour :: Vec3,
+  emissionColor :: Vec3,
+  emissionIntensity :: Number,
   size :: Vec3,
   position :: Vec3,
   rotation :: Vec3 -- Either Vec3 Vec3 --- Left absolute values, Right dynamic values (addition like in the Three.js value: rotation.x += 1 * 0.010;)
@@ -23,9 +26,12 @@ defTransmission = {
   channelReapeater:   {x: 1.0, y: 1.0},
   fulcober:           "rgbaFormat",
   brillo:             1.0,
-  size:               {x: 1.5, y: 1.5,z: 1.5},
-  position:           {x: 0.0, y: 0.0,z: 0.0},
-  rotation:           {x: 0.5, y: 0.0,z: 0.0}
+  colour:             {x: 0.6, y: 0.6, z: 0.6}, -- rgb
+  emissionColor:      {x: 0.0, y: 0.0, z: 0.0}, -- rgb
+  emissionIntensity:  0.0,
+  size:               {x: 1.5, y: 1.5, z: 1.5},
+  position:           {x: 0.0, y: 0.0, z: 0.0},
+  rotation:           {x: 0.5, y: 0.0, z: 0.0}
 }
 
 defTransmissionOn :: Transmission

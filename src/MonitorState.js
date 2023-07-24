@@ -30,6 +30,22 @@ export const matOpacity0 = o => n => () => o.children[0].material.opacity = n;
 
 export const matOpacity1 = o => n => () => o.children[1].material.opacity = n;
 
+// Color
+
+export const matColor0 = o => n1 => n2 => n3 => () => o.children[0].material.color = {r: n1, g: n2, b: n3};
+
+export const matColor1 = o => n1 => n2 => n3 => () => o.children[1].material.color = {r: n1, g: n2, b: n3};
+
+// Emission Color
+
+export const matEmisInt0 = o => n => () => o.children[0].material.emissiveIntensity = n
+
+export const matEmisInt1 = o => n => () => o.children[1].material.emissiveIntensity = n
+
+export const matEmisive0 = o => n1 => n2 => n3 => () => o.children[0].material.emissive = {r: n1, g: n2, b: n3};
+
+export const matEmisive1 = o => n1 => n2 => n3 => () => o.children[1].material.emissive = {r: n1, g: n2, b: n3};
+
 
 // object.children[0].material.transparent = true;
 // object.children[0].material.opacity = 0.5;

@@ -32,7 +32,8 @@ type Monitor = {
   obj :: Ref (Maybe TJS.OBJ),
   -- material
   currMtlURL :: Ref String,
-  material :: Ref (Maybe TJS.MTL)
+  material :: Ref (Maybe TJS.MTL),
+  opacity :: Ref Number
   }
 
 ----------------------------------------
@@ -49,7 +50,8 @@ defMonitor = do
   -- material
   currMtlURL <- new defURL
   material <- new Nothing
-  let mo = {currVidURL, video, vidTexture, currObjURL, obj, currMtlURL, material}
+  opacity <- new 1.0
+  let mo = {currVidURL, video, vidTexture, currObjURL, obj, currMtlURL, material, opacity}
   pure mo
 
 defURL :: String
@@ -80,17 +82,21 @@ updateMonitor sc mo t = do
   -- 1. change video url if necessary
   updateURLfromVidElem mo t.channel
   -- 2. change/load obj url/object
-  changeOrLoadObjIfNecessary sc mo t.tv t.brillo
+  changeOrLoadObjIfNecessary sc mo t.tv t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColor) (v3ToY t.emissionColor) (v3ToZ t.emissionColor) t.emissionIntensity
   -- 3. change/load material url/create new mesh
-  changeOrLoadMatIfNecessary sc mo t.mapping t.brillo
+  changeOrLoadMatIfNecessary sc mo t.mapping t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColor) (v3ToY t.emissionColor) (v3ToZ t.emissionColor) t.emissionIntensity
   -- 4. transform Transmission
+  changeMatParametersIfNecessary sc mo t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColor) (v3ToY t.emissionColor) (v3ToZ t.emissionColor) t.emissionIntensity
+  --changeMatParametersIfNecessary sc mo t.brillo
   transformTransmission sc mo t
   transformVidTexture mo.vidTexture t
 
+  -- (v3ToX t.position) (v3ToY t.position) (v3ToZ t.position)
+
 ---- Obj ---
 
-changeOrLoadObjIfNecessary :: TJS.Scene -> Monitor -> String -> Number -> Effect Unit
-changeOrLoadObjIfNecessary sc mo url n = do
+changeOrLoadObjIfNecessary :: TJS.Scene -> Monitor -> String -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
+changeOrLoadObjIfNecessary sc mo url brillo rC gC bC rE gE bE iE = do
   currURL <- read mo.currObjURL
   if url == currURL
     then (pure unit)
@@ -99,13 +105,13 @@ changeOrLoadObjIfNecessary sc mo url n = do
       loader <- TJS.newOBJLoader
       TJS.loadOBJ loader url $ \o -> do
         write (Just o) mo.obj
-        tryToMakeTransmission sc mo n
+        tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
       write url mo.currObjURL
 
 ---- Material ---
 
-changeOrLoadMatIfNecessary :: TJS.Scene -> Monitor -> String -> Number -> Effect Unit
-changeOrLoadMatIfNecessary sc mo url n = do
+changeOrLoadMatIfNecessary :: TJS.Scene -> Monitor -> String -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
+changeOrLoadMatIfNecessary sc mo url brillo rC gC bC rE gE bE iE = do
   currURL <- read mo.currMtlURL
   if url == currURL
     then (pure unit)
@@ -116,13 +122,21 @@ changeOrLoadMatIfNecessary sc mo url n = do
         preloadMaterials m
         --TJS.printAnything m
         write (Just m) mo.material
-        tryToMakeTransmission sc mo n
+        tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
       write url mo.currMtlURL
+
+changeMatParametersIfNecessary :: TJS.Scene -> Monitor -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
+changeMatParametersIfNecessary sc mo brillo rC gC bC rE gE bE iE = do
+  currOpacity <- read mo.opacity
+  if brillo == currOpacity
+    then (pure unit)
+    else tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+  write brillo mo.opacity
 
 ---- Mesh ---
 
-tryToMakeTransmission :: TJS.Scene -> Monitor -> Number -> Effect Unit
-tryToMakeTransmission sc mo n = do
+tryToMakeTransmission :: TJS.Scene -> Monitor -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
+tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE = do
   currURL <- read mo.currObjURL
   g <- read mo.obj
   case g of
@@ -131,7 +145,7 @@ tryToMakeTransmission sc mo n = do
       m <- read mo.material
       case m of
         Nothing -> pure unit
-        Just m' -> makeTransmission currURL sc g' m' mo.vidTexture n
+        Just m' -> makeTransmission currURL sc g' m' mo.vidTexture brillo rC gC bC rE gE bE iE
 
 removeObj :: TJS.Scene -> Monitor -> Effect Unit
 removeObj sc mo = do
@@ -155,18 +169,22 @@ removeMaterial sc mo = do
 
 -------- Transmission --------
 
-makeTransmission :: String -> TJS.Scene -> TJS.OBJ -> TJS.MTL -> TJS.TextureLoader -> Number -> Effect Unit
-makeTransmission url sc g m vt n = do
+makeTransmission :: String -> TJS.Scene -> TJS.OBJ -> TJS.MTL -> TJS.TextureLoader -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
+makeTransmission url sc g m vt brillo rC gC bC rE gE bE iE = do
   -- 1. combine the three things to make a mesh
   selectMapVidToMat url m vt
   selectMapToObj url g m
   -- Transform Material
   selectMatTrans url g
-  selectMatOpacity url g n
+  selectMatOpacity url g brillo
+  selectMatColor url g rC gC bC
+  selectMatEmiColor url g rE gE bE
+  selectMatEmiInten url g iE
   --
   TJS.printAnything m
   -- 2. add mesh to scene
   TJS.addAnythingToScene sc g
+
 
 -- Imported Functions --
 foreign import preloadMaterials :: TJS.MTL -> Effect Unit
@@ -249,6 +267,63 @@ selectMatOpacity _ g n = matOpacity0 g n
 
 foreign import matOpacity0 :: TJS.OBJ -> Number -> Effect Unit
 foreign import matOpacity1 :: TJS.OBJ -> Number -> Effect Unit
+--
+
+selectMatColor :: String -> TJS.OBJ -> Number -> Number -> Number -> Effect Unit
+-- 0
+selectMatColor "monitors/cubo.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/cubo-1.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/cubo-2.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/cubo-3.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/cubo-4.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/ico.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/globe.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+-- 1
+selectMatColor "monitors/ico2.obj" g n1 n2 n3 = matColor1 g n1 n2 n3
+selectMatColor "monitors/exp.obj" g n1 n2 n3 = matColor1 g n1 n2 n3
+--
+selectMatColor _ g n1 n2 n3 = matColor0 g n1 n2 n3
+
+foreign import matColor0 :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
+foreign import matColor1 :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
+--
+
+selectMatEmiInten :: String -> TJS.OBJ -> Number -> Effect Unit
+-- 0
+selectMatEmiInten "monitors/cubo.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/cubo-1.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/cubo-2.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/cubo-3.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/cubo-4.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/ico.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/globe.obj" g n = matEmisInt0 g n
+-- 1
+selectMatEmiInten "monitors/ico2.obj" g n = matEmisInt1 g n
+selectMatEmiInten "monitors/exp.obj" g n = matEmisInt1 g n
+--
+selectMatEmiInten _ g n = matEmisInt0 g n
+
+foreign import matEmisInt0 :: TJS.OBJ -> Number -> Effect Unit
+foreign import matEmisInt1 :: TJS.OBJ -> Number -> Effect Unit
+--
+
+selectMatEmiColor :: String -> TJS.OBJ -> Number -> Number -> Number -> Effect Unit
+-- 0
+selectMatEmiColor "monitors/cubo.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/cubo-1.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/cubo-2.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/cubo-3.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/cubo-4.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/ico.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/globe.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+-- 1
+selectMatEmiColor "monitors/ico2.obj" g n1 n2 n3 = matEmisive1 g n1 n2 n3
+selectMatEmiColor "monitors/exp.obj" g n1 n2 n3 = matEmisive1 g n1 n2 n3
+--
+selectMatEmiColor _ g n1 n2 n3 = matEmisive0 g n1 n2 n3
+
+foreign import matEmisive0 :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
+foreign import matEmisive1 :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
 ---
 
 transformTransmission :: TJS.Scene -> Monitor -> Transmission -> Effect Unit

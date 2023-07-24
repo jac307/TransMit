@@ -1880,6 +1880,12 @@ var matTransparency0 = (o) => () => o.children[0].material.transparent = true;
 var matTransparency1 = (o) => () => o.children[1].material.transparent = true;
 var matOpacity0 = (o) => (n) => () => o.children[0].material.opacity = n;
 var matOpacity1 = (o) => (n) => () => o.children[1].material.opacity = n;
+var matColor0 = (o) => (n1) => (n2) => (n3) => () => o.children[0].material.color = { r: n1, g: n2, b: n3 };
+var matColor1 = (o) => (n1) => (n2) => (n3) => () => o.children[1].material.color = { r: n1, g: n2, b: n3 };
+var matEmisInt0 = (o) => (n) => () => o.children[0].material.emissiveIntensity = n;
+var matEmisInt1 = (o) => (n) => () => o.children[1].material.emissiveIntensity = n;
+var matEmisive0 = (o) => (n1) => (n2) => (n3) => () => o.children[0].material.emissive = { r: n1, g: n2, b: n3 };
+var matEmisive1 = (o) => (n1) => (n2) => (n3) => () => o.children[1].material.emissive = { r: n1, g: n2, b: n3 };
 
 // output/ThreeJS/foreign.js
 var newScene = () => new THREE.Scene();
@@ -2071,8 +2077,8 @@ var updateURLfromVidElem = function(mo) {
   return function(url) {
     return function __do3() {
       var currURL = read(mo.currVidURL)();
-      var $5 = url !== currURL;
-      if ($5) {
+      var $8 = url !== currURL;
+      if ($8) {
         setSrc(url)(mo.video)();
         preloadAnything(mo.video)();
         load(mo.video)();
@@ -2108,7 +2114,7 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 257, column 3 - line 259, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 332, column 3 - line 334, column 41): " + [g.constructor.name]);
       };
     };
   };
@@ -2232,6 +2238,143 @@ var selectMatOpacity = function(v) {
     };
   };
 };
+var selectMatEmiInten = function(v) {
+  return function(g) {
+    return function(n) {
+      if (v === "monitors/cubo.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/cubo-1.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/cubo-2.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/cubo-3.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/cubo-4.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/ico.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/globe.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/ico2.obj") {
+        return matEmisInt1(g)(n);
+      }
+      ;
+      if (v === "monitors/exp.obj") {
+        return matEmisInt1(g)(n);
+      }
+      ;
+      return matEmisInt0(g)(n);
+    };
+  };
+};
+var selectMatEmiColor = function(v) {
+  return function(g) {
+    return function(n1) {
+      return function(n2) {
+        return function(n3) {
+          if (v === "monitors/cubo.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/cubo-1.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/cubo-2.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/cubo-3.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/cubo-4.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/ico.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/globe.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/ico2.obj") {
+            return matEmisive1(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/exp.obj") {
+            return matEmisive1(g)(n1)(n2)(n3);
+          }
+          ;
+          return matEmisive0(g)(n1)(n2)(n3);
+        };
+      };
+    };
+  };
+};
+var selectMatColor = function(v) {
+  return function(g) {
+    return function(n1) {
+      return function(n2) {
+        return function(n3) {
+          if (v === "monitors/cubo.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/cubo-1.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/cubo-2.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/cubo-3.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/cubo-4.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/ico.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/globe.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/ico2.obj") {
+            return matColor1(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/exp.obj") {
+            return matColor1(g)(n1)(n2)(n3);
+          }
+          ;
+          return matColor0(g)(n1)(n2)(n3);
+        };
+      };
+    };
+  };
+};
 var selectMapVidToMat = function(v) {
   return function(m) {
     return function(vt) {
@@ -2332,7 +2475,7 @@ var removeObj = function(sc) {
         return write(Nothing.value)(mo.obj)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 139, column 3 - line 144, column 27): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 153, column 3 - line 158, column 27): " + [g.constructor.name]);
     };
   };
 };
@@ -2350,7 +2493,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 149, column 3 - line 154, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 163, column 3 - line 168, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -2370,14 +2513,31 @@ var makeTransmission = function(url) {
     return function(g) {
       return function(m) {
         return function(vt) {
-          return function(n) {
-            return function __do3() {
-              selectMapVidToMat(url)(m)(vt)();
-              selectMapToObj(url)(g)(m)();
-              selectMatTrans(url)(g)();
-              selectMatOpacity(url)(g)(n)();
-              printAnything(m)();
-              return addAnythingToScene(sc)(g)();
+          return function(brillo) {
+            return function(rC) {
+              return function(gC) {
+                return function(bC) {
+                  return function(rE) {
+                    return function(gE) {
+                      return function(bE) {
+                        return function(iE) {
+                          return function __do3() {
+                            selectMapVidToMat(url)(m)(vt)();
+                            selectMapToObj(url)(g)(m)();
+                            selectMatTrans(url)(g)();
+                            selectMatOpacity(url)(g)(brillo)();
+                            selectMatColor(url)(g)(rC)(gC)(bC)();
+                            selectMatEmiColor(url)(g)(rE)(gE)(bE)();
+                            selectMatEmiInten(url)(g)(iE)();
+                            printAnything(m)();
+                            return addAnythingToScene(sc)(g)();
+                          };
+                        };
+                      };
+                    };
+                  };
+                };
+              };
             };
           };
         };
@@ -2387,28 +2547,42 @@ var makeTransmission = function(url) {
 };
 var tryToMakeTransmission = function(sc) {
   return function(mo) {
-    return function(n) {
-      return function __do3() {
-        var currURL = read(mo.currObjURL)();
-        var g = read(mo.obj)();
-        if (g instanceof Nothing) {
-          return unit;
-        }
-        ;
-        if (g instanceof Just) {
-          var m = read(mo.material)();
-          if (m instanceof Nothing) {
-            return unit;
-          }
-          ;
-          if (m instanceof Just) {
-            return makeTransmission(currURL)(sc)(g.value0)(m.value0)(mo.vidTexture)(n)();
-          }
-          ;
-          throw new Error("Failed pattern match at MonitorState (line 132, column 7 - line 134, column 69): " + [m.constructor.name]);
-        }
-        ;
-        throw new Error("Failed pattern match at MonitorState (line 128, column 3 - line 134, column 69): " + [g.constructor.name]);
+    return function(brillo) {
+      return function(rC) {
+        return function(gC) {
+          return function(bC) {
+            return function(rE) {
+              return function(gE) {
+                return function(bE) {
+                  return function(iE) {
+                    return function __do3() {
+                      var currURL = read(mo.currObjURL)();
+                      var g = read(mo.obj)();
+                      if (g instanceof Nothing) {
+                        return unit;
+                      }
+                      ;
+                      if (g instanceof Just) {
+                        var m = read(mo.material)();
+                        if (m instanceof Nothing) {
+                          return unit;
+                        }
+                        ;
+                        if (m instanceof Just) {
+                          return makeTransmission(currURL)(sc)(g.value0)(m.value0)(mo.vidTexture)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                        }
+                        ;
+                        throw new Error("Failed pattern match at MonitorState (line 146, column 7 - line 148, column 95): " + [m.constructor.name]);
+                      }
+                      ;
+                      throw new Error("Failed pattern match at MonitorState (line 142, column 3 - line 148, column 95): " + [g.constructor.name]);
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
       };
     };
   };
@@ -2433,6 +2607,7 @@ var defMonitor = function __do2() {
   var obj = $$new(Nothing.value)();
   var currMtlURL = $$new(defURL)();
   var material = $$new(Nothing.value)();
+  var opacity = $$new(1)();
   var mo = {
     currVidURL,
     video,
@@ -2440,30 +2615,45 @@ var defMonitor = function __do2() {
     currObjURL,
     obj,
     currMtlURL,
-    material
+    material,
+    opacity
   };
   return mo;
 };
 var changeOrLoadObjIfNecessary = function(sc) {
   return function(mo) {
     return function(url) {
-      return function(n) {
-        return function __do3() {
-          var currURL = read(mo.currObjURL)();
-          var $28 = url === currURL;
-          if ($28) {
-            return unit;
-          }
-          ;
-          removeObj(sc)(mo)();
-          var loader = newOBJLoader();
-          loadOBJ(loader)(url)(function(o) {
-            return function __do4() {
-              write(new Just(o))(mo.obj)();
-              return tryToMakeTransmission(sc)(mo)(n)();
+      return function(brillo) {
+        return function(rC) {
+          return function(gC) {
+            return function(bC) {
+              return function(rE) {
+                return function(gE) {
+                  return function(bE) {
+                    return function(iE) {
+                      return function __do3() {
+                        var currURL = read(mo.currObjURL)();
+                        var $44 = url === currURL;
+                        if ($44) {
+                          return unit;
+                        }
+                        ;
+                        removeObj(sc)(mo)();
+                        var loader = newOBJLoader();
+                        loadOBJ(loader)(url)(function(o) {
+                          return function __do4() {
+                            write(new Just(o))(mo.obj)();
+                            return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                          };
+                        })();
+                        return write(url)(mo.currObjURL)();
+                      };
+                    };
+                  };
+                };
+              };
             };
-          })();
-          return write(url)(mo.currObjURL)();
+          };
         };
       };
     };
@@ -2472,24 +2662,70 @@ var changeOrLoadObjIfNecessary = function(sc) {
 var changeOrLoadMatIfNecessary = function(sc) {
   return function(mo) {
     return function(url) {
-      return function(n) {
-        return function __do3() {
-          var currURL = read(mo.currMtlURL)();
-          var $29 = url === currURL;
-          if ($29) {
-            return unit;
-          }
-          ;
-          var loader = newMTLLoader();
-          removeMaterial(sc)(mo)();
-          loadMTL(loader)(url)(function(m) {
-            return function __do4() {
-              preloadMaterials(m)();
-              write(new Just(m))(mo.material)();
-              return tryToMakeTransmission(sc)(mo)(n)();
+      return function(brillo) {
+        return function(rC) {
+          return function(gC) {
+            return function(bC) {
+              return function(rE) {
+                return function(gE) {
+                  return function(bE) {
+                    return function(iE) {
+                      return function __do3() {
+                        var currURL = read(mo.currMtlURL)();
+                        var $45 = url === currURL;
+                        if ($45) {
+                          return unit;
+                        }
+                        ;
+                        var loader = newMTLLoader();
+                        removeMaterial(sc)(mo)();
+                        loadMTL(loader)(url)(function(m) {
+                          return function __do4() {
+                            preloadMaterials(m)();
+                            write(new Just(m))(mo.material)();
+                            return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                          };
+                        })();
+                        return write(url)(mo.currMtlURL)();
+                      };
+                    };
+                  };
+                };
+              };
             };
-          })();
-          return write(url)(mo.currMtlURL)();
+          };
+        };
+      };
+    };
+  };
+};
+var changeMatParametersIfNecessary = function(sc) {
+  return function(mo) {
+    return function(brillo) {
+      return function(rC) {
+        return function(gC) {
+          return function(bC) {
+            return function(rE) {
+              return function(gE) {
+                return function(bE) {
+                  return function(iE) {
+                    return function __do3() {
+                      var currOpacity = read(mo.opacity)();
+                      (function() {
+                        var $46 = brillo === currOpacity;
+                        if ($46) {
+                          return unit;
+                        }
+                        ;
+                        return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                      })();
+                      return write(brillo)(mo.opacity)();
+                    };
+                  };
+                };
+              };
+            };
+          };
         };
       };
     };
@@ -2500,8 +2736,9 @@ var updateMonitor = function(sc) {
     return function(t) {
       return function __do3() {
         updateURLfromVidElem(mo)(t.channel)();
-        changeOrLoadObjIfNecessary(sc)(mo)(t.tv)(t.brillo)();
-        changeOrLoadMatIfNecessary(sc)(mo)(t.mapping)(t.brillo)();
+        changeOrLoadObjIfNecessary(sc)(mo)(t.tv)(t.brillo)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColor))(v3ToY(t.emissionColor))(v3ToZ(t.emissionColor))(t.emissionIntensity)();
+        changeOrLoadMatIfNecessary(sc)(mo)(t.mapping)(t.brillo)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColor))(v3ToY(t.emissionColor))(v3ToZ(t.emissionColor))(t.emissionIntensity)();
+        changeMatParametersIfNecessary(sc)(mo)(t.brillo)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColor))(v3ToY(t.emissionColor))(v3ToZ(t.emissionColor))(t.emissionIntensity)();
         transformTransmission(sc)(mo)(t)();
         return transformVidTexture(mo.vidTexture)(t)();
       };
@@ -2521,6 +2758,17 @@ var defTransmission = {
   },
   fulcober: "rgbaFormat",
   brillo: 1,
+  colour: {
+    x: 0.6,
+    y: 0.6,
+    z: 0.6
+  },
+  emissionColor: {
+    x: 0,
+    y: 0,
+    z: 0
+  },
+  emissionIntensity: 0,
   size: {
     x: 1.5,
     y: 1.5,
@@ -2546,6 +2794,9 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
     brillo: defTransmission.brillo,
+    colour: defTransmission.colour,
+    emissionColor: defTransmission.emissionColor,
+    emissionIntensity: defTransmission.emissionIntensity,
     size: defTransmission.size,
     position: defTransmission.position,
     rotation: defTransmission.rotation
@@ -2703,6 +2954,9 @@ var tASTtoT = function(v) {
       channelReapeater: v.value0,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
+      colour: v1.colour,
+      emissionColor: v1.emissionColor,
+      emissionIntensity: v1.emissionIntensity,
       size: v1.size,
       position: v1.position,
       rotation: v1.rotation
@@ -2719,6 +2973,9 @@ var tASTtoT = function(v) {
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
+      colour: v1.colour,
+      emissionColor: v1.emissionColor,
+      emissionIntensity: v1.emissionIntensity,
       size: v.value0,
       position: v1.position,
       rotation: v1.rotation
@@ -2735,6 +2992,9 @@ var tASTtoT = function(v) {
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
+      colour: v1.colour,
+      emissionColor: v1.emissionColor,
+      emissionIntensity: v1.emissionIntensity,
       size: v1.size,
       position: v.value0,
       rotation: v1.rotation
@@ -2751,6 +3011,9 @@ var tASTtoT = function(v) {
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
+      colour: v1.colour,
+      emissionColor: v1.emissionColor,
+      emissionIntensity: v1.emissionIntensity,
       size: v1.size,
       position: v1.position,
       rotation: v.value0
@@ -2767,6 +3030,9 @@ var tASTtoT = function(v) {
       channelReapeater: v1.channelReapeater,
       fulcober: v.value0,
       brillo: v1.brillo,
+      colour: v1.colour,
+      emissionColor: v1.emissionColor,
+      emissionIntensity: v1.emissionIntensity,
       size: v1.size,
       position: v1.position,
       rotation: v1.rotation
@@ -2783,6 +3049,9 @@ var tASTtoT = function(v) {
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
+      colour: v1.colour,
+      emissionColor: v1.emissionColor,
+      emissionIntensity: v1.emissionIntensity,
       size: v1.size,
       position: v1.position,
       rotation: v1.rotation
@@ -2799,6 +3068,9 @@ var tASTtoT = function(v) {
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
+      colour: v1.colour,
+      emissionColor: v1.emissionColor,
+      emissionIntensity: v1.emissionIntensity,
       size: v1.size,
       position: v1.position,
       rotation: v1.rotation
@@ -2815,6 +3087,9 @@ var tASTtoT = function(v) {
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v.value0,
+      colour: v1.colour,
+      emissionColor: v1.emissionColor,
+      emissionIntensity: v1.emissionIntensity,
       size: v1.size,
       position: v1.position,
       rotation: v1.rotation
@@ -26228,7 +26503,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 332, column 1 - line 332, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 333, column 1 - line 333, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -26492,6 +26767,18 @@ var evaluate = function(re) {
           }
         })(showRecordFieldsCons({
           reflectSymbol: function() {
+            return "colour";
+          }
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
+            return "emissionColor";
+          }
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
+            return "emissionIntensity";
+          }
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
             return "estado";
           }
         })(showRecordFieldsCons({
@@ -26554,7 +26841,31 @@ var evaluate = function(re) {
           reflectSymbol: function() {
             return "z";
           }
-        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showString))(showString))(showBoolean))(showRecord()()(showRecordFieldsCons({
+        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showString))(showString))(showBoolean))(showNumber))(showRecord()()(showRecordFieldsCons({
+          reflectSymbol: function() {
+            return "x";
+          }
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
+            return "y";
+          }
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
+            return "z";
+          }
+        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showRecord()()(showRecordFieldsCons({
+          reflectSymbol: function() {
+            return "x";
+          }
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
+            return "y";
+          }
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
+            return "z";
+          }
+        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showRecord()()(showRecordFieldsCons({
           reflectSymbol: function() {
             return "x";
           }
