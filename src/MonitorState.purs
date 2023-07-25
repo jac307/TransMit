@@ -33,7 +33,11 @@ type Monitor = {
   -- material
   currMtlURL :: Ref String,
   material :: Ref (Maybe TJS.MTL),
-  opacity :: Ref Number
+  -- material settings
+  opacity :: Ref Number,
+  colour :: Ref Vec3,
+  emissionColour :: Ref Vec3,
+  emissionIntensity :: Ref Number
   }
 
 ----------------------------------------
@@ -50,8 +54,13 @@ defMonitor = do
   -- material
   currMtlURL <- new defURL
   material <- new Nothing
+  -- material settings
   opacity <- new 1.0
-  let mo = {currVidURL, video, vidTexture, currObjURL, obj, currMtlURL, material, opacity}
+  colour <- new {x: 0.0, y: 0.0, z: 0.0}
+  emissionColour <- new {x: 0.0, y: 0.0, z: 0.0}
+  emissionIntensity <- new 1.0
+  --
+  let mo = {currVidURL, video, vidTexture, currObjURL, obj, currMtlURL, material, opacity, colour, emissionColour, emissionIntensity}
   pure mo
 
 defURL :: String
@@ -82,11 +91,11 @@ updateMonitor sc mo t = do
   -- 1. change video url if necessary
   updateURLfromVidElem mo t.channel
   -- 2. change/load obj url/object
-  changeOrLoadObjIfNecessary sc mo t.tv t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColor) (v3ToY t.emissionColor) (v3ToZ t.emissionColor) t.emissionIntensity
+  changeOrLoadObjIfNecessary sc mo t.tv t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
   -- 3. change/load material url/create new mesh
-  changeOrLoadMatIfNecessary sc mo t.mapping t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColor) (v3ToY t.emissionColor) (v3ToZ t.emissionColor) t.emissionIntensity
+  changeOrLoadMatIfNecessary sc mo t.mapping t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
   -- 4. transform Transmission
-  changeMatParametersIfNecessary sc mo t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColor) (v3ToY t.emissionColor) (v3ToZ t.emissionColor) t.emissionIntensity
+  changeMatParametersIfNecessary sc mo t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
   --changeMatParametersIfNecessary sc mo t.brillo
   transformTransmission sc mo t
   transformVidTexture mo.vidTexture t
@@ -127,11 +136,33 @@ changeOrLoadMatIfNecessary sc mo url brillo rC gC bC rE gE bE iE = do
 
 changeMatParametersIfNecessary :: TJS.Scene -> Monitor -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
 changeMatParametersIfNecessary sc mo brillo rC gC bC rE gE bE iE = do
+  -- reading current mat settings
   currOpacity <- read mo.opacity
+  currColour <- read mo.colour
+  currEmissionColour <- read mo.emissionColour
+  currEmissionIntensity <- read mo.emissionIntensity
+  -- change opacity if necessary
   if brillo == currOpacity
     then (pure unit)
     else tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+  -- change colour if necessary
+  if {x:rC, y:gC, z:bC} == currColour
+    then (pure unit)
+    else tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+  -- change emissive colour if necessary
+  if {x:rE, y:gE, z:bE} == currEmissionColour
+    then (pure unit)
+    else tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+  -- change emissive intensity if necessary
+  if iE == currEmissionIntensity
+    then (pure unit)
+    else tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+  -- write back curr values
   write brillo mo.opacity
+  write {x:rC, y:gC, z:bC} mo.colour
+  write {x:rE, y:gE, z:bE} mo.emissionColour
+  write iE mo.emissionIntensity
+
 
 ---- Mesh ---
 

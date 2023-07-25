@@ -99,6 +99,9 @@ transformations = do
   functionWithV3 "rodar" Rodar,
   functionWithString "fulcober" Fulcober,
   functionWithNumber "brillo" Brillo,
+  functionWithV3 "color" Colour,
+  functionWithV3 "emit" EmissionColour,
+  functionWithNumber "intensity" EmissionIntensity,
   switchFunction,
   monitorFunction
   ]
