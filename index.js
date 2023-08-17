@@ -2188,23 +2188,71 @@ var updateURLfromVidElem = function(mo) {
   };
 };
 var stringToFormatID = function(v) {
+  if (v === "rgb") {
+    return rgbaFormat;
+  }
+  ;
   if (v === "rgba") {
     return rgbaFormat;
+  }
+  ;
+  if (v === "erregebe") {
+    return rgbaFormat;
+  }
+  ;
+  if (v === "alcolor") {
+    return rgbaFormat;
+  }
+  ;
+  if (v === "a") {
+    return alphaFormat;
   }
   ;
   if (v === "alpha") {
     return alphaFormat;
   }
   ;
+  if (v === "alfa") {
+    return alphaFormat;
+  }
+  ;
+  if (v === "r") {
+    return redFormat;
+  }
+  ;
   if (v === "red") {
     return redFormat;
+  }
+  ;
+  if (v === "rojo") {
+    return redFormat;
+  }
+  ;
+  if (v === "rg") {
+    return rgFormat;
+  }
+  ;
+  if (v === "errege") {
+    return rgFormat;
   }
   ;
   if (v === "redgreen") {
     return rgFormat;
   }
   ;
-  if (v === "luminance") {
+  if (v === "verdirojo") {
+    return rgFormat;
+  }
+  ;
+  if (v === "b&w") {
+    return luminanceFormat;
+  }
+  ;
+  if (v === "blackandwhite") {
+    return luminanceFormat;
+  }
+  ;
+  if (v === "negriblanco") {
     return luminanceFormat;
   }
   ;
@@ -2232,7 +2280,7 @@ var setRotationZ2 = function(o) {
       return setRotationZ(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 385, column 1 - line 385, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 381, column 1 - line 381, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationY2 = function(o) {
@@ -2245,7 +2293,7 @@ var setRotationY2 = function(o) {
       return setRotationY(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 381, column 1 - line 381, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 377, column 1 - line 377, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationX2 = function(o) {
@@ -2258,7 +2306,7 @@ var setRotationX2 = function(o) {
       return setRotationX(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 377, column 1 - line 377, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 373, column 1 - line 373, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var transformTransmission$prime = function(g) {
@@ -2285,7 +2333,7 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 364, column 3 - line 366, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 360, column 3 - line 362, column 41): " + [g.constructor.name]);
       };
     };
   };
@@ -2611,7 +2659,7 @@ var removeObj = function(sc) {
         return write(Nothing.value)(mo.obj)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 185, column 3 - line 190, column 27): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 181, column 3 - line 186, column 27): " + [g.constructor.name]);
     };
   };
 };
@@ -2629,7 +2677,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 195, column 3 - line 200, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 191, column 3 - line 196, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -2649,7 +2697,7 @@ var makeTransmission = function(url) {
     return function(g) {
       return function(m) {
         return function(vt) {
-          return function(brillo) {
+          return function(t) {
             return function(rC) {
               return function(gC) {
                 return function(bC) {
@@ -2661,7 +2709,7 @@ var makeTransmission = function(url) {
                             selectMapVidToMat(url)(m)(vt)();
                             selectMapToObj(url)(g)(m)();
                             selectMatTrans(url)(g)();
-                            selectMatOpacity(url)(g)(brillo)();
+                            selectMatOpacity(url)(g)(t)();
                             selectMatColor(url)(g)(rC)(gC)(bC)();
                             selectMatEmiColor(url)(g)(rE)(gE)(bE)();
                             selectMatEmiInten(url)(g)(iE)();
@@ -2683,7 +2731,7 @@ var makeTransmission = function(url) {
 };
 var tryToMakeTransmission = function(sc) {
   return function(mo) {
-    return function(brillo) {
+    return function(t) {
       return function(rC) {
         return function(gC) {
           return function(bC) {
@@ -2705,13 +2753,13 @@ var tryToMakeTransmission = function(sc) {
                         }
                         ;
                         if (m instanceof Just) {
-                          return makeTransmission(currURL)(sc)(g.value0)(m.value0)(mo.vidTexture)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                          return makeTransmission(currURL)(sc)(g.value0)(m.value0)(mo.vidTexture)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                         }
                         ;
-                        throw new Error("Failed pattern match at MonitorState (line 178, column 7 - line 180, column 95): " + [m.constructor.name]);
+                        throw new Error("Failed pattern match at MonitorState (line 174, column 7 - line 176, column 90): " + [m.constructor.name]);
                       }
                       ;
-                      throw new Error("Failed pattern match at MonitorState (line 174, column 3 - line 180, column 95): " + [g.constructor.name]);
+                      throw new Error("Failed pattern match at MonitorState (line 170, column 3 - line 176, column 90): " + [g.constructor.name]);
                     };
                   };
                 };
@@ -2773,7 +2821,7 @@ var defMonitor = function __do2() {
 var changeOrLoadObjIfNecessary = function(sc) {
   return function(mo) {
     return function(url) {
-      return function(brillo) {
+      return function(t) {
         return function(rC) {
           return function(gC) {
             return function(bC) {
@@ -2793,7 +2841,7 @@ var changeOrLoadObjIfNecessary = function(sc) {
                         loadOBJ(loader)(url)(function(o) {
                           return function __do4() {
                             write(new Just(o))(mo.obj)();
-                            return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                            return tryToMakeTransmission(sc)(mo)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                           };
                         })();
                         return write(url)(mo.currObjURL)();
@@ -2812,7 +2860,7 @@ var changeOrLoadObjIfNecessary = function(sc) {
 var changeOrLoadMatIfNecessary = function(sc) {
   return function(mo) {
     return function(url) {
-      return function(brillo) {
+      return function(t) {
         return function(rC) {
           return function(gC) {
             return function(bC) {
@@ -2833,7 +2881,7 @@ var changeOrLoadMatIfNecessary = function(sc) {
                           return function __do4() {
                             preloadMaterials(m)();
                             write(new Just(m))(mo.material)();
-                            return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                            return tryToMakeTransmission(sc)(mo)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                           };
                         })();
                         return write(url)(mo.currMtlURL)();
@@ -2851,7 +2899,7 @@ var changeOrLoadMatIfNecessary = function(sc) {
 };
 var changeMatParametersIfNecessary = function(sc) {
   return function(mo) {
-    return function(brillo) {
+    return function(t) {
       return function(rC) {
         return function(gC) {
           return function(bC) {
@@ -2865,12 +2913,12 @@ var changeMatParametersIfNecessary = function(sc) {
                       var currEmissionColour = read(mo.emissionColour)();
                       var currEmissionIntensity = read(mo.emissionIntensity)();
                       (function() {
-                        var $61 = brillo === currOpacity;
+                        var $61 = t === currOpacity;
                         if ($61) {
                           return unit;
                         }
                         ;
-                        return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                        return tryToMakeTransmission(sc)(mo)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
                       (function() {
                         var $62 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
@@ -2894,7 +2942,7 @@ var changeMatParametersIfNecessary = function(sc) {
                           return unit;
                         }
                         ;
-                        return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                        return tryToMakeTransmission(sc)(mo)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
                       (function() {
                         var $63 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
@@ -2918,7 +2966,7 @@ var changeMatParametersIfNecessary = function(sc) {
                           return unit;
                         }
                         ;
-                        return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                        return tryToMakeTransmission(sc)(mo)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
                       (function() {
                         var $64 = iE === currEmissionIntensity;
@@ -2926,9 +2974,9 @@ var changeMatParametersIfNecessary = function(sc) {
                           return unit;
                         }
                         ;
-                        return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
+                        return tryToMakeTransmission(sc)(mo)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
-                      write(brillo)(mo.opacity)();
+                      write(t)(mo.opacity)();
                       write({
                         x: rC,
                         y: gC,
@@ -2951,14 +2999,14 @@ var changeMatParametersIfNecessary = function(sc) {
     };
   };
 };
-var updateMonitor = function(sc) {
+var alignMonitor = function(sc) {
   return function(mo) {
     return function(t) {
       return function __do3() {
         updateURLfromVidElem(mo)(t.channel)(t.volume)();
-        changeOrLoadObjIfNecessary(sc)(mo)(t.tv)(t.brillo)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColour))(v3ToY(t.emissionColour))(v3ToZ(t.emissionColour))(t.emissionIntensity)();
-        changeOrLoadMatIfNecessary(sc)(mo)(t.mapping)(t.brillo)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColour))(v3ToY(t.emissionColour))(v3ToZ(t.emissionColour))(t.emissionIntensity)();
-        changeMatParametersIfNecessary(sc)(mo)(t.brillo)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColour))(v3ToY(t.emissionColour))(v3ToZ(t.emissionColour))(t.emissionIntensity)();
+        changeOrLoadObjIfNecessary(sc)(mo)(t.tv)(t.translucidez)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColour))(v3ToY(t.emissionColour))(v3ToZ(t.emissionColour))(t.emissionIntensity)();
+        changeOrLoadMatIfNecessary(sc)(mo)(t.mapping)(t.translucidez)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColour))(v3ToY(t.emissionColour))(v3ToZ(t.emissionColour))(t.emissionIntensity)();
+        changeMatParametersIfNecessary(sc)(mo)(t.translucidez)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColour))(v3ToY(t.emissionColour))(v3ToZ(t.emissionColour))(t.emissionIntensity)();
         transformTransmission(sc)(mo)(t)();
         return transformVidTexture(mo.vidTexture)(t)();
       };
@@ -2979,7 +3027,7 @@ var defTransmission = /* @__PURE__ */ function() {
       y: 1
     },
     fulcober: "rgbaFormat",
-    brillo: 1,
+    translucidez: 1,
     colour: {
       x: 0.6,
       y: 0.6,
@@ -3017,7 +3065,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
-    brillo: defTransmission.brillo,
+    translucidez: defTransmission.translucidez,
     colour: defTransmission.colour,
     emissionColour: defTransmission.emissionColour,
     emissionIntensity: defTransmission.emissionIntensity,
@@ -3142,18 +3190,18 @@ var Monitor = /* @__PURE__ */ function() {
   };
   return Monitor2;
 }();
-var Brillo = /* @__PURE__ */ function() {
-  function Brillo2(value0, value1) {
+var Translucidez = /* @__PURE__ */ function() {
+  function Translucidez2(value0, value1) {
     this.value0 = value0;
     this.value1 = value1;
   }
   ;
-  Brillo2.create = function(value0) {
+  Translucidez2.create = function(value0) {
     return function(value1) {
-      return new Brillo2(value0, value1);
+      return new Translucidez2(value0, value1);
     };
   };
-  return Brillo2;
+  return Translucidez2;
 }();
 var Colour = /* @__PURE__ */ function() {
   function Colour2(value0, value1) {
@@ -3230,7 +3278,7 @@ var tASTtoT = function(v) {
       volume: v.value0,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3250,7 +3298,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v.value0,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3270,7 +3318,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3290,7 +3338,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3310,7 +3358,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3330,7 +3378,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v.value0,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3350,7 +3398,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3370,7 +3418,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3380,7 +3428,7 @@ var tASTtoT = function(v) {
     };
   }
   ;
-  if (v instanceof Brillo) {
+  if (v instanceof Translucidez) {
     var v1 = tASTtoT(v.value1);
     return {
       estado: v1.estado,
@@ -3390,7 +3438,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v.value0,
+      translucidez: v.value0,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3410,7 +3458,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v.value0,
       emissionColour: v1.emissionColour,
       emissionIntensity: v1.emissionIntensity,
@@ -3430,7 +3478,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v.value0,
       emissionIntensity: v1.emissionIntensity,
@@ -3450,7 +3498,7 @@ var tASTtoT = function(v) {
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
-      brillo: v1.brillo,
+      translucidez: v1.translucidez,
       colour: v1.colour,
       emissionColour: v1.emissionColour,
       emissionIntensity: v.value0,
@@ -26847,7 +26895,7 @@ var tokenParser = /* @__PURE__ */ makeTokenParser(/* @__PURE__ */ function() {
     identLetter: v.identLetter,
     opStart: v.opStart,
     opLetter: v.opLetter,
-    reservedNames: ["turn off", "transmission", "trasmission", "trasmision", "transmision", "transmisssion", "on", "onn", "onnn", "off", "of", "offf", "volume", "volumen", "vol", "subele", "pumpealo", "repet", "repeat", "repitelo", "repeatelo", "scalar", "scale", "escalar", "bigealo", "movet", "muvet", "move it", "muevelo", "muvetelo", "rodar", "rotate", "rotait", "rotaetelo", "fulcober", "brillo", "color", "emit", "intensity", "switch", "suitch", "suich", "monitor", "auto", "automatic", "automatico"],
+    reservedNames: ["turn off", "turns off", "turnof", "apagar", "transmission", "trasmission", "trasmision", "transmision", "transmisssion", "on", "onn", "onnn", "off", "of", "offf", "volume", "volumen", "vol", "subele", "pumpealo", "repet", "repeat", "repitelo", "repeatelo", "scalar", "scale", "escalar", "bigealo", "movet", "muvet", "move it", "muevelo", "muvetelo", "rodar", "rotate", "rotait", "rotaetelo", "fulcober", "fullcober", "fulcover", "fullcover", "translucido", "traslucido", "traslusido", "traslusido", "translucent", "traslucent", "traslusent", "color", "colour", "color it", "colorealo", "colourealo", "emit", "emitir", "emitear", "emitealo", "brillo", "brightness", "braignes", "braigtnes", "briyo", "switch", "suitch", "suich", "monitor", "auto", "automatic", "automatico", "autom\xE1tico"],
     reservedOpNames: ["=", '"', '"', "_", ";"],
     caseSensitive: v.caseSensitive
   };
@@ -26867,7 +26915,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 403, column 1 - line 403, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 427, column 1 - line 427, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -26892,7 +26940,7 @@ var onlyEOF = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ 
   return pure(applicativeParserT)(EmptyStatement.value);
 });
 var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ reserved("onnn"))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ reserved("offf"))))(false)]));
-var noTranmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reserved("turn off"))(function() {
+var noTranmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("turn off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("turns off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("turnof"))(/* @__PURE__ */ reserved("apagar")))))(function() {
   return pure(applicativeParserT)(EmptyStatement.value);
 });
 var monitorFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
@@ -27027,7 +27075,7 @@ var dynNumberRight = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(appl
   });
 });
 var dynNumberLeft = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("auto"))(alt(altParserT)(reserved("automatic"))(reserved("automatico"))))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("auto"))(alt(altParserT)(reserved("automatic"))(alt(altParserT)(reserved("automatico"))(reserved("autom\xE1tico")))))(function() {
     return bind(bindParserT)(number)(function(v) {
       return pure(applicativeParserT)(new Left(v));
     });
@@ -27057,7 +27105,7 @@ var functionWithDynV3 = function(functionName) {
   };
 };
 var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return choice(foldableArray)([functionWithNumber("volume")(Volume.create), functionWithNumber("volumen")(Volume.create), functionWithNumber("vol")(Volume.create), functionWithNumber("subele")(Volume.create), functionWithNumber("pumpealo")(Volume.create), functionWithV2("repet")(ChannelRepeater.create), functionWithV2("repeat")(ChannelRepeater.create), functionWithV2("repitelo")(ChannelRepeater.create), functionWithV2("repeatelo")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("scale")(Scalar.create), functionWithV3("escalar")(Scalar.create), functionWithV3("bigealo")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithV3("muvet")(Movet.create), functionWithV3("move it")(Movet.create), functionWithV3("muevelo")(Movet.create), functionWithV3("muvetelo")(Movet.create), functionWithDynV3("rodar")(Rodar.create), functionWithDynV3("rotate")(Rodar.create), functionWithDynV3("rotait")(Rodar.create), functionWithDynV3("rotaetelo")(Rodar.create), functionWithString("fulcober")(Fulcober.create), functionWithNumber("brillo")(Brillo.create), functionWithV3("color")(Colour.create), functionWithV3("emit")(EmissionColour.create), functionWithNumber("intensity")(EmissionIntensity.create), switchFunction, monitorFunction]);
+  return choice(foldableArray)([functionWithNumber("volume")(Volume.create), functionWithNumber("volumen")(Volume.create), functionWithNumber("vol")(Volume.create), functionWithNumber("subele")(Volume.create), functionWithNumber("pumpealo")(Volume.create), functionWithV2("repet")(ChannelRepeater.create), functionWithV2("repeat")(ChannelRepeater.create), functionWithV2("repitelo")(ChannelRepeater.create), functionWithV2("repeatelo")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("scale")(Scalar.create), functionWithV3("escalar")(Scalar.create), functionWithV3("bigealo")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithV3("muvet")(Movet.create), functionWithV3("move it")(Movet.create), functionWithV3("muevelo")(Movet.create), functionWithV3("muvetelo")(Movet.create), functionWithDynV3("rodar")(Rodar.create), functionWithDynV3("rotate")(Rodar.create), functionWithDynV3("rotait")(Rodar.create), functionWithDynV3("rotaetelo")(Rodar.create), functionWithString("fulcober")(Fulcober.create), functionWithString("fullcober")(Fulcober.create), functionWithString("fulcover")(Fulcober.create), functionWithString("fullcover")(Fulcober.create), functionWithNumber("translucido")(Translucidez.create), functionWithNumber("traslucido")(Translucidez.create), functionWithNumber("traslusido")(Translucidez.create), functionWithNumber("translucent")(Translucidez.create), functionWithNumber("traslucent")(Translucidez.create), functionWithNumber("traslusent")(Translucidez.create), functionWithV3("color")(Colour.create), functionWithV3("colour")(Colour.create), functionWithV3("color it")(Colour.create), functionWithV3("colorealo")(Colour.create), functionWithV3("colourealo")(Colour.create), functionWithV3("emit")(EmissionColour.create), functionWithV3("emitir")(EmissionColour.create), functionWithV3("emitear")(EmissionColour.create), functionWithV3("emitealo")(EmissionColour.create), functionWithNumber("brillo")(EmissionIntensity.create), functionWithNumber("brightness")(EmissionIntensity.create), functionWithNumber("braignes")(EmissionIntensity.create), functionWithNumber("braigtnes")(EmissionIntensity.create), functionWithNumber("briyo")(EmissionIntensity.create), switchFunction, monitorFunction]);
 });
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("transmission"))(alt(altParserT)(reserved("trasmission"))(alt(altParserT)(reserved("trasmision"))(alt(altParserT)(reserved("transmision"))(reserved("transmisssion"))))))(function() {
@@ -27168,10 +27216,6 @@ var evaluate = function(re) {
       return function __do3() {
         log2(monadEffectEffect)(show(showList(showRecord()()(showRecordFieldsCons({
           reflectSymbol: function() {
-            return "brillo";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
             return "channel";
           }
         })(showRecordFieldsCons({
@@ -27216,13 +27260,17 @@ var evaluate = function(re) {
           }
         })(showRecordFieldsCons({
           reflectSymbol: function() {
+            return "translucidez";
+          }
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
             return "tv";
           }
         })(showRecordFieldsCons({
           reflectSymbol: function() {
             return "volume";
           }
-        })(showRecordFieldsNil)(showNumber))(showString))(showRecord()()(showRecordFieldsCons({
+        })(showRecordFieldsNil)(showNumber))(showString))(showNumber))(showRecord()()(showRecordFieldsCons({
           reflectSymbol: function() {
             return "x";
           }
@@ -27290,7 +27338,7 @@ var evaluate = function(re) {
           reflectSymbol: function() {
             return "y";
           }
-        })(showRecordFieldsNil)(showNumber))(showNumber))))(showString))(showNumber))))(v.value0))();
+        })(showRecordFieldsNil)(showNumber))(showNumber))))(showString))))(v.value0))();
         write(v.value0)(re.program)();
         return Nothing.value;
       };
@@ -27336,7 +27384,7 @@ var alignMonitors = function(re) {
         throw new Error("Failed pattern match at RenderEngine (line 85, column 3 - line 99, column 57): " + [v.constructor.name]);
       })();
       var ms$prime = read(re.monitors)();
-      zipWithA(applicativeEffect)(updateMonitor(re.scene))(ms$prime)(p)();
+      zipWithA(applicativeEffect)(alignMonitor(re.scene))(ms$prime)(p)();
       return unit;
     };
   };

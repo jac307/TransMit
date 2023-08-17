@@ -3,7 +3,7 @@ module MonitorState
 Monitor(..),
 defMonitor,
 removeMonitor,
-updateMonitor,
+alignMonitor,
 playVideoElement
 ) where
 
@@ -86,27 +86,23 @@ removeMonitor sc mo = do
   removeObj sc mo
   removeMaterial sc mo
 
---should this function be renamed alignMonitor?
-updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
-updateMonitor sc mo t = do
+alignMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
+alignMonitor sc mo t = do
   -- 1. change video url if necessary
   updateURLfromVidElem mo t.channel t.volume
   -- 2. change/load obj url/object
-  changeOrLoadObjIfNecessary sc mo t.tv t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
+  changeOrLoadObjIfNecessary sc mo t.tv t.translucidez (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
   -- 3. change/load material url/create new mesh
-  changeOrLoadMatIfNecessary sc mo t.mapping t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
+  changeOrLoadMatIfNecessary sc mo t.mapping t.translucidez (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
   -- 4. transform Transmission
-  changeMatParametersIfNecessary sc mo t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
-  --changeMatParametersIfNecessary sc mo t.brillo
+  changeMatParametersIfNecessary sc mo t.translucidez (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
   transformTransmission sc mo t
   transformVidTexture mo.vidTexture t
-
-  -- (v3ToX t.position) (v3ToY t.position) (v3ToZ t.position)
 
 ---- Obj ---
 
 changeOrLoadObjIfNecessary :: TJS.Scene -> Monitor -> String -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
-changeOrLoadObjIfNecessary sc mo url brillo rC gC bC rE gE bE iE = do
+changeOrLoadObjIfNecessary sc mo url t rC gC bC rE gE bE iE = do
   currURL <- read mo.currObjURL
   if url == currURL
     then (pure unit)
@@ -115,13 +111,13 @@ changeOrLoadObjIfNecessary sc mo url brillo rC gC bC rE gE bE iE = do
       loader <- TJS.newOBJLoader
       TJS.loadOBJ loader url $ \o -> do
         write (Just o) mo.obj
-        tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+        tryToMakeTransmission sc mo t rC gC bC rE gE bE iE
       write url mo.currObjURL
 
 ---- Material ---
 
 changeOrLoadMatIfNecessary :: TJS.Scene -> Monitor -> String -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
-changeOrLoadMatIfNecessary sc mo url brillo rC gC bC rE gE bE iE = do
+changeOrLoadMatIfNecessary sc mo url t rC gC bC rE gE bE iE = do
   currURL <- read mo.currMtlURL
   if url == currURL
     then (pure unit)
@@ -132,34 +128,34 @@ changeOrLoadMatIfNecessary sc mo url brillo rC gC bC rE gE bE iE = do
         preloadMaterials m
         --TJS.printAnything m
         write (Just m) mo.material
-        tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+        tryToMakeTransmission sc mo t rC gC bC rE gE bE iE
       write url mo.currMtlURL
 
 changeMatParametersIfNecessary :: TJS.Scene -> Monitor -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
-changeMatParametersIfNecessary sc mo brillo rC gC bC rE gE bE iE = do
+changeMatParametersIfNecessary sc mo t rC gC bC rE gE bE iE = do
   -- reading current mat settings
   currOpacity <- read mo.opacity
   currColour <- read mo.colour
   currEmissionColour <- read mo.emissionColour
   currEmissionIntensity <- read mo.emissionIntensity
   -- change opacity if necessary
-  if brillo == currOpacity
+  if t == currOpacity
     then (pure unit)
-    else tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+    else tryToMakeTransmission sc mo t rC gC bC rE gE bE iE
   -- change colour if necessary
   if {x:rC, y:gC, z:bC} == currColour
     then (pure unit)
-    else tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+    else tryToMakeTransmission sc mo t rC gC bC rE gE bE iE
   -- change emissive colour if necessary
   if {x:rE, y:gE, z:bE} == currEmissionColour
     then (pure unit)
-    else tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+    else tryToMakeTransmission sc mo t rC gC bC rE gE bE iE
   -- change emissive intensity if necessary
   if iE == currEmissionIntensity
     then (pure unit)
-    else tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE
+    else tryToMakeTransmission sc mo t rC gC bC rE gE bE iE
   -- write back curr values
-  write brillo mo.opacity
+  write t mo.opacity
   write {x:rC, y:gC, z:bC} mo.colour
   write {x:rE, y:gE, z:bE} mo.emissionColour
   write iE mo.emissionIntensity
@@ -168,7 +164,7 @@ changeMatParametersIfNecessary sc mo brillo rC gC bC rE gE bE iE = do
 ---- Mesh ---
 
 tryToMakeTransmission :: TJS.Scene -> Monitor -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
-tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE = do
+tryToMakeTransmission sc mo t rC gC bC rE gE bE iE = do
   currURL <- read mo.currObjURL
   g <- read mo.obj
   case g of
@@ -177,7 +173,7 @@ tryToMakeTransmission sc mo brillo rC gC bC rE gE bE iE = do
       m <- read mo.material
       case m of
         Nothing -> pure unit
-        Just m' -> makeTransmission currURL sc g' m' mo.vidTexture brillo rC gC bC rE gE bE iE
+        Just m' -> makeTransmission currURL sc g' m' mo.vidTexture t rC gC bC rE gE bE iE
 
 removeObj :: TJS.Scene -> Monitor -> Effect Unit
 removeObj sc mo = do
@@ -202,13 +198,13 @@ removeMaterial sc mo = do
 -------- Transmission --------
 
 makeTransmission :: String -> TJS.Scene -> TJS.OBJ -> TJS.MTL -> TJS.TextureLoader -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
-makeTransmission url sc g m vt brillo rC gC bC rE gE bE iE = do
+makeTransmission url sc g m vt t rC gC bC rE gE bE iE = do
   -- 1. combine the three things to make a mesh
   selectMapVidToMat url m vt
   selectMapToObj url g m
   -- Transform Material
   selectMatTrans url g
-  selectMatOpacity url g brillo
+  selectMatOpacity url g t
   selectMatColor url g rC gC bC
   selectMatEmiColor url g rE gE bE
   selectMatEmiInten url g iE
@@ -398,14 +394,25 @@ transformVidTexture vt t = do
   TJS.format vt (stringToFormatID t.fulcober)
 
 stringToFormatID :: String -> TJS.FormatID
+stringToFormatID "rgb" = TJS.rgbaFormat
 stringToFormatID "rgba" = TJS.rgbaFormat
+stringToFormatID "erregebe" = TJS.rgbaFormat
+stringToFormatID "alcolor" = TJS.rgbaFormat
+stringToFormatID "a" = TJS.alphaFormat
 stringToFormatID "alpha" = TJS.alphaFormat
+stringToFormatID "alfa" = TJS.alphaFormat
+stringToFormatID "r" = TJS.redFormat
 stringToFormatID "red" = TJS.redFormat
+stringToFormatID "rojo" = TJS.redFormat
+stringToFormatID "rg" = TJS.rgFormat
+stringToFormatID "errege" = TJS.rgFormat
 stringToFormatID "redgreen" = TJS.rgFormat
-stringToFormatID "luminance" = TJS.luminanceFormat
+stringToFormatID "verdirojo" = TJS.rgFormat
+stringToFormatID "b&w" = TJS.luminanceFormat
+stringToFormatID "blackandwhite" = TJS.luminanceFormat
+stringToFormatID "negriblanco" = TJS.luminanceFormat
 stringToFormatID "luminancealpha" = TJS.luminanceAlphaFormat
 stringToFormatID _ = TJS.rgbaFormat
-
 
 -------- vElem & currVidURL --------
 

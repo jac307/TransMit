@@ -32,7 +32,7 @@ data TransmissionAST =
   Fulcober String TransmissionAST |
   Switch String TransmissionAST |
   Monitor String TransmissionAST |
-  Brillo Number TransmissionAST |
+  Translucidez Number TransmissionAST |
   Colour Vec3 TransmissionAST |
   EmissionColour Vec3 TransmissionAST |
   EmissionIntensity Number TransmissionAST
@@ -47,7 +47,7 @@ instance showTransmissionAST :: Show TransmissionAST where
   show (Fulcober f t) = "Fulcober" <> show f <> show t
   show (Switch s t) = "Switch" <> show s <> show t
   show (Monitor s t) = "Monitor" <> show s <> show t
-  show (Brillo n t) = "Brillo" <> show n <> show t
+  show (Translucidez n t) = "Translucidez" <> show n <> show t
   show (Colour v3 t) = "Color" <> show v3 <> show t
   show (EmissionColour v3 t) = "Emission-color" <> show v3 <> show t
   show (EmissionIntensity n t) = "Emission-intensity" <> show n <> show t
@@ -63,7 +63,7 @@ tASTtoT (Rodar dv3 t) = (tASTtoT t) {rotation = dv3}
 tASTtoT (Fulcober f t) = (tASTtoT t) {fulcober = f}
 tASTtoT (Switch s t) = (tASTtoT t) {channel = s}
 tASTtoT (Monitor s t) = (tASTtoT t) {tv = (s <> ".obj"), mapping = s <> ".mtl"}
-tASTtoT (Brillo n t) = (tASTtoT t) {brillo = n}
+tASTtoT (Translucidez n t) = (tASTtoT t) {translucidez = n}
 tASTtoT (Colour v3 t) = (tASTtoT t) {colour = v3}
 tASTtoT (EmissionColour v3 t) = (tASTtoT t) {emissionColour = v3}
 tASTtoT (EmissionIntensity n t) = (tASTtoT t) {emissionIntensity = n}

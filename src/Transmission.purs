@@ -10,7 +10,7 @@ type Transmission = {
   volume :: Number,
   channelReapeater :: Vec2, -- how many times the video repeats on the monitor
   fulcober :: String,
-  brillo :: Number,
+  translucidez :: Number,
   colour :: Vec3, -- missing application in parser
   emissionColour :: Vec3, -- missing application in parser
   emissionIntensity :: Number, -- missing application in parser
@@ -29,7 +29,7 @@ defTransmission = {
   channel:            "channels/static.mov",
   channelReapeater:   {x: 1.0, y: 1.0},
   fulcober:           "rgbaFormat",
-  brillo:             1.0,
+  translucidez:             1.0,
   colour:             {x: 0.6, y: 0.6, z: 0.6}, -- rgb
   emissionColour:     {x: 0.0, y: 0.0, z: 0.0}, -- rgb
   emissionIntensity:  0.5,

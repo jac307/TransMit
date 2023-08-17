@@ -21,7 +21,7 @@ import Web.HTML.HTMLCanvasElement as HTML
 import ThreeJS as TJS
 
 import Parser (Program, parseProgram)
-import MonitorState (Monitor, defMonitor, removeMonitor, updateMonitor, playVideoElement)
+import MonitorState (Monitor, defMonitor, removeMonitor, alignMonitor, playVideoElement)
 import Transmission (Transmission)
 
 -- python -m SimpleHTTPServer 8000
@@ -99,7 +99,7 @@ alignMonitors re p = do
           traverse_ (newMonitor re) indicesOfNewMonitors
   -- stage 2: align each monitor with each tranmissions
   ms' <- read re.monitors
-  _ <- zipWithA (updateMonitor re.scene) ms' p
+  _ <- zipWithA (alignMonitor re.scene) ms' p
   pure unit
 
 --

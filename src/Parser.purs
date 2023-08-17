@@ -62,7 +62,7 @@ onlyEOF = do
 
 noTranmission :: P Statement
 noTranmission = do
-  reserved "turn off"
+  (reserved "turn off" <|> reserved "turns off" <|> reserved "turnof" <|> reserved "apagar")
   pure $ EmptyStatement
 
 --- Transmission ---
@@ -122,10 +122,34 @@ transformations = do
   functionWithDynV3 "rotaetelo" Rodar,
   --
   functionWithString "fulcober" Fulcober,
-  functionWithNumber "brillo" Brillo,
+  functionWithString "fullcober" Fulcober,
+  functionWithString "fulcover" Fulcober,
+  functionWithString "fullcover" Fulcober,
+  --
+  functionWithNumber "translucido" Translucidez,
+  functionWithNumber "traslucido" Translucidez,
+  functionWithNumber "traslusido" Translucidez,
+  functionWithNumber "translucent" Translucidez,
+  functionWithNumber "traslucent" Translucidez,
+  functionWithNumber "traslusent" Translucidez,
+  --
   functionWithV3 "color" Colour,
+  functionWithV3 "colour" Colour,
+  functionWithV3 "color it" Colour,
+  functionWithV3 "colorealo" Colour,
+  functionWithV3 "colourealo" Colour,
+  --
   functionWithV3 "emit" EmissionColour,
-  functionWithNumber "intensity" EmissionIntensity,
+  functionWithV3 "emitir" EmissionColour,
+  functionWithV3 "emitear" EmissionColour,
+  functionWithV3 "emitealo" EmissionColour,
+  --
+  functionWithNumber "brillo" EmissionIntensity,
+  functionWithNumber "brightness" EmissionIntensity,
+  functionWithNumber "braignes" EmissionIntensity,
+  functionWithNumber "braigtnes" EmissionIntensity,
+  functionWithNumber "briyo" EmissionIntensity,
+  --
   switchFunction,
   monitorFunction
   ]
@@ -199,7 +223,7 @@ dynNumber = choice [ try dynNumberLeft, try dynNumberRight ]
 dynNumberLeft :: P (Either Number Number)
 dynNumberLeft = do
   _ <- pure unit
-  (reserved "auto" <|> reserved "automatic" <|> reserved "automatico")
+  (reserved "auto" <|> reserved "automatic" <|> reserved "automatico" <|> reserved "automático")
   v <- number
   pure $ Left v
 
@@ -293,12 +317,12 @@ negativeNumber = do
 
 ------------
 
-
 tokenParser :: GenTokenParser String Identity
 tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
-  reservedNames = ["turn off", "transmission", "trasmission", "trasmision", "transmision", "transmisssion", "on", "onn", "onnn", "off", "of", "offf", "volume", "volumen", "vol", "subele", "pumpealo", "repet", "repeat", "repitelo", "repeatelo", "scalar", "scale", "escalar", "bigealo", "movet", "muvet", "move it", "muevelo", "muvetelo", "rodar", "rotate", "rotait", "rotaetelo", "fulcober", "brillo", "color", "emit", "intensity", "switch", "suitch", "suich", "monitor", "auto", "automatic", "automatico"],
+  reservedNames = ["turn off", "turns off", "turnof", "apagar", "transmission", "trasmission", "trasmision", "transmision", "transmisssion", "on", "onn", "onnn", "off", "of", "offf", "volume", "volumen", "vol", "subele", "pumpealo", "repet", "repeat", "repitelo", "repeatelo", "scalar", "scale", "escalar", "bigealo", "movet", "muvet", "move it", "muevelo", "muvetelo", "rodar", "rotate", "rotait", "rotaetelo", "fulcober", "fullcober", "fulcover", "fullcover", "translucido", "traslucido", "traslusido", "traslusido", "translucent", "traslucent", "traslusent", "color", "colour", "color it", "colorealo", "colourealo", "emit", "emitir", "emitear", "emitealo", "brillo", "brightness", "braignes", "braigtnes", "briyo", "switch", "suitch", "suich", "monitor", "auto", "automatic", "automatico", "automático"],
   reservedOpNames = ["=", "\"", "\"", "_", ";"]
   }
+
 
 ---------------------
 
