@@ -14,6 +14,7 @@ import Data.Ord (class Ord)
 import Effect.Class.Console (log, error)
 import Effect.Ref (Ref, new, read, write)
 import Data.Maybe
+import Data.Either
 import Web.HTML.HTMLCanvasElement as HTML
 import Web.HTML.HTMLMediaElement as HTML2
 import Web.HTML.HTMLMediaElement (HTMLMediaElement)
@@ -368,7 +369,26 @@ transformTransmission' :: TJS.OBJ -> Transmission -> Effect Unit
 transformTransmission' g t = do
   TJS.setScaleOfAnything g (v3ToX t.size) (v3ToY t.size) (v3ToZ t.size)
   TJS.setPositionOfAnything g (v3ToX t.position) (v3ToY t.position) (v3ToZ t.position)
-  TJS.setRotationOfAnything g (v3ToX t.rotation) (v3ToY t.rotation) (v3ToZ t.rotation)
+  setRotationX g t.rotation.x
+  setRotationY g t.rotation.y
+  setRotationZ g t.rotation.z
+
+-- Set Rotation: Either dynamiRot or fixedRot
+setRotationX :: TJS.OBJ -> Either Number Number -> Effect Unit
+setRotationX o (Left v) = dynRotX o v
+setRotationX o (Right n) = TJS.setRotationX o n
+
+setRotationY :: TJS.OBJ -> Either Number Number -> Effect Unit
+setRotationY o (Left v) = dynRotY o v
+setRotationY o (Right n) = TJS.setRotationY o n
+
+setRotationZ :: TJS.OBJ -> Either Number Number -> Effect Unit
+setRotationZ o (Left v) = dynRotZ o v
+setRotationZ o (Right n) = TJS.setRotationZ o n
+                                 -- velocity
+foreign import dynRotX :: TJS.OBJ -> Number -> Effect Unit
+foreign import dynRotY :: TJS.OBJ -> Number -> Effect Unit
+foreign import dynRotZ :: TJS.OBJ -> Number -> Effect Unit
 
 -------- vidTexture --------
 

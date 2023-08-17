@@ -11,11 +11,11 @@ import Data.Maybe (Maybe(..))
 import Parsing (ParseError(..), ParserT, Position(..), runParser)
 import Parsing.Language (emptyDef)
 import Parsing.Token (GenLanguageDef(..), GenTokenParser, makeTokenParser, unGenLanguageDef)
-import Parsing.Combinators (choice, lookAhead, try, (<|>), many, sepBy)
+import Parsing.Combinators (choice, lookAhead, try, (<|>), many, sepBy, option)
 import Parsing.String (eof)
 
 import AST (AST, Statement(..), TransmissionAST(..), tASTtoT)
-import Transmission (Transmission, Vec3, Vec2)
+import Transmission (Transmission, Vec3, Vec2, DynVec3)
 
 parseProgram :: String -> Either String Program
 parseProgram x = do
@@ -96,7 +96,7 @@ transformations = do
   functionWithV2 "repet" ChannelRepeater,
   functionWithV3 "scalar" Scalar,
   functionWithV3 "movet" Movet,
-  functionWithV3 "rodar" Rodar,
+  functionWithDynV3 "rodar" Rodar,
   functionWithString "fulcober" Fulcober,
   functionWithNumber "brillo" Brillo,
   functionWithV3 "color" Colour,
@@ -105,6 +105,7 @@ transformations = do
   switchFunction,
   monitorFunction
   ]
+
 
 switchFunction :: P (TransmissionAST -> TransmissionAST)
 switchFunction = do
@@ -130,6 +131,12 @@ functionWithString functionName constructor = try $ do
   s <- identifier
   pure $ constructor s
 
+functionWithDynV3 :: String -> (DynVec3 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithDynV3 functionName constructor = try $ do
+  reserved functionName
+  dv3 <- dynVec3xyz
+  pure $ constructor dv3
+
 functionWithV3 :: String -> (Vec3 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
 functionWithV3 functionName constructor = try $ do
   reserved functionName
@@ -149,27 +156,59 @@ functionWithNumber functionName constructor = try $ do
   pure $ constructor n
 
 ----------
+--- Either Number Number
+--
+-- rotation auto 0.01 auto 0.01 auto 0.002
+-- rotatation 0 auto 0.01 0
+-- rotation 0 0 1
 
-vec2xy :: P Vec2
-vec2xy = do
-  x <- number
-  y <- number
-  pure $ {x,y}
+dynVec3xyz :: P DynVec3
+dynVec3xyz = do
+  _ <- pure unit
+  x <- dynNumber
+  y <- dynNumber
+  z <- dynNumber
+  pure $ {x,y,z}
 
--- channel = 1 "";
---                       x y z
--- transmission on movet 1 1 1 (channel 1);
+dynNumber :: P (Either Number Number)
+dynNumber = choice [ try dynNumberLeft, try dynNumberRight ]
+
+dynNumberLeft :: P (Either Number Number)
+dynNumberLeft = do
+  _ <- pure unit
+  reserved "auto"
+  v <- number
+  pure $ Left v
+
+dynNumberRight :: P (Either Number Number)
+dynNumberRight = do
+  _ <- pure unit
+  v <- number
+  pure $ Right v
+
+--- Fixed Number Options
+--
+-- transmission on movet 1 1 1;
 -- transmission on movet 1;  -- vec3x not working
 -- transmission on movet 1 1;
 -- transmission on movet _ 1;
 -- transmission on movet _ _ 1;
 
+----
+vec2xy :: P Vec2
+vec2xy = do
+  _ <- pure unit
+  x <- number
+  y <- number
+  pure $ {x,y}
+
 vec3Param :: P Vec3
-vec3Param = choice [ try vec3xyz, vec3xy, try vec3z, try vec3y, try vec3x ]
+vec3Param = choice [ try vec3xyz, try vec3xy, try vec3z, try vec3y, try vec3x ]
 
 --Function 1 1 1 --> modifies x,y,z
 vec3xyz :: P Vec3
 vec3xyz = do
+  _ <- pure unit
   x <- number
   y <- number
   z <- number
@@ -178,6 +217,7 @@ vec3xyz = do
 --Function _ _ 1 --> modifies z    defX / defY=0
 vec3z :: P Vec3
 vec3z = do
+  _ <- pure unit
   reservedOp "_"
   reservedOp "_"
   let x = 0.0
@@ -188,6 +228,7 @@ vec3z = do
 --Function _ 1 --> modifies y    defX / defZ=0
 vec3y :: P Vec3
 vec3y = do
+  _ <- pure unit
   reservedOp "_"
   let x = 0.0
   y <- number
@@ -197,6 +238,7 @@ vec3y = do
 --Function 1 1 --> modifies x,y    defZ=0
 vec3xy :: P Vec3
 vec3xy = do
+  _ <- pure unit
   x <- number
   y <- number
   let z = 0.0
@@ -205,6 +247,7 @@ vec3xy = do
 --Function 1 --> modifies x    defY / defZ=0
 vec3x :: P Vec3
 vec3x = do
+  _ <- pure unit
   x <- number
   let y = 0.0
   let z = 0.0
@@ -221,6 +264,7 @@ number = choice [
 
 negativeNumber :: P Number
 negativeNumber = do
+  _ <- pure unit
   reservedOp "-"
   ((*) (-1.0)) <$> float
 

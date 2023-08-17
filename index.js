@@ -677,6 +677,23 @@ var Right = /* @__PURE__ */ function() {
   };
   return Right2;
 }();
+var showEither = function(dictShow) {
+  return function(dictShow1) {
+    return {
+      show: function(v) {
+        if (v instanceof Left) {
+          return "(Left " + (show(dictShow)(v.value0) + ")");
+        }
+        ;
+        if (v instanceof Right) {
+          return "(Right " + (show(dictShow1)(v.value0) + ")");
+        }
+        ;
+        throw new Error("Failed pattern match at Data.Either (line 173, column 1 - line 175, column 46): " + [v.constructor.name]);
+      }
+    };
+  };
+};
 var functorEither = {
   map: function(f) {
     return function(m) {
@@ -1929,6 +1946,9 @@ var matEmisInt0 = (o) => (n) => () => o.children[0].material.emissiveIntensity =
 var matEmisInt1 = (o) => (n) => () => o.children[1].material.emissiveIntensity = n;
 var matEmisive0 = (o) => (n1) => (n2) => (n3) => () => o.children[0].material.emissive = { r: n1, g: n2, b: n3 };
 var matEmisive1 = (o) => (n1) => (n2) => (n3) => () => o.children[1].material.emissive = { r: n1, g: n2, b: n3 };
+var dynRotX = (o) => (v) => () => o.rotation.x += v;
+var dynRotY = (o) => (v) => () => o.rotation.y += v;
+var dynRotZ = (o) => (v) => () => o.rotation.z += v;
 
 // output/ThreeJS/foreign.js
 var newScene = () => new THREE.Scene();
@@ -1943,6 +1963,9 @@ var loadMTL = (loader) => (url) => (cb) => () => loader.load(url, (x) => cb(x)()
 var addAnythingToScene = (scene) => (anything) => () => scene.add(anything);
 var disposeAnything = (anything) => (anything2) => () => anything2.dispose();
 var removeObject3D = (parent) => (child) => () => parent.remove(child);
+var rotationX = (thing) => () => thing.rotation.x;
+var rotationY = (thing) => () => thing.rotation.y;
+var rotationZ = (thing) => () => thing.rotation.z;
 var setRotationOfAnything = (thing) => (x) => (y) => (z) => () => thing.rotation.set(x, y, z);
 var setPositionOfAnything = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
 var setScaleOfAnything = (thing) => (x) => (y) => (z) => () => thing.scale.set(x, y, z);
@@ -1976,6 +1999,33 @@ var format = (texture) => (formatID) => () => texture.format = formatID;
 var setPosition = (thing) => (x) => (y) => (z) => () => thing.position.set(x, y, z);
 
 // output/ThreeJS/index.js
+var setRotationZ = function(o) {
+  return function(z) {
+    return function __do3() {
+      var x = rotationX(o)();
+      var y = rotationY(o)();
+      return setRotationOfAnything(o)(x)(y)(z)();
+    };
+  };
+};
+var setRotationY = function(o) {
+  return function(y) {
+    return function __do3() {
+      var x = rotationX(o)();
+      var z = rotationZ(o)();
+      return setRotationOfAnything(o)(x)(y)(z)();
+    };
+  };
+};
+var setRotationX = function(o) {
+  return function(x) {
+    return function __do3() {
+      var y = rotationY(o)();
+      var z = rotationZ(o)();
+      return setRotationOfAnything(o)(x)(y)(z)();
+    };
+  };
+};
 var setPosition2 = function() {
   return setPosition;
 };
@@ -2120,8 +2170,8 @@ var updateURLfromVidElem = function(mo) {
   return function(url) {
     return function __do3() {
       var currURL = read(mo.currVidURL)();
-      var $8 = url !== currURL;
-      if ($8) {
+      var $11 = url !== currURL;
+      if ($11) {
         setSrc(url)(mo.video)();
         preloadAnything(mo.video)();
         load(mo.video)();
@@ -2132,33 +2182,6 @@ var updateURLfromVidElem = function(mo) {
       }
       ;
       return unit;
-    };
-  };
-};
-var transformTransmission$prime = function(g) {
-  return function(t) {
-    return function __do3() {
-      setScaleOfAnything(g)(v3ToX(t.size))(v3ToY(t.size))(v3ToZ(t.size))();
-      setPositionOfAnything(g)(v3ToX(t.position))(v3ToY(t.position))(v3ToZ(t.position))();
-      return setRotationOfAnything(g)(v3ToX(t.rotation))(v3ToY(t.rotation))(v3ToZ(t.rotation))();
-    };
-  };
-};
-var transformTransmission = function(sc) {
-  return function(mo) {
-    return function(t) {
-      return function __do3() {
-        var g = read(mo.obj)();
-        if (g instanceof Nothing) {
-          return unit;
-        }
-        ;
-        if (g instanceof Just) {
-          return transformTransmission$prime(g.value0)(t)();
-        }
-        ;
-        throw new Error("Failed pattern match at MonitorState (line 363, column 3 - line 365, column 41): " + [g.constructor.name]);
-      };
     };
   };
 };
@@ -2194,6 +2217,74 @@ var transformVidTexture = function(vt) {
     return function __do3() {
       setRepeatOfAnything(vt)(v2ToX(t.channelReapeater))(v2ToY(t.channelReapeater))();
       return format(vt)(stringToFormatID(t.fulcober))();
+    };
+  };
+};
+var setRotationZ2 = function(o) {
+  return function(v) {
+    if (v instanceof Left) {
+      return dynRotZ(o)(v.value0);
+    }
+    ;
+    if (v instanceof Right) {
+      return setRotationZ(o)(v.value0);
+    }
+    ;
+    throw new Error("Failed pattern match at MonitorState (line 385, column 1 - line 385, column 63): " + [o.constructor.name, v.constructor.name]);
+  };
+};
+var setRotationY2 = function(o) {
+  return function(v) {
+    if (v instanceof Left) {
+      return dynRotY(o)(v.value0);
+    }
+    ;
+    if (v instanceof Right) {
+      return setRotationY(o)(v.value0);
+    }
+    ;
+    throw new Error("Failed pattern match at MonitorState (line 381, column 1 - line 381, column 63): " + [o.constructor.name, v.constructor.name]);
+  };
+};
+var setRotationX2 = function(o) {
+  return function(v) {
+    if (v instanceof Left) {
+      return dynRotX(o)(v.value0);
+    }
+    ;
+    if (v instanceof Right) {
+      return setRotationX(o)(v.value0);
+    }
+    ;
+    throw new Error("Failed pattern match at MonitorState (line 377, column 1 - line 377, column 63): " + [o.constructor.name, v.constructor.name]);
+  };
+};
+var transformTransmission$prime = function(g) {
+  return function(t) {
+    return function __do3() {
+      setScaleOfAnything(g)(v3ToX(t.size))(v3ToY(t.size))(v3ToZ(t.size))();
+      setPositionOfAnything(g)(v3ToX(t.position))(v3ToY(t.position))(v3ToZ(t.position))();
+      setRotationX2(g)(t.rotation.x)();
+      setRotationY2(g)(t.rotation.y)();
+      return setRotationZ2(g)(t.rotation.z)();
+    };
+  };
+};
+var transformTransmission = function(sc) {
+  return function(mo) {
+    return function(t) {
+      return function __do3() {
+        var g = read(mo.obj)();
+        if (g instanceof Nothing) {
+          return unit;
+        }
+        ;
+        if (g instanceof Just) {
+          return transformTransmission$prime(g.value0)(t)();
+        }
+        ;
+        throw new Error("Failed pattern match at MonitorState (line 364, column 3 - line 366, column 41): " + [g.constructor.name]);
+      };
     };
   };
 };
@@ -2518,7 +2609,7 @@ var removeObj = function(sc) {
         return write(Nothing.value)(mo.obj)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 184, column 3 - line 189, column 27): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 185, column 3 - line 190, column 27): " + [g.constructor.name]);
     };
   };
 };
@@ -2536,7 +2627,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 194, column 3 - line 199, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 195, column 3 - line 200, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -2615,10 +2706,10 @@ var tryToMakeTransmission = function(sc) {
                           return makeTransmission(currURL)(sc)(g.value0)(m.value0)(mo.vidTexture)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                         }
                         ;
-                        throw new Error("Failed pattern match at MonitorState (line 177, column 7 - line 179, column 95): " + [m.constructor.name]);
+                        throw new Error("Failed pattern match at MonitorState (line 178, column 7 - line 180, column 95): " + [m.constructor.name]);
                       }
                       ;
-                      throw new Error("Failed pattern match at MonitorState (line 173, column 3 - line 179, column 95): " + [g.constructor.name]);
+                      throw new Error("Failed pattern match at MonitorState (line 174, column 3 - line 180, column 95): " + [g.constructor.name]);
                     };
                   };
                 };
@@ -2690,8 +2781,8 @@ var changeOrLoadObjIfNecessary = function(sc) {
                     return function(iE) {
                       return function __do3() {
                         var currURL = read(mo.currObjURL)();
-                        var $44 = url === currURL;
-                        if ($44) {
+                        var $59 = url === currURL;
+                        if ($59) {
                           return unit;
                         }
                         ;
@@ -2729,8 +2820,8 @@ var changeOrLoadMatIfNecessary = function(sc) {
                     return function(iE) {
                       return function __do3() {
                         var currURL = read(mo.currMtlURL)();
-                        var $45 = url === currURL;
-                        if ($45) {
+                        var $60 = url === currURL;
+                        if ($60) {
                           return unit;
                         }
                         ;
@@ -2772,15 +2863,15 @@ var changeMatParametersIfNecessary = function(sc) {
                       var currEmissionColour = read(mo.emissionColour)();
                       var currEmissionIntensity = read(mo.emissionIntensity)();
                       (function() {
-                        var $46 = brillo === currOpacity;
-                        if ($46) {
+                        var $61 = brillo === currOpacity;
+                        if ($61) {
                           return unit;
                         }
                         ;
                         return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
                       (function() {
-                        var $47 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
+                        var $62 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
                           reflectSymbol: function() {
                             return "z";
                           }
@@ -2797,14 +2888,14 @@ var changeMatParametersIfNecessary = function(sc) {
                           y: gC,
                           z: bC
                         })(currColour);
-                        if ($47) {
+                        if ($62) {
                           return unit;
                         }
                         ;
                         return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
                       (function() {
-                        var $48 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
+                        var $63 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
                           reflectSymbol: function() {
                             return "z";
                           }
@@ -2821,15 +2912,15 @@ var changeMatParametersIfNecessary = function(sc) {
                           y: gE,
                           z: bE
                         })(currEmissionColour);
-                        if ($48) {
+                        if ($63) {
                           return unit;
                         }
                         ;
                         return tryToMakeTransmission(sc)(mo)(brillo)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
                       (function() {
-                        var $49 = iE === currEmissionIntensity;
-                        if ($49) {
+                        var $64 = iE === currEmissionIntensity;
+                        if ($64) {
                           return unit;
                         }
                         ;
@@ -2874,44 +2965,46 @@ var updateMonitor = function(sc) {
 };
 
 // output/Transmission/index.js
-var defTransmission = {
-  estado: false,
-  tv: "monitors/cubo.obj",
-  mapping: "monitors/cubo.mtl",
-  channel: "channels/static.mov",
-  channelReapeater: {
-    x: 1,
-    y: 1
-  },
-  fulcober: "rgbaFormat",
-  brillo: 1,
-  colour: {
-    x: 0.6,
-    y: 0.6,
-    z: 0.6
-  },
-  emissionColour: {
-    x: 0,
-    y: 0,
-    z: 0
-  },
-  emissionIntensity: 0.5,
-  size: {
-    x: 1.5,
-    y: 1.5,
-    z: 1.5
-  },
-  position: {
-    x: 0,
-    y: 0,
-    z: 0
-  },
-  rotation: {
-    x: 0.5,
-    y: 0,
-    z: 0
-  }
-};
+var defTransmission = /* @__PURE__ */ function() {
+  return {
+    estado: false,
+    tv: "monitors/cubo.obj",
+    mapping: "monitors/cubo.mtl",
+    channel: "channels/static.mov",
+    channelReapeater: {
+      x: 1,
+      y: 1
+    },
+    fulcober: "rgbaFormat",
+    brillo: 1,
+    colour: {
+      x: 0.6,
+      y: 0.6,
+      z: 0.6
+    },
+    emissionColour: {
+      x: 0,
+      y: 0,
+      z: 0
+    },
+    emissionIntensity: 0.5,
+    size: {
+      x: 1.5,
+      y: 1.5,
+      z: 1.5
+    },
+    position: {
+      x: 0,
+      y: 0,
+      z: 0
+    },
+    rotation: {
+      x: new Right(0.5),
+      y: new Right(0),
+      z: new Right(0)
+    }
+  };
+}();
 var defTransmissionOn = /* @__PURE__ */ function() {
   return {
     estado: true,
@@ -3319,7 +3412,7 @@ var tASTtoT = function(v) {
     };
   }
   ;
-  throw new Error("Failed pattern match at AST (line 55, column 1 - line 55, column 43): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at AST (line 54, column 1 - line 54, column 43): " + [v.constructor.name]);
 };
 
 // output/Data.Int/foreign.js
@@ -26726,7 +26819,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 336, column 1 - line 336, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 380, column 1 - line 380, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -26779,8 +26872,10 @@ var functionWithString = function(functionName) {
 var $$float = /* @__PURE__ */ function() {
   return tokenParser["float"];
 }();
-var negativeNumber = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reservedOp("-"))(function() {
-  return map(functorParserT)(mul(semiringNumber)(-1))($$float);
+var negativeNumber = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return discard(discardUnit)(bindParserT)(reservedOp("-"))(function() {
+    return map(functorParserT)(mul(semiringNumber)(-1))($$float);
+  });
 });
 var number = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(negativeNumber), /* @__PURE__ */ $$try($$float), /* @__PURE__ */ map(functorParserT)(toNumber)(integer)]);
 var functionWithNumber = function(functionName) {
@@ -26792,11 +26887,13 @@ var functionWithNumber = function(functionName) {
     }));
   };
 };
-var vec2xy = /* @__PURE__ */ bind(bindParserT)(number)(function(x) {
-  return bind(bindParserT)(number)(function(y) {
-    return pure(applicativeParserT)({
-      x,
-      y
+var vec2xy = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return bind(bindParserT)(number)(function(x) {
+    return bind(bindParserT)(number)(function(y) {
+      return pure(applicativeParserT)({
+        x,
+        y
+      });
     });
   });
 });
@@ -26809,54 +26906,64 @@ var functionWithV2 = function(functionName) {
     }));
   };
 };
-var vec3x = /* @__PURE__ */ bind(bindParserT)(number)(function(x) {
-  return pure(applicativeParserT)({
-    x,
-    y: 0,
-    z: 0
-  });
-});
-var vec3xy = /* @__PURE__ */ bind(bindParserT)(number)(function(x) {
-  return bind(bindParserT)(number)(function(y) {
+var vec3x = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return bind(bindParserT)(number)(function(x) {
     return pure(applicativeParserT)({
       x,
-      y,
+      y: 0,
       z: 0
     });
   });
 });
-var vec3xyz = /* @__PURE__ */ bind(bindParserT)(number)(function(x) {
-  return bind(bindParserT)(number)(function(y) {
-    return bind(bindParserT)(number)(function(z) {
+var vec3xy = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return bind(bindParserT)(number)(function(x) {
+    return bind(bindParserT)(number)(function(y) {
       return pure(applicativeParserT)({
         x,
         y,
-        z
+        z: 0
       });
     });
   });
 });
-var vec3y = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reservedOp("_"))(function() {
-  return bind(bindParserT)(number)(function(y) {
-    return pure(applicativeParserT)({
-      x: 0,
-      y,
-      z: 0
+var vec3xyz = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return bind(bindParserT)(number)(function(x) {
+    return bind(bindParserT)(number)(function(y) {
+      return bind(bindParserT)(number)(function(z) {
+        return pure(applicativeParserT)({
+          x,
+          y,
+          z
+        });
+      });
     });
   });
 });
-var vec3z = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ reservedOp("_"))(function() {
+var vec3y = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(reservedOp("_"))(function() {
-    return bind(bindParserT)(number)(function(z) {
+    return bind(bindParserT)(number)(function(y) {
       return pure(applicativeParserT)({
         x: 0,
-        y: 0,
-        z
+        y,
+        z: 0
       });
     });
   });
 });
-var vec3Param = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(vec3xyz), vec3xy, /* @__PURE__ */ $$try(vec3z), /* @__PURE__ */ $$try(vec3y), /* @__PURE__ */ $$try(vec3x)]);
+var vec3z = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return discard(discardUnit)(bindParserT)(reservedOp("_"))(function() {
+    return discard(discardUnit)(bindParserT)(reservedOp("_"))(function() {
+      return bind(bindParserT)(number)(function(z) {
+        return pure(applicativeParserT)({
+          x: 0,
+          y: 0,
+          z
+        });
+      });
+    });
+  });
+});
+var vec3Param = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(vec3xyz), /* @__PURE__ */ $$try(vec3xy), /* @__PURE__ */ $$try(vec3z), /* @__PURE__ */ $$try(vec3y), /* @__PURE__ */ $$try(vec3x)]);
 var functionWithV3 = function(functionName) {
   return function(constructor) {
     return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
@@ -26866,8 +26973,43 @@ var functionWithV3 = function(functionName) {
     }));
   };
 };
+var dynNumberRight = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return bind(bindParserT)(number)(function(v) {
+    return pure(applicativeParserT)(new Right(v));
+  });
+});
+var dynNumberLeft = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return discard(discardUnit)(bindParserT)(reserved("auto"))(function() {
+    return bind(bindParserT)(number)(function(v) {
+      return pure(applicativeParserT)(new Left(v));
+    });
+  });
+});
+var dynNumber = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(dynNumberLeft), /* @__PURE__ */ $$try(dynNumberRight)]);
+var dynVec3xyz = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
+  return bind(bindParserT)(dynNumber)(function(x) {
+    return bind(bindParserT)(dynNumber)(function(y) {
+      return bind(bindParserT)(dynNumber)(function(z) {
+        return pure(applicativeParserT)({
+          x,
+          y,
+          z
+        });
+      });
+    });
+  });
+});
+var functionWithDynV3 = function(functionName) {
+  return function(constructor) {
+    return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
+      return bind(bindParserT)(dynVec3xyz)(function(dv3) {
+        return pure(applicativeParserT)(constructor(dv3));
+      });
+    }));
+  };
+};
 var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return choice(foldableArray)([functionWithV2("repet")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithV3("rodar")(Rodar.create), functionWithString("fulcober")(Fulcober.create), functionWithNumber("brillo")(Brillo.create), functionWithV3("color")(Colour.create), functionWithV3("emit")(EmissionColour.create), functionWithNumber("intensity")(EmissionIntensity.create), switchFunction, monitorFunction]);
+  return choice(foldableArray)([functionWithV2("repet")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithDynV3("rodar")(Rodar.create), functionWithString("fulcober")(Fulcober.create), functionWithNumber("brillo")(Brillo.create), functionWithV3("color")(Colour.create), functionWithV3("emit")(EmissionColour.create), functionWithNumber("intensity")(EmissionIntensity.create), switchFunction, monitorFunction]);
 });
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(reserved("transmission"))(function() {
@@ -27052,7 +27194,7 @@ var evaluate = function(re) {
           reflectSymbol: function() {
             return "z";
           }
-        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showRecord()()(showRecordFieldsCons({
+        })(showRecordFieldsNil)(showEither(showNumber)(showNumber)))(showEither(showNumber)(showNumber)))(showEither(showNumber)(showNumber)))))(showRecord()()(showRecordFieldsCons({
           reflectSymbol: function() {
             return "x";
           }

@@ -21,7 +21,6 @@ export const mapChildrenToMatNone1 = o => m => () => o.children[1].material = m.
 
 // Opacity
 
-
 export const matTransparency0 = o => () => o.children[0].material.transparent = true;
 
 export const matTransparency1 = o => () => o.children[1].material.transparent = true;
@@ -47,5 +46,10 @@ export const matEmisive0 = o => n1 => n2 => n3 => () => o.children[0].material.e
 export const matEmisive1 = o => n1 => n2 => n3 => () => o.children[1].material.emissive = {r: n1, g: n2, b: n3};
 
 
-// object.children[0].material.transparent = true;
-// object.children[0].material.opacity = 0.5;
+// Rotation
+
+export const dynRotX = o => v => () => o.rotation.x += v;
+
+export const dynRotY = o => v => () => o.rotation.y += v;
+
+export const dynRotZ = o => v => () => o.rotation.z += v;

@@ -7,11 +7,10 @@ import Data.Number
 import Prim.Boolean
 import Data.Map
 import Data.Maybe
-import Effect (Effect)
 
 import ThreeJS (FormatID, rgbaFormat)
 
-import Transmission (Transmission, defTransmission, defTransmissionOn, Vec3, Vec2)
+import Transmission (Transmission, defTransmission, defTransmissionOn, Vec3, Vec2, DynVec3)
 
 type AST = List Statement
 
@@ -28,14 +27,14 @@ data TransmissionAST =
   ChannelRepeater Vec2 TransmissionAST |
   Scalar Vec3 TransmissionAST |
   Movet Vec3 TransmissionAST |
-  Rodar Vec3 TransmissionAST |
+  Rodar DynVec3 TransmissionAST |
   Fulcober String TransmissionAST |
   Switch String TransmissionAST |
   Monitor String TransmissionAST |
   Brillo Number TransmissionAST |
   Colour Vec3 TransmissionAST |
   EmissionColour Vec3 TransmissionAST |
-  EmissionIntensity Number TransmissionAST
+  EmissionIntensity Number TransmissionAST 
   --Volume Float TransmissionAST
 
 instance showTransmissionAST :: Show TransmissionAST where
@@ -43,7 +42,7 @@ instance showTransmissionAST :: Show TransmissionAST where
   show (ChannelRepeater v2 t) = "Repit" <> show v2 <> show t
   show (Scalar v3 t) = "Scalar" <> show v3 <> show t
   show (Movet v3 t) = "Movet " <> show v3 <> show t
-  show (Rodar v3 t) = "Rodar" <> show v3 <> show t
+  show (Rodar dv3 t) = "Rodar" <> show dv3 <> show t
   show (Fulcober f t) = "Fulcober" <> show f <> show t
   show (Switch s t) = "Switch" <> show s <> show t
   show (Monitor s t) = "Monitor" <> show s <> show t
@@ -58,7 +57,7 @@ tASTtoT (LiteralTransmissionAST true) = defTransmissionOn
 tASTtoT (ChannelRepeater v2 t) = (tASTtoT t) {channelReapeater = v2}
 tASTtoT (Scalar v3 t) = (tASTtoT t) {size = v3}
 tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}
-tASTtoT (Rodar v3 t) = (tASTtoT t) {rotation = v3}
+tASTtoT (Rodar dv3 t) = (tASTtoT t) {rotation = dv3}
 tASTtoT (Fulcober f t) = (tASTtoT t) {fulcober = f}
 tASTtoT (Switch s t) = (tASTtoT t) {channel = s}
 tASTtoT (Monitor s t) = (tASTtoT t) {tv = (s <> ".obj"), mapping = s <> ".mtl"}

@@ -1,5 +1,7 @@
 module Transmission where
 
+import Data.Either
+
 type Transmission = {
   estado :: Boolean, -- transmission on (channel) or off (static)
   tv :: String, -- geometry of the monitor obj file
@@ -13,10 +15,10 @@ type Transmission = {
   emissionIntensity :: Number, -- missing application in parser
   size :: Vec3,
   position :: Vec3,
-  rotation :: Vec3 -- Either Vec3 Vec3 --- Left absolute values, Right dynamic values (addition like in the Three.js value: rotation.x += 1 * 0.010;)
+  rotation :: DynVec3
   }
 
--- add video material for ico - [0], ico2 needs element [1], globe nees the element [0]
+
 defTransmission :: Transmission
 defTransmission = {
   estado:             false,
@@ -31,13 +33,20 @@ defTransmission = {
   emissionIntensity:  0.5,
   size:               {x: 1.5, y: 1.5, z: 1.5},
   position:           {x: 0.0, y: 0.0, z: 0.0},
-  rotation:           {x: 0.5, y: 0.0, z: 0.0}
+  rotation:           {x: (Right 0.5), y: (Right 0.0), z: (Right 0.0)}
 }
+
 
 defTransmissionOn :: Transmission
 defTransmissionOn = defTransmission {estado = true, channel = "channels/01.mov"}
 
 ----
+
+type DynVec3 = {
+  x :: Either Number Number,
+  y :: Either Number Number,
+  z :: Either Number Number
+}
 
 type Vec2 = { x :: Number, y :: Number }
 
