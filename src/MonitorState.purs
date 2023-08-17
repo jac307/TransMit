@@ -90,7 +90,7 @@ removeMonitor sc mo = do
 updateMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
 updateMonitor sc mo t = do
   -- 1. change video url if necessary
-  updateURLfromVidElem mo t.channel
+  updateURLfromVidElem mo t.channel t.volume
   -- 2. change/load obj url/object
   changeOrLoadObjIfNecessary sc mo t.tv t.brillo (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
   -- 3. change/load material url/create new mesh
@@ -414,8 +414,9 @@ playVideoElement mo = do
   let v = mo.video -- :: HTML2.HTMLMediaElement
   HTML2.play v
 
-updateURLfromVidElem :: Monitor -> String -> Effect Unit
-updateURLfromVidElem mo url = do
+--                                  url     volume
+updateURLfromVidElem :: Monitor -> String -> Number -> Effect Unit
+updateURLfromVidElem mo url n = do
   let v = mo.video -- :: HTML2.HTMLMediaElement
   currURL <- read mo.currVidURL -- :: String
   if url /= currURL
@@ -425,7 +426,7 @@ updateURLfromVidElem mo url = do
       HTML2.load v
       HTML2.setLoop true v
       HTML2.setMuted false v
-      HTML2.setVolume 0.0 v
+      HTML2.setVolume n v
       write url mo.currVidURL -- write new info
     else (pure unit)
 

@@ -2168,20 +2168,22 @@ var v2ToX = function(v2) {
 };
 var updateURLfromVidElem = function(mo) {
   return function(url) {
-    return function __do3() {
-      var currURL = read(mo.currVidURL)();
-      var $11 = url !== currURL;
-      if ($11) {
-        setSrc(url)(mo.video)();
-        preloadAnything(mo.video)();
-        load(mo.video)();
-        setLoop(true)(mo.video)();
-        setMuted(false)(mo.video)();
-        setVolume(0)(mo.video)();
-        return write(url)(mo.currVidURL)();
-      }
-      ;
-      return unit;
+    return function(n) {
+      return function __do3() {
+        var currURL = read(mo.currVidURL)();
+        var $11 = url !== currURL;
+        if ($11) {
+          setSrc(url)(mo.video)();
+          preloadAnything(mo.video)();
+          load(mo.video)();
+          setLoop(true)(mo.video)();
+          setMuted(false)(mo.video)();
+          setVolume(n)(mo.video)();
+          return write(url)(mo.currVidURL)();
+        }
+        ;
+        return unit;
+      };
     };
   };
 };
@@ -2953,7 +2955,7 @@ var updateMonitor = function(sc) {
   return function(mo) {
     return function(t) {
       return function __do3() {
-        updateURLfromVidElem(mo)(t.channel)();
+        updateURLfromVidElem(mo)(t.channel)(t.volume)();
         changeOrLoadObjIfNecessary(sc)(mo)(t.tv)(t.brillo)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColour))(v3ToY(t.emissionColour))(v3ToZ(t.emissionColour))(t.emissionIntensity)();
         changeOrLoadMatIfNecessary(sc)(mo)(t.mapping)(t.brillo)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColour))(v3ToY(t.emissionColour))(v3ToZ(t.emissionColour))(t.emissionIntensity)();
         changeMatParametersIfNecessary(sc)(mo)(t.brillo)(v3ToX(t.colour))(v3ToY(t.colour))(v3ToZ(t.colour))(v3ToX(t.emissionColour))(v3ToY(t.emissionColour))(v3ToZ(t.emissionColour))(t.emissionIntensity)();
@@ -2970,6 +2972,7 @@ var defTransmission = /* @__PURE__ */ function() {
     estado: false,
     tv: "monitors/cubo.obj",
     mapping: "monitors/cubo.mtl",
+    volume: 0,
     channel: "channels/static.mov",
     channelReapeater: {
       x: 1,
@@ -3011,6 +3014,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
     channel: "channels/01.mov",
+    volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
     brillo: defTransmission.brillo,
@@ -3033,6 +3037,19 @@ var LiteralTransmissionAST = /* @__PURE__ */ function() {
     return new LiteralTransmissionAST2(value0);
   };
   return LiteralTransmissionAST2;
+}();
+var Volume = /* @__PURE__ */ function() {
+  function Volume2(value0, value1) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+  ;
+  Volume2.create = function(value0) {
+    return function(value1) {
+      return new Volume2(value0, value1);
+    };
+  };
+  return Volume2;
 }();
 var ChannelRepeater = /* @__PURE__ */ function() {
   function ChannelRepeater2(value0, value1) {
@@ -3203,6 +3220,26 @@ var tASTtoT = function(v) {
     return defTransmissionOn;
   }
   ;
+  if (v instanceof Volume) {
+    var v1 = tASTtoT(v.value1);
+    return {
+      estado: v1.estado,
+      tv: v1.tv,
+      mapping: v1.mapping,
+      channel: v1.channel,
+      volume: v.value0,
+      channelReapeater: v1.channelReapeater,
+      fulcober: v1.fulcober,
+      brillo: v1.brillo,
+      colour: v1.colour,
+      emissionColour: v1.emissionColour,
+      emissionIntensity: v1.emissionIntensity,
+      size: v1.size,
+      position: v1.position,
+      rotation: v1.rotation
+    };
+  }
+  ;
   if (v instanceof ChannelRepeater) {
     var v1 = tASTtoT(v.value1);
     return {
@@ -3210,6 +3247,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v.value0,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
@@ -3229,6 +3267,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
@@ -3248,6 +3287,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
@@ -3267,6 +3307,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
@@ -3286,6 +3327,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v.value0,
       brillo: v1.brillo,
@@ -3305,6 +3347,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v.value0,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
@@ -3324,6 +3367,7 @@ var tASTtoT = function(v) {
       tv: v.value0 + ".obj",
       mapping: v.value0 + ".mtl",
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
@@ -3343,6 +3387,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v.value0,
@@ -3362,6 +3407,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
@@ -3381,6 +3427,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
@@ -3400,6 +3447,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
+      volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       brillo: v1.brillo,
@@ -3412,7 +3460,7 @@ var tASTtoT = function(v) {
     };
   }
   ;
-  throw new Error("Failed pattern match at AST (line 54, column 1 - line 54, column 43): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at AST (line 55, column 1 - line 55, column 43): " + [v.constructor.name]);
 };
 
 // output/Data.Int/foreign.js
@@ -26799,7 +26847,7 @@ var tokenParser = /* @__PURE__ */ makeTokenParser(/* @__PURE__ */ function() {
     identLetter: v.identLetter,
     opStart: v.opStart,
     opLetter: v.opLetter,
-    reservedNames: ["transmission", "on", "off", "channel", "movet", "scalar", "rodar"],
+    reservedNames: ["turn off", "transmission", "trasmission", "trasmision", "transmision", "transmisssion", "on", "onn", "onnn", "off", "of", "offf", "volume", "volumen", "vol", "subele", "pumpealo", "repet", "repeat", "repitelo", "repeatelo", "scalar", "scale", "escalar", "bigealo", "movet", "muvet", "move it", "muevelo", "muvetelo", "rodar", "rotate", "rotait", "rotaetelo", "fulcober", "brillo", "color", "emit", "intensity", "switch", "suitch", "suich", "monitor", "auto", "automatic", "automatico"],
     reservedOpNames: ["=", '"', '"', "_", ";"],
     caseSensitive: v.caseSensitive
   };
@@ -26819,7 +26867,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 380, column 1 - line 380, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 403, column 1 - line 403, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -26831,7 +26879,7 @@ var reserved = /* @__PURE__ */ function() {
   return tokenParser.reserved;
 }();
 var switchFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(reserved("switch"))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("switch"))(alt(altParserT)(reserved("suitch"))(reserved("suich"))))(function() {
     return bind(bindParserT)(stringLiteral)(function(s) {
       return pure(applicativeParserT)(Switch.create("channels/" + s));
     });
@@ -26979,7 +27027,7 @@ var dynNumberRight = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(appl
   });
 });
 var dynNumberLeft = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(reserved("auto"))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("auto"))(alt(altParserT)(reserved("automatic"))(reserved("automatico"))))(function() {
     return bind(bindParserT)(number)(function(v) {
       return pure(applicativeParserT)(new Left(v));
     });
@@ -27009,10 +27057,10 @@ var functionWithDynV3 = function(functionName) {
   };
 };
 var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return choice(foldableArray)([functionWithV2("repet")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithDynV3("rodar")(Rodar.create), functionWithString("fulcober")(Fulcober.create), functionWithNumber("brillo")(Brillo.create), functionWithV3("color")(Colour.create), functionWithV3("emit")(EmissionColour.create), functionWithNumber("intensity")(EmissionIntensity.create), switchFunction, monitorFunction]);
+  return choice(foldableArray)([functionWithNumber("volume")(Volume.create), functionWithNumber("volumen")(Volume.create), functionWithNumber("vol")(Volume.create), functionWithNumber("subele")(Volume.create), functionWithNumber("pumpealo")(Volume.create), functionWithV2("repet")(ChannelRepeater.create), functionWithV2("repeat")(ChannelRepeater.create), functionWithV2("repitelo")(ChannelRepeater.create), functionWithV2("repeatelo")(ChannelRepeater.create), functionWithV3("scalar")(Scalar.create), functionWithV3("scale")(Scalar.create), functionWithV3("escalar")(Scalar.create), functionWithV3("bigealo")(Scalar.create), functionWithV3("movet")(Movet.create), functionWithV3("muvet")(Movet.create), functionWithV3("move it")(Movet.create), functionWithV3("muevelo")(Movet.create), functionWithV3("muvetelo")(Movet.create), functionWithDynV3("rodar")(Rodar.create), functionWithDynV3("rotate")(Rodar.create), functionWithDynV3("rotait")(Rodar.create), functionWithDynV3("rotaetelo")(Rodar.create), functionWithString("fulcober")(Fulcober.create), functionWithNumber("brillo")(Brillo.create), functionWithV3("color")(Colour.create), functionWithV3("emit")(EmissionColour.create), functionWithNumber("intensity")(EmissionIntensity.create), switchFunction, monitorFunction]);
 });
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(reserved("transmission"))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("transmission"))(alt(altParserT)(reserved("trasmission"))(alt(altParserT)(reserved("trasmision"))(alt(altParserT)(reserved("transmision"))(reserved("transmisssion"))))))(function() {
     return bind(bindParserT)(onOrOff)(function(b) {
       var t = new LiteralTransmissionAST(b);
       return bind(bindParserT)(many2(transformations))(function(xs) {
@@ -27170,7 +27218,11 @@ var evaluate = function(re) {
           reflectSymbol: function() {
             return "tv";
           }
-        })(showRecordFieldsNil)(showString))(showRecord()()(showRecordFieldsCons({
+        })(showRecordFieldsCons({
+          reflectSymbol: function() {
+            return "volume";
+          }
+        })(showRecordFieldsNil)(showNumber))(showString))(showRecord()()(showRecordFieldsCons({
           reflectSymbol: function() {
             return "x";
           }

@@ -73,7 +73,7 @@ noTranmission = do
 transmissionParser :: P TransmissionAST
 transmissionParser = do
   _ <- pure unit
-  reserved "transmission"
+  (reserved "transmission" <|> reserved "trasmission" <|> reserved "trasmision" <|> reserved "transmision" <|> reserved "transmisssion" )
   b <- onOrOff
   let t = LiteralTransmissionAST b
   xs <- many transformations
@@ -93,10 +93,34 @@ transformations :: P (TransmissionAST -> TransmissionAST)
 transformations = do
   _ <- pure unit
   choice [
+  --volume
+  functionWithNumber "volume" Volume,
+  functionWithNumber "volumen" Volume,
+  functionWithNumber "vol" Volume,
+  functionWithNumber "subele" Volume,
+  functionWithNumber "pumpealo" Volume,
+  --repeat
   functionWithV2 "repet" ChannelRepeater,
+  functionWithV2 "repeat" ChannelRepeater,
+  functionWithV2 "repitelo" ChannelRepeater,
+  functionWithV2 "repeatelo" ChannelRepeater,
+  --scale
   functionWithV3 "scalar" Scalar,
+  functionWithV3 "scale" Scalar,
+  functionWithV3 "escalar" Scalar,
+  functionWithV3 "bigealo" Scalar,
+  --move
   functionWithV3 "movet" Movet,
+  functionWithV3 "muvet" Movet,
+  functionWithV3 "move it" Movet,
+  functionWithV3 "muevelo" Movet,
+  functionWithV3 "muvetelo" Movet,
+  --rotate
   functionWithDynV3 "rodar" Rodar,
+  functionWithDynV3 "rotate" Rodar,
+  functionWithDynV3 "rotait" Rodar,
+  functionWithDynV3 "rotaetelo" Rodar,
+  --
   functionWithString "fulcober" Fulcober,
   functionWithNumber "brillo" Brillo,
   functionWithV3 "color" Colour,
@@ -106,11 +130,10 @@ transformations = do
   monitorFunction
   ]
 
-
 switchFunction :: P (TransmissionAST -> TransmissionAST)
 switchFunction = do
   _ <- pure unit
-  reserved "switch"
+  (reserved "switch" <|> reserved "suitch" <|> reserved "suich")
   s <- stringLiteral
   pure $ Switch ("channels/" <> s)
   -- should remove the empty spaces at the beginning of s
@@ -120,7 +143,7 @@ switchFunction = do
 monitorFunction :: P (TransmissionAST -> TransmissionAST)
 monitorFunction = do
   _ <- pure unit
-  reserved "monitor"
+  (reserved "monitor")
   s <- stringLiteral
   pure $ Monitor ("monitors/" <> s)
 -- check empty spaces
@@ -176,7 +199,7 @@ dynNumber = choice [ try dynNumberLeft, try dynNumberRight ]
 dynNumberLeft :: P (Either Number Number)
 dynNumberLeft = do
   _ <- pure unit
-  reserved "auto"
+  (reserved "auto" <|> reserved "automatic" <|> reserved "automatico")
   v <- number
   pure $ Left v
 
@@ -273,7 +296,7 @@ negativeNumber = do
 
 tokenParser :: GenTokenParser String Identity
 tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
-  reservedNames = ["transmission", "on", "off", "channel", "movet", "scalar", "rodar"],
+  reservedNames = ["turn off", "transmission", "trasmission", "trasmision", "transmision", "transmisssion", "on", "onn", "onnn", "off", "of", "offf", "volume", "volumen", "vol", "subele", "pumpealo", "repet", "repeat", "repitelo", "repeatelo", "scalar", "scale", "escalar", "bigealo", "movet", "muvet", "move it", "muevelo", "muvetelo", "rodar", "rotate", "rotait", "rotaetelo", "fulcober", "brillo", "color", "emit", "intensity", "switch", "suitch", "suich", "monitor", "auto", "automatic", "automatico"],
   reservedOpNames = ["=", "\"", "\"", "_", ";"]
   }
 

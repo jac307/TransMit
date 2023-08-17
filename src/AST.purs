@@ -24,6 +24,7 @@ instance showStatement :: Show Statement where
 
 data TransmissionAST =
   LiteralTransmissionAST Boolean |
+  Volume Number TransmissionAST |
   ChannelRepeater Vec2 TransmissionAST |
   Scalar Vec3 TransmissionAST |
   Movet Vec3 TransmissionAST |
@@ -34,11 +35,11 @@ data TransmissionAST =
   Brillo Number TransmissionAST |
   Colour Vec3 TransmissionAST |
   EmissionColour Vec3 TransmissionAST |
-  EmissionIntensity Number TransmissionAST 
-  --Volume Float TransmissionAST
+  EmissionIntensity Number TransmissionAST
 
 instance showTransmissionAST :: Show TransmissionAST where
   show (LiteralTransmissionAST b) = "LitTransmission " <> show b
+  show (Volume n t) = "Volume" <> show n <> show t
   show (ChannelRepeater v2 t) = "Repit" <> show v2 <> show t
   show (Scalar v3 t) = "Scalar" <> show v3 <> show t
   show (Movet v3 t) = "Movet " <> show v3 <> show t
@@ -54,6 +55,7 @@ instance showTransmissionAST :: Show TransmissionAST where
 tASTtoT :: TransmissionAST -> Transmission
 tASTtoT (LiteralTransmissionAST false) = defTransmission
 tASTtoT (LiteralTransmissionAST true) = defTransmissionOn
+tASTtoT (Volume n t) = (tASTtoT t) {volume = n}
 tASTtoT (ChannelRepeater v2 t) = (tASTtoT t) {channelReapeater = v2}
 tASTtoT (Scalar v3 t) = (tASTtoT t) {size = v3}
 tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}

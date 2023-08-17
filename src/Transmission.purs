@@ -7,6 +7,7 @@ type Transmission = {
   tv :: String, -- geometry of the monitor obj file
   mapping :: String, -- how video envolves monitor mtl file
   channel :: String, -- video playing
+  volume :: Number,
   channelReapeater :: Vec2, -- how many times the video repeats on the monitor
   fulcober :: String,
   brillo :: Number,
@@ -24,6 +25,7 @@ defTransmission = {
   estado:             false,
   tv:                 "monitors/cubo.obj",
   mapping:            "monitors/cubo.mtl",
+  volume:             0.0,
   channel:            "channels/static.mov",
   channelReapeater:   {x: 1.0, y: 1.0},
   fulcober:           "rgbaFormat",
