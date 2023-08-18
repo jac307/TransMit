@@ -2280,7 +2280,7 @@ var setRotationZ2 = function(o) {
       return setRotationZ(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 381, column 1 - line 381, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 416, column 1 - line 416, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationY2 = function(o) {
@@ -2293,7 +2293,7 @@ var setRotationY2 = function(o) {
       return setRotationY(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 377, column 1 - line 377, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 412, column 1 - line 412, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationX2 = function(o) {
@@ -2306,7 +2306,7 @@ var setRotationX2 = function(o) {
       return setRotationX(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 373, column 1 - line 373, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 408, column 1 - line 408, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var transformTransmission$prime = function(g) {
@@ -2333,7 +2333,7 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 360, column 3 - line 362, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 395, column 3 - line 397, column 41): " + [g.constructor.name]);
       };
     };
   };
@@ -2357,6 +2357,26 @@ var selectMatTrans = function(v) {
     }
     ;
     if (v === "monitors/cubo-4.obj") {
+      return matTransparency0(g);
+    }
+    ;
+    if (v === "monitors/squaredPlane.obj") {
+      return matTransparency0(g);
+    }
+    ;
+    if (v === "monitors/rectPlane.obj") {
+      return matTransparency0(g);
+    }
+    ;
+    if (v === "monitors/rectPlane2.obj") {
+      return matTransparency0(g);
+    }
+    ;
+    if (v === "monitors/rectPlane3.obj") {
+      return matTransparency0(g);
+    }
+    ;
+    if (v === "monitors/rectPlane4.obj") {
       return matTransparency0(g);
     }
     ;
@@ -2399,6 +2419,26 @@ var selectMatOpacity = function(v) {
       }
       ;
       if (v === "monitors/cubo-4.obj") {
+        return matOpacity0(g)(n);
+      }
+      ;
+      if (v === "monitors/squaredPlane.obj") {
+        return matOpacity0(g)(n);
+      }
+      ;
+      if (v === "monitors/rectPlane.obj") {
+        return matOpacity0(g)(n);
+      }
+      ;
+      if (v === "monitors/rectPlane2.obj") {
+        return matOpacity0(g)(n);
+      }
+      ;
+      if (v === "monitors/rectPlane3.obj") {
+        return matOpacity0(g)(n);
+      }
+      ;
+      if (v === "monitors/rectPlane4.obj") {
         return matOpacity0(g)(n);
       }
       ;
@@ -2445,6 +2485,26 @@ var selectMatEmiInten = function(v) {
         return matEmisInt0(g)(n);
       }
       ;
+      if (v === "monitors/squaredPlane.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/rectPlane.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/rectPlane2.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/rectPlane3.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
+      if (v === "monitors/rectPlane4.obj") {
+        return matEmisInt0(g)(n);
+      }
+      ;
       if (v === "monitors/ico.obj") {
         return matEmisInt0(g)(n);
       }
@@ -2487,6 +2547,26 @@ var selectMatEmiColor = function(v) {
           }
           ;
           if (v === "monitors/cubo-4.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/squaredPlane.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/rectPlane.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/rectPlane2.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/rectPlane3.obj") {
+            return matEmisive0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/rectPlane4.obj") {
             return matEmisive0(g)(n1)(n2)(n3);
           }
           ;
@@ -2537,6 +2617,26 @@ var selectMatColor = function(v) {
             return matColor0(g)(n1)(n2)(n3);
           }
           ;
+          if (v === "monitors/squaredPlane.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/rectPlane.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/rectPlane2.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/rectPlane3.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
+          if (v === "monitors/rectPlane4.obj") {
+            return matColor0(g)(n1)(n2)(n3);
+          }
+          ;
           if (v === "monitors/ico.obj") {
             return matColor0(g)(n1)(n2)(n3);
           }
@@ -2582,6 +2682,26 @@ var selectMapVidToMat = function(v) {
         return mapVidToMatNone(m)(vt);
       }
       ;
+      if (v === "monitors/squaredPlane.obj") {
+        return mapVidToMatNone(m)(vt);
+      }
+      ;
+      if (v === "monitors/rectPlane.obj") {
+        return mapVidToMatNone(m)(vt);
+      }
+      ;
+      if (v === "monitors/rectPlane2.obj") {
+        return mapVidToMatNone(m)(vt);
+      }
+      ;
+      if (v === "monitors/rectPlane3.obj") {
+        return mapVidToMatNone(m)(vt);
+      }
+      ;
+      if (v === "monitors/rectPlane4.obj") {
+        return mapVidToMatNone(m)(vt);
+      }
+      ;
       if (v === "monitors/ico.obj") {
         return mapVidToMatNone(m)(vt);
       }
@@ -2622,6 +2742,26 @@ var selectMapToObj = function(v) {
       }
       ;
       if (v === "monitors/cubo-4.obj") {
+        return mapChildrenToMatNone0(g)(m);
+      }
+      ;
+      if (v === "monitors/squaredPlane.obj") {
+        return mapChildrenToMatNone0(g)(m);
+      }
+      ;
+      if (v === "monitors/rectPlane.obj") {
+        return mapChildrenToMatNone0(g)(m);
+      }
+      ;
+      if (v === "monitors/rectPlane2.obj") {
+        return mapChildrenToMatNone0(g)(m);
+      }
+      ;
+      if (v === "monitors/rectPlane3.obj") {
+        return mapChildrenToMatNone0(g)(m);
+      }
+      ;
+      if (v === "monitors/rectPlane4.obj") {
         return mapChildrenToMatNone0(g)(m);
       }
       ;
@@ -3394,7 +3534,7 @@ var tASTtoT = function(v) {
       estado: v1.estado,
       tv: v1.tv,
       mapping: v1.mapping,
-      channel: v.value0,
+      channel: v.value0 + ".mp4",
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,

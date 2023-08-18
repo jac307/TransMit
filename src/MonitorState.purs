@@ -226,6 +226,11 @@ selectMapVidToMat "monitors/cubo-2.obj" m vt = mapVidToMatMat m vt
 -- None 0
 selectMapVidToMat "monitors/cubo-3.obj" m vt = mapVidToMatNone m vt
 selectMapVidToMat "monitors/cubo-4.obj" m vt = mapVidToMatNone m vt
+selectMapVidToMat "monitors/squaredPlane.obj" m vt = mapVidToMatNone m vt
+selectMapVidToMat "monitors/rectPlane.obj" m vt = mapVidToMatNone m vt
+selectMapVidToMat "monitors/rectPlane2.obj" m vt = mapVidToMatNone m vt
+selectMapVidToMat "monitors/rectPlane3.obj" m vt = mapVidToMatNone m vt
+selectMapVidToMat "monitors/rectPlane4.obj" m vt = mapVidToMatNone m vt
 selectMapVidToMat "monitors/ico.obj" m vt = mapVidToMatNone m vt
 selectMapVidToMat "monitors/globe.obj" m vt = mapVidToMatNone m vt
 -- None 1
@@ -246,6 +251,11 @@ selectMapToObj "monitors/cubo-2.obj" g m = mapChildrenToMatMat g m
 -- None 0
 selectMapToObj "monitors/cubo-3.obj" g m = mapChildrenToMatNone0 g m
 selectMapToObj "monitors/cubo-4.obj" g m = mapChildrenToMatNone0 g m
+selectMapToObj "monitors/squaredPlane.obj" g m = mapChildrenToMatNone0 g m
+selectMapToObj "monitors/rectPlane.obj" g m = mapChildrenToMatNone0 g m
+selectMapToObj "monitors/rectPlane2.obj" g m = mapChildrenToMatNone0 g m
+selectMapToObj "monitors/rectPlane3.obj" g m = mapChildrenToMatNone0 g m
+selectMapToObj "monitors/rectPlane4.obj" g m = mapChildrenToMatNone0 g m
 selectMapToObj "monitors/ico.obj" g m = mapChildrenToMatNone0 g m
 selectMapToObj "monitors/globe.obj" g m = mapChildrenToMatNone0 g m
 -- None 1
@@ -266,6 +276,11 @@ selectMatTrans "monitors/cubo-1.obj" g = matTransparency0 g
 selectMatTrans "monitors/cubo-2.obj" g = matTransparency0 g
 selectMatTrans "monitors/cubo-3.obj" g = matTransparency0 g
 selectMatTrans "monitors/cubo-4.obj" g = matTransparency0 g
+selectMatTrans "monitors/squaredPlane.obj" g = matTransparency0 g
+selectMatTrans "monitors/rectPlane.obj" g = matTransparency0 g
+selectMatTrans "monitors/rectPlane2.obj" g = matTransparency0 g
+selectMatTrans "monitors/rectPlane3.obj" g = matTransparency0 g
+selectMatTrans "monitors/rectPlane4.obj" g = matTransparency0 g
 selectMatTrans "monitors/ico.obj" g = matTransparency0 g
 selectMatTrans "monitors/globe.obj" g = matTransparency0 g
 -- 1
@@ -285,6 +300,11 @@ selectMatOpacity "monitors/cubo-1.obj" g n = matOpacity0 g n
 selectMatOpacity "monitors/cubo-2.obj" g n = matOpacity0 g n
 selectMatOpacity "monitors/cubo-3.obj" g n = matOpacity0 g n
 selectMatOpacity "monitors/cubo-4.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/squaredPlane.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/rectPlane.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/rectPlane2.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/rectPlane3.obj" g n = matOpacity0 g n
+selectMatOpacity "monitors/rectPlane4.obj" g n = matOpacity0 g n
 selectMatOpacity "monitors/ico.obj" g n = matOpacity0 g n
 selectMatOpacity "monitors/globe.obj" g n = matOpacity0 g n
 -- 1
@@ -304,6 +324,11 @@ selectMatColor "monitors/cubo-1.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
 selectMatColor "monitors/cubo-2.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
 selectMatColor "monitors/cubo-3.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
 selectMatColor "monitors/cubo-4.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/squaredPlane.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/rectPlane.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/rectPlane2.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/rectPlane3.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
+selectMatColor "monitors/rectPlane4.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
 selectMatColor "monitors/ico.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
 selectMatColor "monitors/globe.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
 -- 1
@@ -323,6 +348,11 @@ selectMatEmiInten "monitors/cubo-1.obj" g n = matEmisInt0 g n
 selectMatEmiInten "monitors/cubo-2.obj" g n = matEmisInt0 g n
 selectMatEmiInten "monitors/cubo-3.obj" g n = matEmisInt0 g n
 selectMatEmiInten "monitors/cubo-4.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/squaredPlane.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/rectPlane.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/rectPlane2.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/rectPlane3.obj" g n = matEmisInt0 g n
+selectMatEmiInten "monitors/rectPlane4.obj" g n = matEmisInt0 g n
 selectMatEmiInten "monitors/ico.obj" g n = matEmisInt0 g n
 selectMatEmiInten "monitors/globe.obj" g n = matEmisInt0 g n
 -- 1
@@ -342,6 +372,11 @@ selectMatEmiColor "monitors/cubo-1.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
 selectMatEmiColor "monitors/cubo-2.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
 selectMatEmiColor "monitors/cubo-3.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
 selectMatEmiColor "monitors/cubo-4.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/squaredPlane.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/rectPlane.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/rectPlane2.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/rectPlane3.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
+selectMatEmiColor "monitors/rectPlane4.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
 selectMatEmiColor "monitors/ico.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
 selectMatEmiColor "monitors/globe.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
 -- 1
