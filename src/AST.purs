@@ -26,7 +26,7 @@ data TransmissionAST =
   LiteralTransmissionAST Boolean |
   Volume Number TransmissionAST |
   ChannelRepeater Vec2 TransmissionAST |
-  Scalar Vec3 TransmissionAST |
+  Scalar Number TransmissionAST |
   Movet Vec3 TransmissionAST |
   Rodar DynVec3 TransmissionAST |
   Fulcober String TransmissionAST |
@@ -41,7 +41,7 @@ instance showTransmissionAST :: Show TransmissionAST where
   show (LiteralTransmissionAST b) = "LitTransmission " <> show b
   show (Volume n t) = "Volume" <> show n <> show t
   show (ChannelRepeater v2 t) = "Repit" <> show v2 <> show t
-  show (Scalar v3 t) = "Scalar" <> show v3 <> show t
+  show (Scalar n t) = "Scalar" <> show n <> show t
   show (Movet v3 t) = "Movet " <> show v3 <> show t
   show (Rodar dv3 t) = "Rodar" <> show dv3 <> show t
   show (Fulcober f t) = "Fulcober" <> show f <> show t
@@ -57,7 +57,7 @@ tASTtoT (LiteralTransmissionAST false) = defTransmission
 tASTtoT (LiteralTransmissionAST true) = defTransmissionOn
 tASTtoT (Volume n t) = (tASTtoT t) {volume = n}
 tASTtoT (ChannelRepeater v2 t) = (tASTtoT t) {channelReapeater = v2}
-tASTtoT (Scalar v3 t) = (tASTtoT t) {size = v3}
+tASTtoT (Scalar n t) = (tASTtoT t) {size = n}
 tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}
 tASTtoT (Rodar dv3 t) = (tASTtoT t) {rotation = dv3}
 tASTtoT (Fulcober f t) = (tASTtoT t) {fulcober = f}

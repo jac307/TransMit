@@ -104,14 +104,10 @@ transformations = do
   functionWithV2 "repeat" ChannelRepeater,
   functionWithV2 "repitelo" ChannelRepeater,
   functionWithV2 "repeatelo" ChannelRepeater,
-  --scale
-  functionWithV3 "scalar" Scalar,
-  functionWithV3 "scale" Scalar,
-  functionWithV3 "escalar" Scalar,
-  functionWithV3 "bigealo" Scalar,
   --move
   functionWithV3 "movet" Movet,
   functionWithV3 "muvet" Movet,
+  functionWithV3 "muvit" Movet,
   functionWithV3 "move it" Movet,
   functionWithV3 "muevelo" Movet,
   functionWithV3 "muvetelo" Movet,
@@ -151,7 +147,8 @@ transformations = do
   functionWithNumber "briyo" EmissionIntensity,
   --
   switchFunction,
-  monitorFunction
+  monitorFunction,
+  scalarFunction
   ]
 
 switchFunction :: P (TransmissionAST -> TransmissionAST)
@@ -171,6 +168,13 @@ monitorFunction = do
   s <- stringLiteral
   pure $ Monitor ("monitors/" <> s)
 -- check empty spaces
+
+scalarFunction :: P (TransmissionAST -> TransmissionAST)
+scalarFunction = do
+  _ <- pure unit
+  (reserved "scalar" <|> reserved "scale" <|> reserved "escalar" <|> reserved "bigealo")
+  n <- number
+  pure $ Scalar n
 
 functionWithString :: String -> (String -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
 functionWithString functionName constructor = try $ do
@@ -201,6 +205,9 @@ functionWithNumber functionName constructor = try $ do
   reserved functionName
   n <- number
   pure $ constructor n
+
+
+------- PARAMETERS
 
 ----------
 --- Either Number Number

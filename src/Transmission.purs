@@ -14,7 +14,7 @@ type Transmission = {
   colour :: Vec3, -- missing application in parser
   emissionColour :: Vec3, -- missing application in parser
   emissionIntensity :: Number, -- missing application in parser
-  size :: Vec3,
+  size :: Number,
   position :: Vec3,
   rotation :: DynVec3
   }
@@ -29,11 +29,11 @@ defTransmission = {
   channel:            "channels/static.mov",
   channelReapeater:   {x: 1.0, y: 1.0},
   fulcober:           "rgbaFormat",
-  translucidez:             1.0,
+  translucidez:       1.0,
   colour:             {x: 0.6, y: 0.6, z: 0.6}, -- rgb
   emissionColour:     {x: 0.0, y: 0.0, z: 0.0}, -- rgb
   emissionIntensity:  0.5,
-  size:               {x: 1.5, y: 1.5, z: 1.5},
+  size:               1.0,
   position:           {x: 0.0, y: 0.0, z: 0.0},
   rotation:           {x: (Right 0.5), y: (Right 0.0), z: (Right 0.0)}
 }

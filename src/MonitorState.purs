@@ -233,7 +233,7 @@ transformTransmission sc mo t = do
 
 transformTransmission' :: TJS.OBJ -> Transmission -> Effect Unit
 transformTransmission' g t = do
-  TJS.setScaleOfAnything g (v3ToX t.size) (v3ToY t.size) (v3ToZ t.size)
+  TJS.setScaleOfAnything g t.size t.size t.size
   TJS.setPositionOfAnything g (v3ToX t.position) (v3ToY t.position) (v3ToZ t.position)
   setRotationX g t.rotation.x
   setRotationY g t.rotation.y
