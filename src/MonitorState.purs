@@ -200,193 +200,28 @@ removeMaterial sc mo = do
 makeTransmission :: String -> TJS.Scene -> TJS.OBJ -> TJS.MTL -> TJS.TextureLoader -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
 makeTransmission url sc g m vt t rC gC bC rE gE bE iE = do
   -- 1. combine the three things to make a mesh
-  selectMapVidToMat url m vt
-  selectMapToObj url g m
+  mapVidToMatNone m vt
+  mapChildrenToMatNone g m
   -- Transform Material
-  selectMatTrans url g
-  selectMatOpacity url g t
-  selectMatColor url g rC gC bC
-  selectMatEmiColor url g rE gE bE
-  selectMatEmiInten url g iE
+  matTransparency g
+  matOpacity g t
+  matColor g rC gC bC
+  matEmisColour g rE gE bE
+  matEmisInt g iE
   --
   TJS.printAnything m
   -- 2. add mesh to scene
   TJS.addAnythingToScene sc g
 
-
 -- Imported Functions --
 foreign import preloadMaterials :: TJS.MTL -> Effect Unit
---
-
-selectMapVidToMat :: String -> TJS.MTL -> TJS.TextureLoader -> Effect Unit
--- Material 0
-selectMapVidToMat "monitors/cubo.obj" m vt = mapVidToMatMat m vt
-selectMapVidToMat "monitors/cubo-1.obj" m vt = mapVidToMatMat m vt
-selectMapVidToMat "monitors/cubo-2.obj" m vt = mapVidToMatMat m vt
--- None 0
-selectMapVidToMat "monitors/cubo-3.obj" m vt = mapVidToMatNone m vt
-selectMapVidToMat "monitors/cubo-4.obj" m vt = mapVidToMatNone m vt
-selectMapVidToMat "monitors/squaredPlane.obj" m vt = mapVidToMatNone m vt
-selectMapVidToMat "monitors/rectPlane.obj" m vt = mapVidToMatNone m vt
-selectMapVidToMat "monitors/rectPlane2.obj" m vt = mapVidToMatNone m vt
-selectMapVidToMat "monitors/rectPlane3.obj" m vt = mapVidToMatNone m vt
-selectMapVidToMat "monitors/rectPlane4.obj" m vt = mapVidToMatNone m vt
-selectMapVidToMat "monitors/ico.obj" m vt = mapVidToMatNone m vt
-selectMapVidToMat "monitors/globe.obj" m vt = mapVidToMatNone m vt
--- None 1
-selectMapVidToMat "monitors/ico2.obj" m vt = mapVidToMatNone m vt
-selectMapVidToMat "monitors/exp.obj" m vt = mapVidToMatNone m vt
---
-selectMapVidToMat _ m vt = mapVidToMatMat m vt
-
-foreign import mapVidToMatMat :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
 foreign import mapVidToMatNone :: TJS.MTL -> TJS.TextureLoader -> Effect Unit
---
-
-selectMapToObj :: String -> TJS.OBJ -> TJS.MTL -> Effect Unit
--- Material 0
-selectMapToObj "monitors/cubo.obj" g m = mapChildrenToMatMat g m
-selectMapToObj "monitors/cubo-1.obj" g m = mapChildrenToMatMat g m
-selectMapToObj "monitors/cubo-2.obj" g m = mapChildrenToMatMat g m
--- None 0
-selectMapToObj "monitors/cubo-3.obj" g m = mapChildrenToMatNone0 g m
-selectMapToObj "monitors/cubo-4.obj" g m = mapChildrenToMatNone0 g m
-selectMapToObj "monitors/squaredPlane.obj" g m = mapChildrenToMatNone0 g m
-selectMapToObj "monitors/rectPlane.obj" g m = mapChildrenToMatNone0 g m
-selectMapToObj "monitors/rectPlane2.obj" g m = mapChildrenToMatNone0 g m
-selectMapToObj "monitors/rectPlane3.obj" g m = mapChildrenToMatNone0 g m
-selectMapToObj "monitors/rectPlane4.obj" g m = mapChildrenToMatNone0 g m
-selectMapToObj "monitors/ico.obj" g m = mapChildrenToMatNone0 g m
-selectMapToObj "monitors/globe.obj" g m = mapChildrenToMatNone0 g m
--- None 1
-selectMapToObj "monitors/ico2.obj" g m = mapChildrenToMatNone1 g m
-selectMapToObj "monitors/exp.obj" g m = mapChildrenToMatNone1 g m
---
-selectMapToObj _ g m = mapChildrenToMatMat g m
-
-foreign import mapChildrenToMatMat :: TJS.OBJ -> TJS.MTL -> Effect Unit
-foreign import mapChildrenToMatNone0 :: TJS.OBJ -> TJS.MTL -> Effect Unit
-foreign import mapChildrenToMatNone1 :: TJS.OBJ -> TJS.MTL -> Effect Unit
---
-
-selectMatTrans :: String -> TJS.OBJ -> Effect Unit
--- 0
-selectMatTrans "monitors/cubo.obj" g = matTransparency0 g
-selectMatTrans "monitors/cubo-1.obj" g = matTransparency0 g
-selectMatTrans "monitors/cubo-2.obj" g = matTransparency0 g
-selectMatTrans "monitors/cubo-3.obj" g = matTransparency0 g
-selectMatTrans "monitors/cubo-4.obj" g = matTransparency0 g
-selectMatTrans "monitors/squaredPlane.obj" g = matTransparency0 g
-selectMatTrans "monitors/rectPlane.obj" g = matTransparency0 g
-selectMatTrans "monitors/rectPlane2.obj" g = matTransparency0 g
-selectMatTrans "monitors/rectPlane3.obj" g = matTransparency0 g
-selectMatTrans "monitors/rectPlane4.obj" g = matTransparency0 g
-selectMatTrans "monitors/ico.obj" g = matTransparency0 g
-selectMatTrans "monitors/globe.obj" g = matTransparency0 g
--- 1
-selectMatTrans "monitors/ico2.obj" g = matTransparency1 g
-selectMatTrans "monitors/exp.obj" g = matTransparency1 g
---
-selectMatTrans _ g = matTransparency0 g
-
-foreign import matTransparency0 :: TJS.OBJ -> Effect Unit
-foreign import matTransparency1 :: TJS.OBJ -> Effect Unit
---
-
-selectMatOpacity :: String -> TJS.OBJ -> Number -> Effect Unit
--- 0
-selectMatOpacity "monitors/cubo.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/cubo-1.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/cubo-2.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/cubo-3.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/cubo-4.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/squaredPlane.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/rectPlane.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/rectPlane2.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/rectPlane3.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/rectPlane4.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/ico.obj" g n = matOpacity0 g n
-selectMatOpacity "monitors/globe.obj" g n = matOpacity0 g n
--- 1
-selectMatOpacity "monitors/ico2.obj" g n = matOpacity1 g n
-selectMatOpacity "monitors/exp.obj" g n = matOpacity1 g n
---
-selectMatOpacity _ g n = matOpacity0 g n
-
-foreign import matOpacity0 :: TJS.OBJ -> Number -> Effect Unit
-foreign import matOpacity1 :: TJS.OBJ -> Number -> Effect Unit
---
-
-selectMatColor :: String -> TJS.OBJ -> Number -> Number -> Number -> Effect Unit
--- 0
-selectMatColor "monitors/cubo.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/cubo-1.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/cubo-2.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/cubo-3.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/cubo-4.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/squaredPlane.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/rectPlane.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/rectPlane2.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/rectPlane3.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/rectPlane4.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/ico.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
-selectMatColor "monitors/globe.obj" g n1 n2 n3 = matColor0 g n1 n2 n3
--- 1
-selectMatColor "monitors/ico2.obj" g n1 n2 n3 = matColor1 g n1 n2 n3
-selectMatColor "monitors/exp.obj" g n1 n2 n3 = matColor1 g n1 n2 n3
---
-selectMatColor _ g n1 n2 n3 = matColor0 g n1 n2 n3
-
-foreign import matColor0 :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
-foreign import matColor1 :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
---
-
-selectMatEmiInten :: String -> TJS.OBJ -> Number -> Effect Unit
--- 0
-selectMatEmiInten "monitors/cubo.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/cubo-1.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/cubo-2.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/cubo-3.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/cubo-4.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/squaredPlane.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/rectPlane.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/rectPlane2.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/rectPlane3.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/rectPlane4.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/ico.obj" g n = matEmisInt0 g n
-selectMatEmiInten "monitors/globe.obj" g n = matEmisInt0 g n
--- 1
-selectMatEmiInten "monitors/ico2.obj" g n = matEmisInt1 g n
-selectMatEmiInten "monitors/exp.obj" g n = matEmisInt1 g n
---
-selectMatEmiInten _ g n = matEmisInt0 g n
-
-foreign import matEmisInt0 :: TJS.OBJ -> Number -> Effect Unit
-foreign import matEmisInt1 :: TJS.OBJ -> Number -> Effect Unit
---
-
-selectMatEmiColor :: String -> TJS.OBJ -> Number -> Number -> Number -> Effect Unit
--- 0
-selectMatEmiColor "monitors/cubo.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/cubo-1.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/cubo-2.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/cubo-3.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/cubo-4.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/squaredPlane.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/rectPlane.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/rectPlane2.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/rectPlane3.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/rectPlane4.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/ico.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
-selectMatEmiColor "monitors/globe.obj" g n1 n2 n3 = matEmisive0 g n1 n2 n3
--- 1
-selectMatEmiColor "monitors/ico2.obj" g n1 n2 n3 = matEmisive1 g n1 n2 n3
-selectMatEmiColor "monitors/exp.obj" g n1 n2 n3 = matEmisive1 g n1 n2 n3
---
-selectMatEmiColor _ g n1 n2 n3 = matEmisive0 g n1 n2 n3
-
-foreign import matEmisive0 :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
-foreign import matEmisive1 :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
+foreign import mapChildrenToMatNone :: TJS.OBJ -> TJS.MTL -> Effect Unit
+foreign import matTransparency :: TJS.OBJ -> Effect Unit
+foreign import matOpacity :: TJS.OBJ -> Number -> Effect Unit
+foreign import matColor :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
+foreign import matEmisColour :: TJS.OBJ -> Number -> Number -> Number -> Effect Unit
+foreign import matEmisInt :: TJS.OBJ -> Number -> Effect Unit
 ---
 
 transformTransmission :: TJS.Scene -> Monitor -> Transmission -> Effect Unit

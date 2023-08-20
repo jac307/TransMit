@@ -23,8 +23,8 @@ type Transmission = {
 defTransmission :: Transmission
 defTransmission = {
   estado:             false,
-  tv:                 "monitors/cubo.obj",
-  mapping:            "monitors/cubo.mtl",
+  tv:                 "monitors/Cubo-1.obj",
+  mapping:            "monitors/Cubo-1.mtl",
   volume:             0.0,
   channel:            "channels/static.mov",
   channelReapeater:   {x: 1.0, y: 1.0},

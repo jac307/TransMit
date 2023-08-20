@@ -1931,21 +1931,13 @@ var log2 = function(dictMonadEffect) {
 
 // output/MonitorState/foreign.js
 var preloadMaterials = (m) => () => m.preload();
-var mapVidToMatMat = (m) => (vt) => () => m.materials.Material.map = vt;
-var mapChildrenToMatMat = (o) => (m) => () => o.children[0].material = m.materials.Material;
 var mapVidToMatNone = (m) => (vt) => () => m.materials.None.map = vt;
-var mapChildrenToMatNone0 = (o) => (m) => () => o.children[0].material = m.materials.None;
-var mapChildrenToMatNone1 = (o) => (m) => () => o.children[1].material = m.materials.None;
-var matTransparency0 = (o) => () => o.children[0].material.transparent = true;
-var matTransparency1 = (o) => () => o.children[1].material.transparent = true;
-var matOpacity0 = (o) => (n) => () => o.children[0].material.opacity = n;
-var matOpacity1 = (o) => (n) => () => o.children[1].material.opacity = n;
-var matColor0 = (o) => (n1) => (n2) => (n3) => () => o.children[0].material.color = { r: n1, g: n2, b: n3 };
-var matColor1 = (o) => (n1) => (n2) => (n3) => () => o.children[1].material.color = { r: n1, g: n2, b: n3 };
-var matEmisInt0 = (o) => (n) => () => o.children[0].material.emissiveIntensity = n;
-var matEmisInt1 = (o) => (n) => () => o.children[1].material.emissiveIntensity = n;
-var matEmisive0 = (o) => (n1) => (n2) => (n3) => () => o.children[0].material.emissive = { r: n1, g: n2, b: n3 };
-var matEmisive1 = (o) => (n1) => (n2) => (n3) => () => o.children[1].material.emissive = { r: n1, g: n2, b: n3 };
+var mapChildrenToMatNone = (o) => (m) => () => o.children[0].material = m.materials.None;
+var matTransparency = (o) => () => o.children[0].material.transparent = true;
+var matOpacity = (o) => (n) => () => o.children[0].material.opacity = n;
+var matColor = (o) => (n1) => (n2) => (n3) => () => o.children[0].material.color = { r: n1, g: n2, b: n3 };
+var matEmisColour = (o) => (n1) => (n2) => (n3) => () => o.children[0].material.emissive = { r: n1, g: n2, b: n3 };
+var matEmisInt = (o) => (n) => () => o.children[0].material.emissiveIntensity = n;
 var dynRotX = (o) => (v) => () => o.rotation.x += v;
 var dynRotY = (o) => (v) => () => o.rotation.y += v;
 var dynRotZ = (o) => (v) => () => o.rotation.z += v;
@@ -2171,8 +2163,8 @@ var updateURLfromVidElem = function(mo) {
     return function(n) {
       return function __do3() {
         var currURL = read(mo.currVidURL)();
-        var $11 = url !== currURL;
-        if ($11) {
+        var $4 = url !== currURL;
+        if ($4) {
           setSrc(url)(mo.video)();
           preloadAnything(mo.video)();
           load(mo.video)();
@@ -2280,7 +2272,7 @@ var setRotationZ2 = function(o) {
       return setRotationZ(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 416, column 1 - line 416, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 251, column 1 - line 251, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationY2 = function(o) {
@@ -2293,7 +2285,7 @@ var setRotationY2 = function(o) {
       return setRotationY(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 412, column 1 - line 412, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 247, column 1 - line 247, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationX2 = function(o) {
@@ -2306,7 +2298,7 @@ var setRotationX2 = function(o) {
       return setRotationX(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 408, column 1 - line 408, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 243, column 1 - line 243, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var transformTransmission$prime = function(g) {
@@ -2333,455 +2325,8 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 395, column 3 - line 397, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 230, column 3 - line 232, column 41): " + [g.constructor.name]);
       };
-    };
-  };
-};
-var selectMatTrans = function(v) {
-  return function(g) {
-    if (v === "monitors/cubo.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/cubo-1.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/cubo-2.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/cubo-3.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/cubo-4.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/squaredPlane.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/rectPlane.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/rectPlane2.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/rectPlane3.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/rectPlane4.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/ico.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/globe.obj") {
-      return matTransparency0(g);
-    }
-    ;
-    if (v === "monitors/ico2.obj") {
-      return matTransparency1(g);
-    }
-    ;
-    if (v === "monitors/exp.obj") {
-      return matTransparency1(g);
-    }
-    ;
-    return matTransparency0(g);
-  };
-};
-var selectMatOpacity = function(v) {
-  return function(g) {
-    return function(n) {
-      if (v === "monitors/cubo.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/cubo-1.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/cubo-2.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/cubo-3.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/cubo-4.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/squaredPlane.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/rectPlane.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/rectPlane2.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/rectPlane3.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/rectPlane4.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/ico.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/globe.obj") {
-        return matOpacity0(g)(n);
-      }
-      ;
-      if (v === "monitors/ico2.obj") {
-        return matOpacity1(g)(n);
-      }
-      ;
-      if (v === "monitors/exp.obj") {
-        return matOpacity1(g)(n);
-      }
-      ;
-      return matOpacity0(g)(n);
-    };
-  };
-};
-var selectMatEmiInten = function(v) {
-  return function(g) {
-    return function(n) {
-      if (v === "monitors/cubo.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/cubo-1.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/cubo-2.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/cubo-3.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/cubo-4.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/squaredPlane.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/rectPlane.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/rectPlane2.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/rectPlane3.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/rectPlane4.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/ico.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/globe.obj") {
-        return matEmisInt0(g)(n);
-      }
-      ;
-      if (v === "monitors/ico2.obj") {
-        return matEmisInt1(g)(n);
-      }
-      ;
-      if (v === "monitors/exp.obj") {
-        return matEmisInt1(g)(n);
-      }
-      ;
-      return matEmisInt0(g)(n);
-    };
-  };
-};
-var selectMatEmiColor = function(v) {
-  return function(g) {
-    return function(n1) {
-      return function(n2) {
-        return function(n3) {
-          if (v === "monitors/cubo.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/cubo-1.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/cubo-2.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/cubo-3.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/cubo-4.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/squaredPlane.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/rectPlane.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/rectPlane2.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/rectPlane3.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/rectPlane4.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/ico.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/globe.obj") {
-            return matEmisive0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/ico2.obj") {
-            return matEmisive1(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/exp.obj") {
-            return matEmisive1(g)(n1)(n2)(n3);
-          }
-          ;
-          return matEmisive0(g)(n1)(n2)(n3);
-        };
-      };
-    };
-  };
-};
-var selectMatColor = function(v) {
-  return function(g) {
-    return function(n1) {
-      return function(n2) {
-        return function(n3) {
-          if (v === "monitors/cubo.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/cubo-1.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/cubo-2.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/cubo-3.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/cubo-4.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/squaredPlane.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/rectPlane.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/rectPlane2.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/rectPlane3.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/rectPlane4.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/ico.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/globe.obj") {
-            return matColor0(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/ico2.obj") {
-            return matColor1(g)(n1)(n2)(n3);
-          }
-          ;
-          if (v === "monitors/exp.obj") {
-            return matColor1(g)(n1)(n2)(n3);
-          }
-          ;
-          return matColor0(g)(n1)(n2)(n3);
-        };
-      };
-    };
-  };
-};
-var selectMapVidToMat = function(v) {
-  return function(m) {
-    return function(vt) {
-      if (v === "monitors/cubo.obj") {
-        return mapVidToMatMat(m)(vt);
-      }
-      ;
-      if (v === "monitors/cubo-1.obj") {
-        return mapVidToMatMat(m)(vt);
-      }
-      ;
-      if (v === "monitors/cubo-2.obj") {
-        return mapVidToMatMat(m)(vt);
-      }
-      ;
-      if (v === "monitors/cubo-3.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/cubo-4.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/squaredPlane.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/rectPlane.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/rectPlane2.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/rectPlane3.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/rectPlane4.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/ico.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/globe.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/ico2.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      if (v === "monitors/exp.obj") {
-        return mapVidToMatNone(m)(vt);
-      }
-      ;
-      return mapVidToMatMat(m)(vt);
-    };
-  };
-};
-var selectMapToObj = function(v) {
-  return function(g) {
-    return function(m) {
-      if (v === "monitors/cubo.obj") {
-        return mapChildrenToMatMat(g)(m);
-      }
-      ;
-      if (v === "monitors/cubo-1.obj") {
-        return mapChildrenToMatMat(g)(m);
-      }
-      ;
-      if (v === "monitors/cubo-2.obj") {
-        return mapChildrenToMatMat(g)(m);
-      }
-      ;
-      if (v === "monitors/cubo-3.obj") {
-        return mapChildrenToMatNone0(g)(m);
-      }
-      ;
-      if (v === "monitors/cubo-4.obj") {
-        return mapChildrenToMatNone0(g)(m);
-      }
-      ;
-      if (v === "monitors/squaredPlane.obj") {
-        return mapChildrenToMatNone0(g)(m);
-      }
-      ;
-      if (v === "monitors/rectPlane.obj") {
-        return mapChildrenToMatNone0(g)(m);
-      }
-      ;
-      if (v === "monitors/rectPlane2.obj") {
-        return mapChildrenToMatNone0(g)(m);
-      }
-      ;
-      if (v === "monitors/rectPlane3.obj") {
-        return mapChildrenToMatNone0(g)(m);
-      }
-      ;
-      if (v === "monitors/rectPlane4.obj") {
-        return mapChildrenToMatNone0(g)(m);
-      }
-      ;
-      if (v === "monitors/ico.obj") {
-        return mapChildrenToMatNone0(g)(m);
-      }
-      ;
-      if (v === "monitors/globe.obj") {
-        return mapChildrenToMatNone0(g)(m);
-      }
-      ;
-      if (v === "monitors/ico2.obj") {
-        return mapChildrenToMatNone1(g)(m);
-      }
-      ;
-      if (v === "monitors/exp.obj") {
-        return mapChildrenToMatNone1(g)(m);
-      }
-      ;
-      return mapChildrenToMatMat(g)(m);
     };
   };
 };
@@ -2846,13 +2391,13 @@ var makeTransmission = function(url) {
                       return function(bE) {
                         return function(iE) {
                           return function __do3() {
-                            selectMapVidToMat(url)(m)(vt)();
-                            selectMapToObj(url)(g)(m)();
-                            selectMatTrans(url)(g)();
-                            selectMatOpacity(url)(g)(t)();
-                            selectMatColor(url)(g)(rC)(gC)(bC)();
-                            selectMatEmiColor(url)(g)(rE)(gE)(bE)();
-                            selectMatEmiInten(url)(g)(iE)();
+                            mapVidToMatNone(m)(vt)();
+                            mapChildrenToMatNone(g)(m)();
+                            matTransparency(g)();
+                            matOpacity(g)(t)();
+                            matColor(g)(rC)(gC)(bC)();
+                            matEmisColour(g)(rE)(gE)(bE)();
+                            matEmisInt(g)(iE)();
                             printAnything(m)();
                             return addAnythingToScene(sc)(g)();
                           };
@@ -2971,8 +2516,8 @@ var changeOrLoadObjIfNecessary = function(sc) {
                     return function(iE) {
                       return function __do3() {
                         var currURL = read(mo.currObjURL)();
-                        var $59 = url === currURL;
-                        if ($59) {
+                        var $28 = url === currURL;
+                        if ($28) {
                           return unit;
                         }
                         ;
@@ -3010,8 +2555,8 @@ var changeOrLoadMatIfNecessary = function(sc) {
                     return function(iE) {
                       return function __do3() {
                         var currURL = read(mo.currMtlURL)();
-                        var $60 = url === currURL;
-                        if ($60) {
+                        var $29 = url === currURL;
+                        if ($29) {
                           return unit;
                         }
                         ;
@@ -3053,15 +2598,15 @@ var changeMatParametersIfNecessary = function(sc) {
                       var currEmissionColour = read(mo.emissionColour)();
                       var currEmissionIntensity = read(mo.emissionIntensity)();
                       (function() {
-                        var $61 = t === currOpacity;
-                        if ($61) {
+                        var $30 = t === currOpacity;
+                        if ($30) {
                           return unit;
                         }
                         ;
                         return tryToMakeTransmission(sc)(mo)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
                       (function() {
-                        var $62 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
+                        var $31 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
                           reflectSymbol: function() {
                             return "z";
                           }
@@ -3078,14 +2623,14 @@ var changeMatParametersIfNecessary = function(sc) {
                           y: gC,
                           z: bC
                         })(currColour);
-                        if ($62) {
+                        if ($31) {
                           return unit;
                         }
                         ;
                         return tryToMakeTransmission(sc)(mo)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
                       (function() {
-                        var $63 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
+                        var $32 = eq(eqRec()(eqRowCons(eqRowCons(eqRowCons(eqRowNil)()({
                           reflectSymbol: function() {
                             return "z";
                           }
@@ -3102,15 +2647,15 @@ var changeMatParametersIfNecessary = function(sc) {
                           y: gE,
                           z: bE
                         })(currEmissionColour);
-                        if ($63) {
+                        if ($32) {
                           return unit;
                         }
                         ;
                         return tryToMakeTransmission(sc)(mo)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                       })();
                       (function() {
-                        var $64 = iE === currEmissionIntensity;
-                        if ($64) {
+                        var $33 = iE === currEmissionIntensity;
+                        if ($33) {
                           return unit;
                         }
                         ;
@@ -3158,8 +2703,8 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "monitors/cubo.obj",
-    mapping: "monitors/cubo.mtl",
+    tv: "monitors/Cubo-1.obj",
+    mapping: "monitors/Cubo-1.mtl",
     volume: 0,
     channel: "channels/static.mov",
     channelReapeater: {
