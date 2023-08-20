@@ -2703,10 +2703,10 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "monitors/Cubo-1.obj",
-    mapping: "monitors/Cubo-1.mtl",
+    tv: "monitors/oldtv1.obj",
+    mapping: "monitors/oldtv1.mtl",
     volume: 0,
-    channel: "channels/static.mov",
+    channel: "channels/defaultOff.mp4",
     channelReapeater: {
       x: 1,
       y: 1
@@ -2742,7 +2742,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     estado: true,
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
-    channel: "channels/01.mov",
+    channel: "channels/defaultOn.mp4",
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,

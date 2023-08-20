@@ -23,10 +23,10 @@ type Transmission = {
 defTransmission :: Transmission
 defTransmission = {
   estado:             false,
-  tv:                 "monitors/Cubo-1.obj",
-  mapping:            "monitors/Cubo-1.mtl",
+  tv:                 "monitors/oldtv1.obj",
+  mapping:            "monitors/oldtv1.mtl",
   volume:             0.0,
-  channel:            "channels/static.mov",
+  channel:            "channels/defaultOff.mp4",
   channelReapeater:   {x: 1.0, y: 1.0},
   fulcober:           "rgbaFormat",
   translucidez:       1.0,
@@ -40,7 +40,7 @@ defTransmission = {
 
 
 defTransmissionOn :: Transmission
-defTransmissionOn = defTransmission {estado = true, channel = "channels/01.mov"}
+defTransmissionOn = defTransmission {estado = true, channel = "channels/defaultOn.mp4"}
 
 ----
 
