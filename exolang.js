@@ -5,7 +5,7 @@ export function TransMit(canvas) {
 }
 
 TransMit.prototype.evaluate = function(zone, text) {
-  return T.evaluate(this.tm)(txt)();
+  return T.evaluate(this.tm)(text)();
 }
 
 TransMit.prototype.clearZone = function(zone) {}
