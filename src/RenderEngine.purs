@@ -24,7 +24,7 @@ import Parser (Program, parseProgram)
 import MonitorState (Monitor, defMonitor, removeMonitor, alignMonitor, playVideoElement)
 import Transmission (Transmission)
 
--- python -m SimpleHTTPServer 8000
+-- python3 -m http.server 8000
 
 type RenderEngine =
   {
