@@ -3075,7 +3075,7 @@ var tASTtoT = function(v) {
       estado: v1.estado,
       tv: v1.tv,
       mapping: v1.mapping,
-      channel: v.value0 + ".mp4",
+      channel: v.value0,
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
@@ -26610,7 +26610,7 @@ var reserved = /* @__PURE__ */ function() {
 var switchFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("switch"))(alt(altParserT)(reserved("suitch"))(reserved("suich"))))(function() {
     return bind(bindParserT)(stringLiteral)(function(s) {
-      return pure(applicativeParserT)(Switch.create("channels/" + s));
+      return pure(applicativeParserT)(Switch.create(s));
     });
   });
 });

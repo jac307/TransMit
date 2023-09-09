@@ -61,7 +61,7 @@ tASTtoT (Scalar n t) = (tASTtoT t) {size = n}
 tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}
 tASTtoT (Rodar dv3 t) = (tASTtoT t) {rotation = dv3}
 tASTtoT (Fulcober f t) = (tASTtoT t) {fulcober = f}
-tASTtoT (Switch s t) = (tASTtoT t) {channel = s <> ".mp4"}
+tASTtoT (Switch s t) = (tASTtoT t) {channel = s}
 tASTtoT (Monitor s t) = (tASTtoT t) {tv = (s <> ".obj"), mapping = s <> ".mtl"}
 tASTtoT (Translucidez n t) = (tASTtoT t) {translucidez = n}
 tASTtoT (Colour v3 t) = (tASTtoT t) {colour = v3}

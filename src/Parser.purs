@@ -156,7 +156,7 @@ switchFunction = do
   _ <- pure unit
   (reserved "switch" <|> reserved "suitch" <|> reserved "suich")
   s <- stringLiteral
-  pure $ Switch ("channels/" <> s)
+  pure $ Switch s
   -- should remove the empty spaces at the beginning of s
   -- this function can only be use with transmission on
 
