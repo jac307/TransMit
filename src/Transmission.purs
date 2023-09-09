@@ -26,7 +26,7 @@ defTransmission = {
   tv:                 "monitors/oldtv1.obj",
   mapping:            "monitors/oldtv1.mtl",
   volume:             0.0,
-  channel:            "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
+  channel:            "channels/defaultOff.mp4",
   channelReapeater:   {x: 1.0, y: 1.0},
   fulcober:           "rgbaFormat",
   translucidez:       1.0,
@@ -40,7 +40,7 @@ defTransmission = {
 
 
 defTransmissionOn :: Transmission
-defTransmissionOn = defTransmission {estado = true, channel = "https://jac307.github.io/TransMit/channels/defaultOn.mp4"}
+defTransmissionOn = defTransmission {estado = true, channel = "channels/defaultOn.mp4"}
 
 ----
 
