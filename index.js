@@ -2706,7 +2706,7 @@ var defTransmission = /* @__PURE__ */ function() {
     tv: "monitors/oldtv1.obj",
     mapping: "monitors/oldtv1.mtl",
     volume: 0,
-    channel: "channels/defaultOff.mp4",
+    channel: "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
     channelReapeater: {
       x: 1,
       y: 1
@@ -2742,7 +2742,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     estado: true,
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
-    channel: "channels/defaultOn.mp4",
+    channel: "https://jac307.github.io/TransMit/channels/defaultOn.mp4",
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
@@ -3075,7 +3075,7 @@ var tASTtoT = function(v) {
       estado: v1.estado,
       tv: v1.tv,
       mapping: v1.mapping,
-      channel: v.value0,
+      channel: v.value0 + ".mp4",
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
@@ -26610,7 +26610,7 @@ var reserved = /* @__PURE__ */ function() {
 var switchFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("switch"))(alt(altParserT)(reserved("suitch"))(reserved("suich"))))(function() {
     return bind(bindParserT)(stringLiteral)(function(s) {
-      return pure(applicativeParserT)(Switch.create(s));
+      return pure(applicativeParserT)(Switch.create("channels/" + s));
     });
   });
 });
