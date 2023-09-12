@@ -2703,8 +2703,8 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "monitors/oldtv1.obj",
-    mapping: "monitors/oldtv1.mtl",
+    tv: "https://jac307.github.io/TransMit/monitors/oldtv1.obj",
+    mapping: "https://jac307.github.io/TransMit/monitors/oldtv1.mtl",
     volume: 0,
     channel: "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
     channelReapeater: {
