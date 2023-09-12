@@ -23,8 +23,8 @@ type Transmission = {
 defTransmission :: Transmission
 defTransmission = {
   estado:             false,
-  tv:                 "monitors/oldtv1.obj",
-  mapping:            "monitors/oldtv1.mtl",
+  tv:                 "https://jac307.github.io/TransMit/monitors/oldtv1.obj",
+  mapping:            "https://jac307.github.io/TransMit/monitors/oldtv1.mtl",
   volume:             0.0,
   channel:            "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
   channelReapeater:   {x: 1.0, y: 1.0},
