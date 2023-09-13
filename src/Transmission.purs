@@ -23,8 +23,8 @@ type Transmission = {
 defTransmission :: Transmission
 defTransmission = {
   estado:             false,
-  tv:                 "https://firebasestorage.googleapis.com/v0/b/my-project-e3680.appspot.com/o/90stv0.obj?alt=media&token=d0ea6128-cbc8-4d44-9bea-70f309c07e15",
-  mapping:            "https://firebasestorage.googleapis.com/v0/b/my-project-e3680.appspot.com/o/90stv0.mtl?alt=media&token=f92111ab-05ea-45cf-8b00-cc8f8e8f677b",
+  tv:                 "https://jac307.github.io/TransMit/monitors/90stv0.obj",
+  mapping:            "https://jac307.github.io/TransMit/monitors/90stv0.mtl",
   volume:             0.0,
   channel:            "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
   channelReapeater:   {x: 1.0, y: 1.0},
