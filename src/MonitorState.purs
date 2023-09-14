@@ -28,6 +28,7 @@ type Monitor = {
   currVidURL :: Ref String,
   video :: HTMLMediaElement,
   vidTexture :: TJS.TextureLoader,
+  vol :: Ref Number,
   -- object
   currObjURL :: Ref String,
   obj :: Ref (Maybe TJS.OBJ),
@@ -49,6 +50,7 @@ defMonitor = do
   currVidURL <- new defURL
   video <- defVidElem
   vidTexture <- defVidTexture video
+  vol <- new 0.0
   -- object
   currObjURL <- new defURL
   obj <- new Nothing
@@ -61,7 +63,7 @@ defMonitor = do
   emissionColour <- new {x: 0.0, y: 0.0, z: 0.0}
   emissionIntensity <- new 1.0
   --
-  let mo = {currVidURL, video, vidTexture, currObjURL, obj, currMtlURL, material, opacity, colour, emissionColour, emissionIntensity}
+  let mo = {currVidURL, video, vidTexture, vol, currObjURL, obj, currMtlURL, material, opacity, colour, emissionColour, emissionIntensity}
   pure mo
 
 defURL :: String
@@ -89,7 +91,8 @@ removeMonitor sc mo = do
 alignMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
 alignMonitor sc mo t = do
   -- 1. change video url if necessary
-  updateURLfromVidElem mo t.channel t.volume
+  updateURLfromVidElem mo t.channel
+  updateVol mo t.volume
   -- 2. change/load obj url/object
   changeOrLoadObjIfNecessary sc mo t.tv t.translucidez (v3ToX t.colour) (v3ToY t.colour) (v3ToZ t.colour) (v3ToX t.emissionColour) (v3ToY t.emissionColour) (v3ToZ t.emissionColour) t.emissionIntensity
   -- 3. change/load material url/create new mesh
@@ -291,10 +294,11 @@ playVideoElement mo = do
   let v = mo.video -- :: HTML2.HTMLMediaElement
   HTML2.play v
 
---                                  url     volume
-updateURLfromVidElem :: Monitor -> String -> Number -> Effect Unit
-updateURLfromVidElem mo url n = do
+--                                  url
+updateURLfromVidElem :: Monitor -> String -> Effect Unit
+updateURLfromVidElem mo url = do
   let v = mo.video -- :: HTML2.HTMLMediaElement
+  currVol <- read mo.vol
   currURL <- read mo.currVidURL -- :: String
   if url /= currURL
     then do
@@ -303,9 +307,20 @@ updateURLfromVidElem mo url n = do
       HTML2.load v
       HTML2.setLoop true v
       HTML2.setMuted false v
-      HTML2.setVolume n v
+      HTML2.setVolume currVol v
       write url mo.currVidURL -- write new info
     else (pure unit)
+
+updateVol :: Monitor -> Number -> Effect Unit
+updateVol mo newVol = do
+  let v = mo.video -- :: HTML2.HTMLMediaElement
+  currVol <- read mo.vol -- :: Number
+  if newVol /= currVol
+    then do
+      HTML2.setVolume newVol v
+      write newVol mo.vol -- write new info
+    else (pure unit)
+
 
 ------------------------
 

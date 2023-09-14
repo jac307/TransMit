@@ -1,3 +1,8 @@
+@font-face {
+  font-family: AlargadX;
+  src: url(fonts/CinematicX.otf);
+}
+
 body{
   background: black;
 }
@@ -41,16 +46,18 @@ body{
 
 .editorArea {
   font-family: Inconsolata,Consolas,monospace;
+  /* font-family: AlargadX; */
   background-color: transparent;
   border: none;
 	width: 100%;
   height: 100%;
-  color: white;
+  color: red;
   resize: none;
   overflow: hidden;
+  text-align: center;
   box-shadow: none;
   outline: none;
-  font-size: 3em;
+  font-size: 4em;
 }
 
 .status {
