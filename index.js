@@ -3091,7 +3091,7 @@ var tASTtoT = function(v) {
       estado: v1.estado,
       tv: v1.tv,
       mapping: v1.mapping,
-      channel: "channels/afrontaciones/" + (v.value0 + ".mp4"),
+      channel: "channels/encarnadas/" + (v.value0 + ".mp4"),
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
