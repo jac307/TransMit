@@ -2705,8 +2705,8 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "monitors/90stv0.obj",
-    mapping: "monitors/90stv0.mtl",
+    tv: "monitors/90stv1.obj",
+    mapping: "monitors/90stv1.mtl",
     volume: 0,
     channel: "channels/defaultOff.mp4",
     channelReapeater: {
