@@ -1,3 +1,5 @@
+//
+export const crossOrigin = v => () => v.crossOrigin = "Anonymous";
 
 // General
 export const preloadMaterials = m => () => m.preload()

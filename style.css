@@ -1,7 +1,7 @@
-@font-face {
+/* @font-face {
   font-family: AlargadX;
   src: url(fonts/CinematicX.otf);
-}
+} */
 
 body{
   background: black;
@@ -54,7 +54,7 @@ body{
   color: white;
   resize: none;
   overflow: hidden;
-  text-align: center;
+  text-align: left;
   box-shadow: none;
   outline: none;
   font-size: 4em;
