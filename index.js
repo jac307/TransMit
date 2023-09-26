@@ -2705,10 +2705,10 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "https://jac307.github.io/TransMit/monitors/90stv0.obj",
-    mapping: "https://jac307.github.io/TransMit/monitors/90stv0.mtl",
+    tv: "monitors/90stv0.obj",
+    mapping: "monitors/90stv0.mtl",
     volume: 0,
-    channel: "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
+    channel: "channels/defaultOff.mp4",
     channelReapeater: {
       x: 1,
       y: 1
@@ -2744,7 +2744,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     estado: true,
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
-    channel: "https://jac307.github.io/TransMit/channels/defaultOn.mp4",
+    channel: "channels/defaultOn.mp4",
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
