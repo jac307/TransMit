@@ -1930,6 +1930,7 @@ var log2 = function(dictMonadEffect) {
 };
 
 // output/MonitorState/foreign.js
+var crossOrigin = (v) => () => v.crossOrigin = "Anonymous";
 var preloadMaterials = (m) => () => m.preload();
 var mapVidToMatNone = (m) => (vt) => () => m.materials.None.map = vt;
 var mapChildrenToMatNone = (o) => (m) => () => o.children[0].material = m.materials.None;
@@ -2272,7 +2273,7 @@ var setRotationZ2 = function(o) {
       return setRotationZ(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 251, column 1 - line 251, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 255, column 1 - line 255, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationY2 = function(o) {
@@ -2285,7 +2286,7 @@ var setRotationY2 = function(o) {
       return setRotationY(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 247, column 1 - line 247, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 251, column 1 - line 251, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationX2 = function(o) {
@@ -2298,7 +2299,7 @@ var setRotationX2 = function(o) {
       return setRotationX(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 243, column 1 - line 243, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 247, column 1 - line 247, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var transformTransmission$prime = function(g) {
@@ -2325,7 +2326,7 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 230, column 3 - line 232, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 234, column 3 - line 236, column 41): " + [g.constructor.name]);
       };
     };
   };
@@ -2344,7 +2345,7 @@ var removeObj = function(sc) {
         return write(Nothing.value)(mo.obj)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 181, column 3 - line 186, column 27): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 185, column 3 - line 190, column 27): " + [g.constructor.name]);
     };
   };
 };
@@ -2362,7 +2363,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 191, column 3 - line 196, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 195, column 3 - line 200, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -2441,10 +2442,10 @@ var tryToMakeTransmission = function(sc) {
                           return makeTransmission(currURL)(sc)(g.value0)(m.value0)(mo.vidTexture)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                         }
                         ;
-                        throw new Error("Failed pattern match at MonitorState (line 174, column 7 - line 176, column 90): " + [m.constructor.name]);
+                        throw new Error("Failed pattern match at MonitorState (line 178, column 7 - line 180, column 90): " + [m.constructor.name]);
                       }
                       ;
-                      throw new Error("Failed pattern match at MonitorState (line 170, column 3 - line 176, column 90): " + [g.constructor.name]);
+                      throw new Error("Failed pattern match at MonitorState (line 174, column 3 - line 180, column 90): " + [g.constructor.name]);
                     };
                   };
                 };
@@ -2465,6 +2466,7 @@ var defVidTexture = function(v) {
 var defURL = "";
 var defVidElem = function __do() {
   var v = createElement("video")();
+  crossOrigin(v)();
   setSrc(defURL)(v)();
   return v;
 };

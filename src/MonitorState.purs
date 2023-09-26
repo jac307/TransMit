@@ -70,8 +70,12 @@ defURL = ""
 defVidElem :: Effect HTML2.HTMLMediaElement
 defVidElem = do
   v <- TJS.createElement "video"
+  crossOrigin v
   HTML2.setSrc defURL v
   pure v
+
+foreign import crossOrigin :: HTMLMediaElement -> Effect Unit
+
 
 defVidTexture :: HTML2.HTMLMediaElement -> Effect TJS.TextureLoader
 defVidTexture  v = do
@@ -306,6 +310,7 @@ updateURLfromVidElem mo url n = do
       HTML2.setVolume n v
       write url mo.currVidURL -- write new info
     else (pure unit)
+
 
 ------------------------
 
