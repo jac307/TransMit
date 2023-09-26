@@ -2721,10 +2721,10 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "monitors/oldtv1.obj",
-    mapping: "monitors/oldtv1.mtl",
+    tv: "https://jac307.github.io/TransMit/monitors/oldtv0.obj",
+    mapping: "https://jac307.github.io/TransMit/monitors/oldtv0.mtl",
     volume: 0,
-    channel: "channels/defaultOff.mp4",
+    channel: "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
     channelReapeater: {
       x: 1,
       y: 1
@@ -2760,7 +2760,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     estado: true,
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
-    channel: "channels/defaultOn.mp4",
+    channel: "https://jac307.github.io/TransMit/channels/defaultOn.mp4",
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
@@ -3093,7 +3093,7 @@ var tASTtoT = function(v) {
       estado: v1.estado,
       tv: v1.tv,
       mapping: v1.mapping,
-      channel: "channels/encarnadas/" + (v.value0 + ".mp4"),
+      channel: v.value0,
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
@@ -3111,8 +3111,8 @@ var tASTtoT = function(v) {
     var v1 = tASTtoT(v.value1);
     return {
       estado: v1.estado,
-      tv: v.value0 + ".obj",
-      mapping: v.value0 + ".mtl",
+      tv: "https://jac307.github.io/TransMit/" + (v.value0 + ".obj"),
+      mapping: "https://jac307.github.io/TransMit/" + (v.value0 + ".mtl"),
       channel: v1.channel,
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
