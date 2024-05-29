@@ -35,7 +35,11 @@
   window.doEval = function () {
     console.log("doEval");
     var t = document.getElementById("editorArea").value;
-    var r = TransMit.evaluate(window.tm)(t)();
+    var t2 = document.getElementById("editorArea2").value;
+    var ts = t + " " + t2
+    console.log(ts)
+
+    var r = TransMit.evaluate(window.tm)(ts)();
     document.getElementById('errors').textContent = r.error;
   }
 
@@ -53,11 +57,18 @@
   <div id="canvasDiv"><canvas id="canvas"></canvas></div>
   <div class="editorAndStatus">
     <div class="editor">
-      <textarea class="editorArea" id="editorArea">
 
-transmission on
+      <div class="row">
+        <div class="column">
+            <textarea id="editorArea">transmission on movet -4 0 0;</textarea>
+        </div>
+        <div class="column">
+            <textarea id="editorArea2">transmission off</textarea>
+        </div>
+      </div>
 
-      </textarea>
+      <!-- <textarea class="editorArea" id="editorArea">transmission on</textarea> -->
+
     </div>
     <div class="status">
       <span id="errors"></span>

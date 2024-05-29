@@ -62,7 +62,7 @@ tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}
 tASTtoT (Rodar dv3 t) = (tASTtoT t) {rotation = dv3}
 tASTtoT (Fulcober f t) = (tASTtoT t) {fulcober = f}
 tASTtoT (Switch s t) = (tASTtoT t) {channel = ("channels/encarnadas/" <> s <> ".mp4")}
-tASTtoT (Monitor s t) = (tASTtoT t) {tv = (s <> ".obj"), mapping = s <> ".mtl"}
+tASTtoT (Monitor s t) = (tASTtoT t) {tv = (s <> ".obj"), mapping = (s <> ".mtl")}
 tASTtoT (Translucidez n t) = (tASTtoT t) {translucidez = n}
 tASTtoT (Colour v3 t) = (tASTtoT t) {colour = v3}
 tASTtoT (EmissionColour v3 t) = (tASTtoT t) {emissionColour = v3}

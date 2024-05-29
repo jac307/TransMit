@@ -2721,9 +2721,9 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "monitors/oldtv1.obj",
-    mapping: "monitors/oldtv1.mtl",
-    volume: 0,
+    tv: "monitors/horScreen0.obj",
+    mapping: "monitors/horScreen0.mtl",
+    volume: 0.05,
     channel: "channels/defaultOff.mp4",
     channelReapeater: {
       x: 1,
@@ -2742,14 +2742,14 @@ var defTransmission = /* @__PURE__ */ function() {
       z: 0
     },
     emissionIntensity: 0.5,
-    size: 1,
+    size: 4.5,
     position: {
       x: 0,
       y: 0,
       z: 0
     },
     rotation: {
-      x: new Right(0.5),
+      x: new Right(0),
       y: new Right(0),
       z: new Right(0)
     }
@@ -26614,7 +26614,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 443, column 1 - line 443, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 490, column 1 - line 490, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -26626,7 +26626,7 @@ var reserved = /* @__PURE__ */ function() {
   return tokenParser.reserved;
 }();
 var switchFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("switch"))(alt(altParserT)(reserved("suitch"))(alt(altParserT)(reserved("suich"))(reserved("SWITCH")))))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("s"))(alt(altParserT)(reserved("switch"))(alt(altParserT)(reserved("suitch"))(alt(altParserT)(reserved("suich"))(alt(altParserT)(reserved("SWITCH"))(alt(altParserT)(reserved("SUITCH"))(reserved("SUICH"))))))))(function() {
     return bind(bindParserT)(stringLiteral)(function(s) {
       return pure(applicativeParserT)(Switch.create(s));
     });
@@ -26638,14 +26638,14 @@ var onlySemiColon = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE
 var onlyEOF = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ lookAhead(eof))(function() {
   return pure(applicativeParserT)(EmptyStatement.value);
 });
-var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onnn"))(/* @__PURE__ */ reserved("ON")))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("offf"))(/* @__PURE__ */ reserved("OF")))))(false)]));
+var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onnn"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("ON"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("ONN"))(/* @__PURE__ */ reserved("ONNN")))))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("offf"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("OFF"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("OF"))(/* @__PURE__ */ reserved("OFFF")))))))(false)]));
 var noTranmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("turn off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("turns off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("turnof"))(/* @__PURE__ */ reserved("apagar")))))(function() {
   return pure(applicativeParserT)(EmptyStatement.value);
 });
 var monitorFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("monitor"))(reserved("MONITOR")))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("m"))(alt(altParserT)(reserved("monitor"))(alt(altParserT)(reserved("MONITOR"))(alt(altParserT)(reserved("mon"))(reserved("MON"))))))(function() {
     return bind(bindParserT)(stringLiteral)(function(s) {
-      return pure(applicativeParserT)(Monitor.create("monitors/" + s));
+      return pure(applicativeParserT)(Monitor.create("monitors/horScreen" + s));
     });
   });
 });
@@ -26683,7 +26683,7 @@ var functionWithNumber = function(functionName) {
   };
 };
 var scalarFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("scalar"))(alt(altParserT)(reserved("scale"))(alt(altParserT)(reserved("escalar"))(alt(altParserT)(reserved("bigealo"))(reserved("SCALA"))))))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("scail"))(alt(altParserT)(reserved("scala"))(alt(altParserT)(reserved("scalar"))(alt(altParserT)(reserved("scale"))(alt(altParserT)(reserved("escalar"))(alt(altParserT)(reserved("bigealo"))(alt(altParserT)(reserved("SCALAR"))(alt(altParserT)(reserved("SCALE"))(alt(altParserT)(reserved("ESCALAR"))(reserved("BIGEALO")))))))))))(function() {
     return bind(bindParserT)(number)(function(n) {
       return pure(applicativeParserT)(Scalar.create(n));
     });
@@ -26781,7 +26781,7 @@ var dynNumberRight = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(appl
   });
 });
 var dynNumberLeft = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("auto"))(alt(altParserT)(reserved("automatic"))(alt(altParserT)(reserved("automatico"))(alt(altParserT)(reserved("autom\xE1tico"))(reserved("AUTO"))))))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("a"))(alt(altParserT)(reserved("auto"))(alt(altParserT)(reserved("automatic"))(alt(altParserT)(reserved("automatico"))(alt(altParserT)(reserved("autom\xE1tico"))(reserved("AUTO")))))))(function() {
     return bind(bindParserT)(number)(function(v) {
       return pure(applicativeParserT)(new Left(v));
     });
@@ -26811,10 +26811,10 @@ var functionWithDynV3 = function(functionName) {
   };
 };
 var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return choice(foldableArray)([functionWithNumber("volume")(Volume.create), functionWithNumber("volumen")(Volume.create), functionWithNumber("vol")(Volume.create), functionWithNumber("subele")(Volume.create), functionWithNumber("pumpealo")(Volume.create), functionWithNumber("SUBELE")(Volume.create), functionWithV2("repet")(ChannelRepeater.create), functionWithV2("repeat")(ChannelRepeater.create), functionWithV2("repitelo")(ChannelRepeater.create), functionWithV2("repeatelo")(ChannelRepeater.create), functionWithV2("REPET")(ChannelRepeater.create), functionWithV3("movet")(Movet.create), functionWithV3("muvet")(Movet.create), functionWithV3("muvit")(Movet.create), functionWithV3("move it")(Movet.create), functionWithV3("muevelo")(Movet.create), functionWithV3("muvetelo")(Movet.create), functionWithV3("MOVET")(Movet.create), functionWithDynV3("rodar")(Rodar.create), functionWithDynV3("rotate")(Rodar.create), functionWithDynV3("rotait")(Rodar.create), functionWithDynV3("rotaetelo")(Rodar.create), functionWithDynV3("RODALO")(Rodar.create), functionWithString("fulcober")(Fulcober.create), functionWithString("fullcober")(Fulcober.create), functionWithString("fulcover")(Fulcober.create), functionWithString("fullcover")(Fulcober.create), functionWithString("FULCOBER")(Fulcober.create), functionWithNumber("translucido")(Translucidez.create), functionWithNumber("traslucido")(Translucidez.create), functionWithNumber("traslusido")(Translucidez.create), functionWithNumber("translucent")(Translucidez.create), functionWithNumber("traslucent")(Translucidez.create), functionWithNumber("traslusent")(Translucidez.create), functionWithNumber("TRANSLUCIDO")(Translucidez.create), functionWithV3("color")(Colour.create), functionWithV3("colour")(Colour.create), functionWithV3("color it")(Colour.create), functionWithV3("colorealo")(Colour.create), functionWithV3("colourealo")(Colour.create), functionWithV3("COLOR")(Colour.create), functionWithV3("emit")(EmissionColour.create), functionWithV3("emitir")(EmissionColour.create), functionWithV3("emitear")(EmissionColour.create), functionWithV3("emitealo")(EmissionColour.create), functionWithV3("EMITEALO")(EmissionColour.create), functionWithNumber("brillo")(EmissionIntensity.create), functionWithNumber("brightness")(EmissionIntensity.create), functionWithNumber("braignes")(EmissionIntensity.create), functionWithNumber("braigtnes")(EmissionIntensity.create), functionWithNumber("briyo")(EmissionIntensity.create), functionWithNumber("BRIYO")(EmissionIntensity.create), switchFunction, monitorFunction, scalarFunction]);
+  return choice(foldableArray)([functionWithNumber("volume")(Volume.create), functionWithNumber("volumen")(Volume.create), functionWithNumber("vol")(Volume.create), functionWithNumber("v")(Volume.create), functionWithNumber("subele")(Volume.create), functionWithNumber("pumpealo")(Volume.create), functionWithNumber("SUBELE")(Volume.create), functionWithNumber("VOL")(Volume.create), functionWithNumber("PUMPEALO")(Volume.create), functionWithV2("repet")(ChannelRepeater.create), functionWithV2("repeat")(ChannelRepeater.create), functionWithV2("repitelo")(ChannelRepeater.create), functionWithV2("repeatelo")(ChannelRepeater.create), functionWithV2("REPET")(ChannelRepeater.create), functionWithV2("REPEAT")(ChannelRepeater.create), functionWithV2("REPITELO")(ChannelRepeater.create), functionWithV2("REPEATELO")(ChannelRepeater.create), functionWithV3("m")(Movet.create), functionWithV3("muv")(Movet.create), functionWithV3("move")(Movet.create), functionWithV3("movet")(Movet.create), functionWithV3("muvet")(Movet.create), functionWithV3("muvit")(Movet.create), functionWithV3("move it")(Movet.create), functionWithV3("muevelo")(Movet.create), functionWithV3("muvetelo")(Movet.create), functionWithV3("MUVET")(Movet.create), functionWithV3("MUVIT")(Movet.create), functionWithV3("MOVE IT")(Movet.create), functionWithV3("MUEVELO")(Movet.create), functionWithV3("MUVELO")(Movet.create), functionWithDynV3("r")(Rodar.create), functionWithDynV3("roda")(Rodar.create), functionWithDynV3("rodar")(Rodar.create), functionWithDynV3("rodalo")(Rodar.create), functionWithDynV3("rotate")(Rodar.create), functionWithDynV3("rotait")(Rodar.create), functionWithDynV3("RODAR")(Rodar.create), functionWithDynV3("RODALO")(Rodar.create), functionWithDynV3("ROTATE")(Rodar.create), functionWithDynV3("ROTAIT")(Rodar.create), functionWithString("fulcober")(Fulcober.create), functionWithString("fullcober")(Fulcober.create), functionWithString("fulcover")(Fulcober.create), functionWithString("fullcover")(Fulcober.create), functionWithString("FULCOBER")(Fulcober.create), functionWithString("FULLCOBER")(Fulcober.create), functionWithString("FULCOVER")(Fulcober.create), functionWithString("FULLCOVER")(Fulcober.create), functionWithNumber("translucido")(Translucidez.create), functionWithNumber("traslucido")(Translucidez.create), functionWithNumber("traslusido")(Translucidez.create), functionWithNumber("translucent")(Translucidez.create), functionWithNumber("traslucent")(Translucidez.create), functionWithNumber("traslusent")(Translucidez.create), functionWithNumber("TRANSLUCIDO")(Translucidez.create), functionWithNumber("TRASLUCIDO")(Translucidez.create), functionWithV3("color")(Colour.create), functionWithV3("colour")(Colour.create), functionWithV3("color it")(Colour.create), functionWithV3("colorealo")(Colour.create), functionWithV3("colourealo")(Colour.create), functionWithV3("COLOR")(Colour.create), functionWithV3("COLOUR")(Colour.create), functionWithV3("COLOREALO")(Colour.create), functionWithV3("emit")(EmissionColour.create), functionWithV3("emitir")(EmissionColour.create), functionWithV3("emitear")(EmissionColour.create), functionWithV3("emitealo")(EmissionColour.create), functionWithV3("EMIT")(EmissionColour.create), functionWithV3("EMITIR")(EmissionColour.create), functionWithV3("EMITEAR")(EmissionColour.create), functionWithV3("EMITEALO")(EmissionColour.create), functionWithNumber("brillo")(EmissionIntensity.create), functionWithNumber("brightness")(EmissionIntensity.create), functionWithNumber("braignes")(EmissionIntensity.create), functionWithNumber("braigtnes")(EmissionIntensity.create), functionWithNumber("briyo")(EmissionIntensity.create), functionWithNumber("BRILLO")(EmissionIntensity.create), functionWithNumber("BIRGHTNESS")(EmissionIntensity.create), functionWithNumber("BRAIGNES")(EmissionIntensity.create), functionWithNumber("BRAIGTNES")(EmissionIntensity.create), functionWithNumber("BRIYO")(EmissionIntensity.create), switchFunction, monitorFunction, scalarFunction]);
 });
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("transmission"))(alt(altParserT)(reserved("trasmission"))(alt(altParserT)(reserved("trasmision"))(alt(altParserT)(reserved("transmision"))(alt(altParserT)(reserved("transmisssion"))(reserved("TRANSMISION")))))))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("transmission"))(alt(altParserT)(reserved("transmision"))(alt(altParserT)(reserved("transmisssion"))(alt(altParserT)(reserved("trasmission"))(alt(altParserT)(reserved("trasmision"))(alt(altParserT)(reserved("trasmisssion"))(alt(altParserT)(reserved("trasmisi\xF3n"))(alt(altParserT)(reserved("transmisi\xF3n"))(alt(altParserT)(reserved("trasmici\xF3n"))(alt(altParserT)(reserved("transmici\xF3n"))(alt(altParserT)(reserved("trans"))(alt(altParserT)(reserved("TRANSMISSION"))(alt(altParserT)(reserved("TRASMISSION"))(alt(altParserT)(reserved("TRASMISION"))(alt(altParserT)(reserved("TRANSMISION"))(reserved("TRANSMISSSION")))))))))))))))))(function() {
     return bind(bindParserT)(onOrOff)(function(b) {
       var t = new LiteralTransmissionAST(b);
       return bind(bindParserT)(many2(transformations))(function(xs) {

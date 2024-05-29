@@ -73,17 +73,33 @@ noTranmission = do
 transmissionParser :: P TransmissionAST
 transmissionParser = do
   _ <- pure unit
-  (reserved "transmission" <|> reserved "trasmission" <|> reserved "trasmision" <|> reserved "transmision" <|> reserved "transmisssion" <|> reserved "TRANSMISION" )
+  (reserved "transmission" <|>
+  reserved "transmision" <|>
+  reserved "transmisssion" <|>
+  reserved "trasmission" <|>
+  reserved "trasmision" <|>
+  reserved "trasmisssion" <|>
+  reserved "trasmisión" <|>
+  reserved "transmisión" <|>
+  reserved "trasmición" <|>
+  reserved "transmición" <|>
+  reserved "trans" <|>
+  reserved "TRANSMISSION" <|>
+  reserved "TRASMISSION" <|>
+  reserved "TRASMISION" <|>
+  reserved "TRANSMISION" <|>
+  reserved "TRANSMISSSION" )
   b <- onOrOff
   let t = LiteralTransmissionAST b
   xs <- many transformations
   let xs' = foldl (<<<) identity xs
   pure $ xs' t
 
+
 onOrOff :: P Boolean
 onOrOff = try $ choice [
-  (reserved "on" <|> reserved "onn" <|> reserved "onnn" <|> reserved "ON")  $> true,
-  (reserved "off" <|> reserved "of" <|> reserved "offf" <|> reserved "OF") $> false
+  (reserved "on" <|> reserved "onn" <|> reserved "onnn" <|> reserved "ON" <|> reserved "ONN" <|> reserved "ONNN")  $> true,
+  (reserved "off" <|> reserved "of" <|> reserved "offf" <|> reserved "OFF" <|> reserved "OF" <|> reserved "OFFF") $> false
 ]
 
 -- Transformations --
@@ -97,35 +113,56 @@ transformations = do
   functionWithNumber "volume" Volume,
   functionWithNumber "volumen" Volume,
   functionWithNumber "vol" Volume,
+  functionWithNumber "v" Volume,
   functionWithNumber "subele" Volume,
   functionWithNumber "pumpealo" Volume,
   functionWithNumber "SUBELE" Volume,
+  functionWithNumber "VOL" Volume,
+  functionWithNumber "PUMPEALO" Volume,
   --repeat
   functionWithV2 "repet" ChannelRepeater,
   functionWithV2 "repeat" ChannelRepeater,
   functionWithV2 "repitelo" ChannelRepeater,
   functionWithV2 "repeatelo" ChannelRepeater,
   functionWithV2 "REPET" ChannelRepeater,
+  functionWithV2 "REPEAT" ChannelRepeater,
+  functionWithV2 "REPITELO" ChannelRepeater,
+  functionWithV2 "REPEATELO" ChannelRepeater,
   --move
+  functionWithV3 "m" Movet,
+  functionWithV3 "muv" Movet,
+  functionWithV3 "move" Movet,
   functionWithV3 "movet" Movet,
   functionWithV3 "muvet" Movet,
   functionWithV3 "muvit" Movet,
   functionWithV3 "move it" Movet,
   functionWithV3 "muevelo" Movet,
   functionWithV3 "muvetelo" Movet,
-  functionWithV3 "MOVET" Movet,
+  functionWithV3 "MUVET" Movet,
+  functionWithV3 "MUVIT" Movet,
+  functionWithV3 "MOVE IT" Movet,
+  functionWithV3 "MUEVELO" Movet,
+  functionWithV3 "MUVELO" Movet,
   --rotate
+  functionWithDynV3 "r" Rodar,
+  functionWithDynV3 "roda" Rodar,
   functionWithDynV3 "rodar" Rodar,
+  functionWithDynV3 "rodalo" Rodar,
   functionWithDynV3 "rotate" Rodar,
   functionWithDynV3 "rotait" Rodar,
-  functionWithDynV3 "rotaetelo" Rodar,
+  functionWithDynV3 "RODAR" Rodar,
   functionWithDynV3 "RODALO" Rodar,
+  functionWithDynV3 "ROTATE" Rodar,
+  functionWithDynV3 "ROTAIT" Rodar,
   --
   functionWithString "fulcober" Fulcober,
   functionWithString "fullcober" Fulcober,
   functionWithString "fulcover" Fulcober,
   functionWithString "fullcover" Fulcober,
   functionWithString "FULCOBER" Fulcober,
+  functionWithString "FULLCOBER" Fulcober,
+  functionWithString "FULCOVER" Fulcober,
+  functionWithString "FULLCOVER" Fulcober,
   --
   functionWithNumber "translucido" Translucidez,
   functionWithNumber "traslucido" Translucidez,
@@ -134,6 +171,7 @@ transformations = do
   functionWithNumber "traslucent" Translucidez,
   functionWithNumber "traslusent" Translucidez,
   functionWithNumber "TRANSLUCIDO" Translucidez,
+  functionWithNumber "TRASLUCIDO" Translucidez,
   --
   functionWithV3 "color" Colour,
   functionWithV3 "colour" Colour,
@@ -141,11 +179,16 @@ transformations = do
   functionWithV3 "colorealo" Colour,
   functionWithV3 "colourealo" Colour,
   functionWithV3 "COLOR" Colour,
+  functionWithV3 "COLOUR" Colour,
+  functionWithV3 "COLOREALO" Colour,
   --
   functionWithV3 "emit" EmissionColour,
   functionWithV3 "emitir" EmissionColour,
   functionWithV3 "emitear" EmissionColour,
   functionWithV3 "emitealo" EmissionColour,
+  functionWithV3 "EMIT" EmissionColour,
+  functionWithV3 "EMITIR" EmissionColour,
+  functionWithV3 "EMITEAR" EmissionColour,
   functionWithV3 "EMITEALO" EmissionColour,
   --
   functionWithNumber "brillo" EmissionIntensity,
@@ -153,6 +196,10 @@ transformations = do
   functionWithNumber "braignes" EmissionIntensity,
   functionWithNumber "braigtnes" EmissionIntensity,
   functionWithNumber "briyo" EmissionIntensity,
+  functionWithNumber "BRILLO" EmissionIntensity,
+  functionWithNumber "BIRGHTNESS" EmissionIntensity,
+  functionWithNumber "BRAIGNES" EmissionIntensity,
+  functionWithNumber "BRAIGTNES" EmissionIntensity,
   functionWithNumber "BRIYO" EmissionIntensity,
   --
   switchFunction,
@@ -163,7 +210,7 @@ transformations = do
 switchFunction :: P (TransmissionAST -> TransmissionAST)
 switchFunction = do
   _ <- pure unit
-  (reserved "switch" <|> reserved "suitch" <|> reserved "suich" <|> reserved "SWITCH")
+  (reserved "s" <|> reserved "switch" <|> reserved "suitch" <|> reserved "suich" <|> reserved "SWITCH" <|> reserved "SUITCH" <|> reserved "SUICH")
   s <- stringLiteral
   pure $ Switch s
   -- should remove the empty spaces at the beginning of s
@@ -173,15 +220,15 @@ switchFunction = do
 monitorFunction :: P (TransmissionAST -> TransmissionAST)
 monitorFunction = do
   _ <- pure unit
-  (reserved "monitor" <|> reserved "MONITOR")
+  (reserved "m" <|> reserved "monitor" <|> reserved "MONITOR" <|> reserved "mon" <|> reserved "MON")
   s <- stringLiteral
-  pure $ Monitor ("monitors/" <> s)
+  pure $ Monitor ("monitors/horScreen" <> s)
 -- check empty spaces
 
 scalarFunction :: P (TransmissionAST -> TransmissionAST)
 scalarFunction = do
   _ <- pure unit
-  (reserved "scalar" <|> reserved "scale" <|> reserved "escalar" <|> reserved "bigealo" <|> reserved "SCALA")
+  (reserved "scail" <|> reserved "scala" <|> reserved "scalar" <|> reserved "scale" <|> reserved "escalar" <|> reserved "bigealo" <|> reserved "SCALAR" <|> reserved "SCALE" <|> reserved "ESCALAR" <|> reserved "BIGEALO")
   n <- number
   pure $ Scalar n
 
@@ -239,7 +286,7 @@ dynNumber = choice [ try dynNumberLeft, try dynNumberRight ]
 dynNumberLeft :: P (Either Number Number)
 dynNumberLeft = do
   _ <- pure unit
-  (reserved "auto" <|> reserved "automatic" <|> reserved "automatico" <|> reserved "automático" <|> reserved "AUTO")
+  (reserved "a" <|> reserved "auto" <|> reserved "automatic" <|> reserved "automatico" <|> reserved "automático" <|> reserved "AUTO")
   v <- number
   pure $ Left v
 

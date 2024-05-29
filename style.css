@@ -1,7 +1,7 @@
-/* @font-face {
+@font-face {
   font-family: AlargadX;
-  src: url(fonts/CinematicX.otf);
-} */
+  src: url(fonts/AlargadX.otf);
+}
 
 body{
   background: black;
@@ -9,8 +9,8 @@ body{
 
 #canvasDiv {
   position: absolute;
-	width: 100%;
-	height: 100%;
+	width: 100vw;
+	height: 100vh;
 	left: 0px;
 	top: 0px;
 	pointer-events: none;
@@ -19,8 +19,8 @@ body{
 
 #canvas {
   position: absolute;
-	width: 100%;
-	height: 100%;
+	width: 100vw;
+	height: 100vh;
 	left: 0px;
 	top: 0px;
 	pointer-events: none;
@@ -30,8 +30,8 @@ body{
 .editorAndStatus {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  width: 100%;
+  width: 100vw;
+	height: 100vh;
   position: absolute;
   left: 0px;
   top: 0px;
@@ -41,32 +41,59 @@ body{
   flex-grow: 1;
   flex-direction: column;
   background-color: transparent;
-	width: 100%;
+  padding-top: 3em;
+  padding-left: 3em;
 }
 
 .editorArea {
   font-family: Inconsolata,Consolas,monospace;
-  /* font-family: AlargadX; */
+  /* font-family: EscolarX; */
+  text-align: right;
+  font-size: 3em;
+
+  color: white;
   background-color: transparent;
   border: none;
-	width: 100%;
-  height: 100%;
-  color: white;
+	width: 96%;
+  height: 94%;
   resize: none;
   overflow: hidden;
-  text-align: left;
   box-shadow: none;
   outline: none;
-  font-size: 4em;
 }
 
 .status {
   font-family: monospace;
   width: 100%;
   color: white;
-  font-size: 1em;
+  font-size: 0.5em;
 }
 
 .errors {
   // float: left;
+}
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+.column textarea {
+  width: 100%;
+  height: 100vw;
+  background-color: transparent;
+  font-family: Inconsolata,Consolas,monospace;
+  color: white;
+  font-size: 4em;
+  resize: none;
+  border: none;
+  margin: 1.5em;
+  text-align: left;
+  text
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
 }
