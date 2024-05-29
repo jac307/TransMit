@@ -2721,8 +2721,8 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "monitors/horScreen0.obj",
-    mapping: "monitors/horScreen0.mtl",
+    tv: "monitors/oldtv1.obj",
+    mapping: "monitors/oldtv1.mtl",
     volume: 0.05,
     channel: "channels/defaultOff.mp4",
     channelReapeater: {
@@ -2742,16 +2742,16 @@ var defTransmission = /* @__PURE__ */ function() {
       z: 0
     },
     emissionIntensity: 0.5,
-    size: 4.5,
+    size: 1,
     position: {
       x: 0,
       y: 0,
       z: 0
     },
     rotation: {
-      x: new Right(0),
-      y: new Right(0),
-      z: new Right(0)
+      x: new Right(0.5),
+      y: new Right(0.1),
+      z: new Right(0.3)
     }
   };
 }();
@@ -3093,7 +3093,7 @@ var tASTtoT = function(v) {
       estado: v1.estado,
       tv: v1.tv,
       mapping: v1.mapping,
-      channel: "channels/encarnadas/" + (v.value0 + ".mp4"),
+      channel: "channels/" + (v.value0 + ".mov"),
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
@@ -26645,7 +26645,7 @@ var noTranmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE
 var monitorFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("m"))(alt(altParserT)(reserved("monitor"))(alt(altParserT)(reserved("MONITOR"))(alt(altParserT)(reserved("mon"))(reserved("MON"))))))(function() {
     return bind(bindParserT)(stringLiteral)(function(s) {
-      return pure(applicativeParserT)(Monitor.create("monitors/horScreen" + s));
+      return pure(applicativeParserT)(Monitor.create("monitors/" + s));
     });
   });
 });

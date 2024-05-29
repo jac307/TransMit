@@ -20,29 +20,11 @@ type Transmission = {
   }
 
 
--- defTransmission :: Transmission
--- defTransmission = {
---   estado:             false,
---   tv:                 "monitors/oldtv1.obj",
---   mapping:            "monitors/oldtv1.mtl",
---   volume:             0.05,
---   channel:            "channels/defaultOff.mp4",
---   channelReapeater:   {x: 1.0, y: 1.0},
---   fulcober:           "rgbaFormat",
---   translucidez:       1.0,
---   colour:             {x: 0.6, y: 0.6, z: 0.6}, -- rgb
---   emissionColour:     {x: 0.0, y: 0.0, z: 0.0}, -- rgb
---   emissionIntensity:  0.5,
---   size:               1.0,
---   position:           {x: 0.0, y: 0.0, z: 0.0},
---   rotation:           {x: (Right 0.5), y: (Right 0.1), z: (Right 0.3)}
--- }
-
 defTransmission :: Transmission
 defTransmission = {
   estado:             false,
-  tv:                 "monitors/horScreen0.obj",
-  mapping:            "monitors/horScreen0.mtl",
+  tv:                 "monitors/oldtv1.obj",
+  mapping:            "monitors/oldtv1.mtl",
   volume:             0.05,
   channel:            "channels/defaultOff.mp4",
   channelReapeater:   {x: 1.0, y: 1.0},
@@ -51,9 +33,9 @@ defTransmission = {
   colour:             {x: 0.6, y: 0.6, z: 0.6}, -- rgb
   emissionColour:     {x: 0.0, y: 0.0, z: 0.0}, -- rgb
   emissionIntensity:  0.5,
-  size:               4.5,
+  size:               1.0,
   position:           {x: 0.0, y: 0.0, z: 0.0},
-  rotation:           {x: (Right 0.0), y: (Right 0.0), z: (Right 0.0)}
+  rotation:           {x: (Right 0.5), y: (Right 0.1), z: (Right 0.3)}
 }
 
 

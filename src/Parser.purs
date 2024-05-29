@@ -222,7 +222,7 @@ monitorFunction = do
   _ <- pure unit
   (reserved "m" <|> reserved "monitor" <|> reserved "MONITOR" <|> reserved "mon" <|> reserved "MON")
   s <- stringLiteral
-  pure $ Monitor ("monitors/horScreen" <> s)
+  pure $ Monitor ("monitors/" <> s)
 -- check empty spaces
 
 scalarFunction :: P (TransmissionAST -> TransmissionAST)
