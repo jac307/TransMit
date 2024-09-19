@@ -2723,13 +2723,13 @@ var defTransmission = /* @__PURE__ */ function() {
     estado: false,
     tv: "monitors/horScreen0.obj",
     mapping: "monitors/horScreen0.mtl",
-    volume: 0.05,
+    volume: 0,
     channel: "channels/defaultOff.mp4",
     channelReapeater: {
       x: 1,
       y: 1
     },
-    fulcober: "rgbaFormat",
+    fulcober: "b&w",
     translucidez: 1,
     colour: {
       x: 0.6,
@@ -2742,7 +2742,7 @@ var defTransmission = /* @__PURE__ */ function() {
       z: 0
     },
     emissionIntensity: 0.5,
-    size: 4.5,
+    size: 5,
     position: {
       x: 0,
       y: 0,
@@ -2760,7 +2760,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     estado: true,
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
-    channel: "channels/encarnadas/F0.mp4",
+    channel: "channels/encarnadas/P1.mp4",
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
@@ -3093,7 +3093,7 @@ var tASTtoT = function(v) {
       estado: v1.estado,
       tv: v1.tv,
       mapping: v1.mapping,
-      channel: "channels/encarnadas/" + (v.value0 + ".mp4"),
+      channel: "channels/encarnadas/P" + (v.value0 + ".mp4"),
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
@@ -26626,7 +26626,7 @@ var reserved = /* @__PURE__ */ function() {
   return tokenParser.reserved;
 }();
 var switchFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("s"))(alt(altParserT)(reserved("switch"))(alt(altParserT)(reserved("suitch"))(alt(altParserT)(reserved("suich"))(alt(altParserT)(reserved("SWITCH"))(alt(altParserT)(reserved("SUITCH"))(reserved("SUICH"))))))))(function() {
+  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("s"))(alt(altParserT)(reserved("switch"))(alt(altParserT)(reserved("suitch"))(alt(altParserT)(reserved("suich"))(alt(altParserT)(reserved("SWITCH"))(alt(altParserT)(reserved("SUITCH"))(alt(altParserT)(reserved("SUICH"))(alt(altParserT)(reserved("switchealo"))(reserved("suichealo"))))))))))(function() {
     return bind(bindParserT)(stringLiteral)(function(s) {
       return pure(applicativeParserT)(Switch.create(s));
     });

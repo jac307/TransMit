@@ -41,11 +41,12 @@ body{
   flex-grow: 1;
   flex-direction: column;
   background-color: transparent;
-  padding-top: 3em;
+  padding-top: 4em;
   padding-left: 3em;
 }
 
 .editorArea {
+  margin-left: 47%;
   font-family: Inconsolata,Consolas,monospace;
   /* font-family: EscolarX; */
   text-align: right;
@@ -54,7 +55,7 @@ body{
   color: white;
   background-color: transparent;
   border: none;
-	width: 96%;
+	width: 50%;
   height: 94%;
   resize: none;
   overflow: hidden;

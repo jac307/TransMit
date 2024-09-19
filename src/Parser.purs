@@ -210,7 +210,7 @@ transformations = do
 switchFunction :: P (TransmissionAST -> TransmissionAST)
 switchFunction = do
   _ <- pure unit
-  (reserved "s" <|> reserved "switch" <|> reserved "suitch" <|> reserved "suich" <|> reserved "SWITCH" <|> reserved "SUITCH" <|> reserved "SUICH")
+  (reserved "s" <|> reserved "switch" <|> reserved "suitch" <|> reserved "suich" <|> reserved "SWITCH" <|> reserved "SUITCH" <|> reserved "SUICH" <|> reserved "switchealo" <|> reserved "suichealo")
   s <- stringLiteral
   pure $ Switch s
   -- should remove the empty spaces at the beginning of s

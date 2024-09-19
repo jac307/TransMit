@@ -24,22 +24,22 @@ defTransmission = {
   estado:             false,
   tv:                 "monitors/horScreen0.obj",
   mapping:            "monitors/horScreen0.mtl",
-  volume:             0.05,
+  volume:             0.0,
   channel:            "channels/defaultOff.mp4",
   channelReapeater:   {x: 1.0, y: 1.0},
-  fulcober:           "rgbaFormat",
+  fulcober:           "b&w",
   translucidez:       1.0,
   colour:             {x: 0.6, y: 0.6, z: 0.6}, -- rgb
   emissionColour:     {x: 0.0, y: 0.0, z: 0.0}, -- rgb
   emissionIntensity:  0.5,
-  size:               4.5,
+  size:               5.0,
   position:           {x: 0.0, y: 0.0, z: 0.0},
   rotation:           {x: (Right 0.0), y: (Right 0.0), z: (Right 0.0)}
 }
 
 
 defTransmissionOn :: Transmission
-defTransmissionOn = defTransmission {estado = true, channel = "channels/encarnadas/F0.mp4"}
+defTransmissionOn = defTransmission {estado = true, channel = "channels/encarnadas/P1.mp4"}
 
 ----
 
