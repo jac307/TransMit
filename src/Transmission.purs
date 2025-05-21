@@ -39,7 +39,7 @@ defTransmission = {
 
 
 defTransmissionOn :: Transmission
-defTransmissionOn = defTransmission {estado = true, channel = "channels/encarnadas/P1.mp4"}
+defTransmissionOn = defTransmission {estado = true, channel = "channels/encarnadas/P15.mp4"}
 
 ----
 
