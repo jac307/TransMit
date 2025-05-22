@@ -1,5 +1,35 @@
-body{
-  background: black;
+:root {
+  --editor-font:
+    monospace,
+    'Inconsolata',
+    'Acuarela',
+    'Alargada',
+    'Anarquia',
+    'Brillante',
+    'Cinematica',
+    'Escolar',
+    'Estampa',
+    'Molde',
+    'Nitida',
+    'Nocturna',
+    'Plumon',
+    'Salpicon',
+    'Treintas',
+    'Voyeur';
+
+  --editor-size: 4em;
+  --editor-align: left;
+  --editor-bg: transparent;
+  --editor-color: white;
+}
+
+/* ----------- */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* prevent window scrollbars */
 }
 
 #canvasDiv {
@@ -23,37 +53,41 @@ body{
 }
 
 .editorAndStatus {
-  display: flex;
-  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
-  position: absolute;
-  left: 0px;
-  top: 0px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* prevent internal scroll */
 }
 
 .editor {
   flex-grow: 1;
+  display: flex;
   flex-direction: column;
-  background-color: transparent;
-	width: 100%;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 .editorArea {
-  font-family: Inconsolata,Consolas,monospace;
-  /* font-family: AlargadX; */
-  background-color: transparent;
+  font-family: var(--editor-font);
+  font-size: var(--editor-size);
+  background-color: var(--editor-bg);
+  color: var(--editor-color);
+  text-align: var(--editor-align);
+
   border: none;
-	width: 100%;
+  width: 100%;
   height: 100%;
-  color: white;
   resize: none;
   overflow: hidden;
-  text-align: left;
   box-shadow: none;
   outline: none;
-  font-size: 4em;
   padding: 0.6em;
+  box-sizing: border-box;
 }
 
 .status {
@@ -149,4 +183,212 @@ pre {
   overflow-x: auto;
   white-space: pre-wrap;
   font-family: monospace;
+}
+
+#helpPopup select {
+  font-size: 1em;       /* Increase font size */
+  padding: 10px 16px;     /* Increase padding */
+  border-radius: 6px;     /* Optional: rounded corners */
+  width: 100%;            /* Optional: full width for consistency */
+  margin-top: 5px;
+  margin-bottom: 15px;
+  font-family: var(--editor-font);
+}
+
+/* fonts */
+
+@font-face {
+  font-family: 'Acuarela';
+  src: url('fonts/Acuarela.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'AcuarelX';
+  src: url('fonts/AcuarelX.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Alargada';
+  src: url('fonts/Alargada.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'AlargadX';
+  src: url('fonts/AlargadX.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Anarquia';
+  src: url('fonts/Anarquia.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'AnarquiX';
+  src: url('fonts/AnarquiX.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Brillante';
+  src: url('fonts/Brillante.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BrillantX';
+  src: url('fonts/BrillantX.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cinematica';
+  src: url('fonts/Cinematica.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'CinematicX';
+  src: url('fonts/CinematicX.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Escolar';
+  src: url('fonts/Escolar.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'EscolXr';
+  src: url('fonts/EscolXr.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Estampa';
+  src: url('fonts/Estampa.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'EstampX';
+  src: url('fonts/EstampX.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Molde';
+  src: url('fonts/Molde.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MoldX';
+  src: url('fonts/MoldX.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nitida';
+  src: url('fonts/Nitida.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NitidX';
+  src: url('fonts/NitidX.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nocturna';
+  src: url('fonts/Nocturna.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NocturnX';
+  src: url('fonts/NocturnX.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Plumon';
+  src: url('fonts/Plumon.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PlumXn';
+  src: url('fonts/PlumXn.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Salpicon';
+  src: url('fonts/Salpicon.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SalpicXn';
+  src: url('fonts/SalpicXn.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Treintas';
+  src: url('fonts/Treintas.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TreintXs';
+  src: url('fonts/TreintXs.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Voyeur';
+  src: url('fonts/Voyeur.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'VoyeXr';
+  src: url('fonts/VoyeXr.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }

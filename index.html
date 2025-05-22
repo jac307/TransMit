@@ -4,6 +4,7 @@
  <title>TransMit</title>
  <link href="style.css" rel="stylesheet" type="text/css"/>
  <link rel="shortcut icon" href="#">
+ <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
  <meta charset="UTF-8">
 </head>
 
@@ -36,41 +37,6 @@
     var r = TransMit.evaluate(window.tm)(t)();
     document.getElementById('errors').textContent = r.error;
   }
-
-  window.addEventListener('keydown', function (e) {
-    e = e || window.event;
-    if(e.shiftKey && e.key=="Enter") {
-      e.preventDefault();
-      window.doEval();
-    }
-  });
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const helpBtn = document.getElementById('helpButton');
-    const helpPopup = document.getElementById('helpPopup');
-    const closeHelp = document.getElementById('closeHelp');
-    const navButtons = document.querySelectorAll('.helpNav button');
-    const helpPages = document.querySelectorAll('.helpPage');
-
-navButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const targetId = btn.getAttribute('data-page');
-    helpPages.forEach(page => {
-      page.classList.add('hidden');
-    });
-    document.getElementById(targetId).classList.remove('hidden');
-  });
-});
-
-    helpBtn.addEventListener('click', () => {
-      helpPopup.classList.toggle('hidden');
-    });
-
-    closeHelp.addEventListener('click', () => {
-      helpPopup.classList.add('hidden');
-    });
-  });
-
   </script>
 
 
@@ -86,78 +52,8 @@ transmissión on
     </div>
   </div>
 
-
-  <!-- Help Button -->
-  <div id="helpButton">Info</div>
-
-  <!-- Pop-up Menu -->
-  <div id="helpPopup" class="hidden">
-    <div class="helpContent">
-      <span id="closeHelp">&times;</span>
-
-      <!-- Page 1 -->
-      <div class="helpPage" id="page1">
-        <h3> Acerca del TransMit (The Spanglish version) </h3>
-        <p> TransMit is a live video programming language con una sintaxis culturalmente situada en Spanglish —osease una mix lingüística que refleja tanto las prácticas tecnológicas contemporáneas como las hybrid identities de quienes la usan. Aquí, live-codeamos como hablamos: todo cortado y torturado. </p>
-        <p> TransMit corre as web-based application, que fue developed en Purescript integrando la librería Three.js para rendering gráfico en 3D. En esta application, es posible mapear video sobre objetos tridimensionales como planes, cubes, spheres, y esos poliedros que suenan más a geometría avanzada que a arte visual (pero son ambos).</p>
-        <p>Cada objeto viene con sus propios mapping settings, pa'una variedad de visual effects e interactions. En otras palabras: tú le das las instrucciones, y TransMit te devuelve arte audiovisual en movimiento. Critical code meets visual performance, con un twist bicultural.</p>
-        <h3> About TransMit (The boring version)</h3>
-        <p>TransMit is a programming language for live video with a culturally situated syntax in Spanglish.</p>
-        <p>TransMit runs as a web application and was implemented in Purescript using Three.js library. With TransMit, you can play video by mapping it onto 3D objects such as planes, cubes, spheres, and polyhedrons. Each object offers distinct mapping settings, allowing for varied visual effects and interactions.</p>
-      </div>
-
-      <!-- Page 2 -->
-      <div class="helpPage hidden" id="page2">
-        <h3>Cod(e/i)-go</h3>
-        <ul>
-          <li><code>transmissión on</code></li>
-          <li><code>transmissión on switch 1</code></li>
-          <li><code>transmission on suich 3</code></li>
-          <li><code>transmission on monitor oldi3</code></li>
-          <li><code>trasmission on MONITOR celScreen0</code></li>
-          <li><code>transmissión on muv -2 1 0</code></li>
-          <li><code>transmissión on rodar 1 2 0</code></li>
-          <li><code>transmissión on rodar 1 a-0.002 0 fulcober negriblanco</code></li>
-        </ul>
-        <hr>
-        <h4>Multiple</code></h4>
-        <p><code>transmissión on emit 0 -1 1 movit -3 0 0; </br> transmissión on emit 0 1 -1 movit 3 0 0 switch 10;</code></p>
-        <hr>
-        <h4>Channels - <code>switch #</code></h4>
-        <p><code>1</code>, <code>2</code>, <code>3</code>... <code>30</code> </p>
-        <hr>
-        <p>Complete List(a) de/of Function(e)s:</p>
-      </div>
-
-      <!-- Page 3 -->
-      <div class="helpPage hidden" id="page3">
-        <h3>Monitor(e)s</h3>
-        <ul>
-          <li><b>Cub(e/o):</b> <code>oldi0</code>, <code>oldi1</code>, <code>oldi2</code>, <code>oldi3</code>, <code>oldi4</code> </li>
-          <hr>
-          <li><b>Rectangular Prism(a):</b> <code>90s0</code>, <code>90s1</code>, <code>90s2</code>, <code>90s3</code>, <code>90s4</code> </li>
-          <hr>
-          <li><b>Vertical Plan(e/o):</b> <code>celScreen0</code>, <code>celScreen1</code>, <code>celScreen2</code>, <code>celScreen3</code>, <code>celScreen4</code>, <code>celScreen5</code>, <code>celScreen6</code>, <code>celScreen7</code>, <code>celScreen8</code>, c<code>elScreen9</code>, <code>celScreen10</code>, <code>celScreen11</code>, <code>celScreen12</code> </li>
-          <hr>
-          <li><b>Horizontal Plan(e/o):</b> <code>movieScreen0</code>, <code>movieScreen1</code>, <code>movieScreen2</code>, <code>movieScreen3</code>, <code>movieScreen4</code>, <code>movieScreen5</code>, <code>movieScreen6</code>, <code>movieScreen7</code>, <code>movieScreen8</code>, <code>movieScreen9</code>, <code>movieScreen10</code>, <code>movieScreen11</code>, <code>movieScreen12</code>, <code>movieScreen13</code>, <code>movieScreen14</code>, <code>movieScreen15</code> </li>
-          <hr>
-          <li><b>Sq Plan(e/o):</b> <code>insta0</code>, <code>insta1</code>, <code>insta2</code>, <code>insta3</code>, <code>insta4</code>, <code>insta5</code> </li>
-          <hr>
-          <li><b>Spher(e/a):</b> <code>domo0</code>, <code>domo1</code>, <code>domo2</code>, <code>domo3</code>, <code>domo4</code>, <code>domo5</code> </li>
-          <hr>
-          <li><b>Pol(y/i)hedron(e)s:</b> <code>penta0</code>, <code>penta1</code>, <code>penta2</code>, <code>penta3</code>, <code>penta4</code>, <code>penta5</code> </li>
-        </ul>
-      </div>
-
-      <!-- Navigation -->
-      <div class="helpNav">
-        <button data-page="page1">General</button>
-        <button data-page="page2">Cod(e/i)-go</button>
-        <button data-page="page3">Monitor(e)s</button>
-      </div>
-
-    </div>
-  </div>
+  <div id="helpContainer"></div>
+  <script type="module" src="interfaceSettings.js"></script>
 
 </body>
 
