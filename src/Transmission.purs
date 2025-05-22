@@ -23,8 +23,8 @@ type Transmission = {
 defTransmission :: Transmission
 defTransmission = {
   estado:             false,
-  tv:                 "https://jac307.github.io/TransMit/monitors/oldtv0.obj",
-  mapping:            "https://jac307.github.io/TransMit/monitors/oldtv0.mtl",
+  tv:                 "/monitors/oldi0.obj",
+  mapping:            "/monitors/oldi0.mtl",
   volume:             0.0,
   channel:            "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
   channelReapeater:   {x: 1.0, y: 1.0},
@@ -40,7 +40,7 @@ defTransmission = {
 
 
 defTransmissionOn :: Transmission
-defTransmissionOn = defTransmission {estado = true, channel = "https://jac307.github.io/TransMit/channels/defaultOn.mp4"}
+defTransmissionOn = defTransmission {estado = true, channel = "/channels/00.mp4"}
 
 ----
 

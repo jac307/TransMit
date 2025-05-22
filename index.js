@@ -842,6 +842,44 @@ var fix = function(dictLazy) {
   };
 };
 
+// output/Data.HeytingAlgebra/foreign.js
+var boolConj = function(b1) {
+  return function(b2) {
+    return b1 && b2;
+  };
+};
+var boolDisj = function(b1) {
+  return function(b2) {
+    return b1 || b2;
+  };
+};
+var boolNot = function(b) {
+  return !b;
+};
+
+// output/Data.HeytingAlgebra/index.js
+var not = function(dict) {
+  return dict.not;
+};
+var ff = function(dict) {
+  return dict.ff;
+};
+var disj = function(dict) {
+  return dict.disj;
+};
+var heytingAlgebraBoolean = {
+  ff: false,
+  tt: true,
+  implies: function(a) {
+    return function(b) {
+      return disj(heytingAlgebraBoolean)(not(heytingAlgebraBoolean)(a))(b);
+    };
+  },
+  conj: boolConj,
+  disj: boolDisj,
+  not: boolNot
+};
+
 // output/Data.EuclideanRing/foreign.js
 var intDegree = function(x) {
   return Math.min(Math.abs(x), 2147483647);
@@ -922,6 +960,28 @@ var bimap = function(dict) {
   return dict.bimap;
 };
 
+// output/Data.Monoid.Disj/index.js
+var Disj = function(x) {
+  return x;
+};
+var semigroupDisj = function(dictHeytingAlgebra) {
+  return {
+    append: function(v) {
+      return function(v1) {
+        return disj(dictHeytingAlgebra)(v)(v1);
+      };
+    }
+  };
+};
+var monoidDisj = function(dictHeytingAlgebra) {
+  return {
+    mempty: ff(dictHeytingAlgebra),
+    Semigroup0: function() {
+      return semigroupDisj(dictHeytingAlgebra);
+    }
+  };
+};
+
 // output/Unsafe.Coerce/foreign.js
 var unsafeCoerce2 = function(x) {
   return x;
@@ -934,6 +994,17 @@ var coerce = function() {
 
 // output/Data.Newtype/index.js
 var unwrap = coerce;
+var alaF = function() {
+  return function() {
+    return function() {
+      return function() {
+        return function(v) {
+          return coerce();
+        };
+      };
+    };
+  };
+};
 
 // output/Data.Foldable/index.js
 var foldr = function(dict) {
@@ -998,6 +1069,23 @@ var foldableArray = {
   foldMap: function(dictMonoid) {
     return foldMapDefaultR(foldableArray)(dictMonoid);
   }
+};
+var foldMap = function(dict) {
+  return dict.foldMap;
+};
+var any = function(dictFoldable) {
+  return function(dictHeytingAlgebra) {
+    return alaF()()()()(Disj)(foldMap(dictFoldable)(monoidDisj(dictHeytingAlgebra)));
+  };
+};
+var elem = function(dictFoldable) {
+  return function(dictEq) {
+    var $326 = any(dictFoldable)(heytingAlgebraBoolean);
+    var $327 = eq(dictEq);
+    return function($328) {
+      return $326($327($328));
+    };
+  };
 };
 
 // output/Control.Monad/index.js
@@ -1869,6 +1957,9 @@ var length = /* @__PURE__ */ foldl(foldableList)(function(acc) {
     return acc + 1 | 0;
   };
 })(0);
+var fromFoldable = function(dictFoldable) {
+  return foldr(dictFoldable)(Cons.create)(Nil.value);
+};
 var drop = function($copy_v) {
   return function($copy_v1) {
     var $tco_var_v = $copy_v;
@@ -2721,8 +2812,8 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "https://jac307.github.io/TransMit/monitors/oldtv0.obj",
-    mapping: "https://jac307.github.io/TransMit/monitors/oldtv0.mtl",
+    tv: "/monitors/oldi0.obj",
+    mapping: "/monitors/oldi0.mtl",
     volume: 0,
     channel: "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
     channelReapeater: {
@@ -2760,7 +2851,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     estado: true,
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
-    channel: "https://jac307.github.io/TransMit/channels/defaultOn.mp4",
+    channel: "/channels/00.mp4",
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
@@ -3093,7 +3184,7 @@ var tASTtoT = function(v) {
       estado: v1.estado,
       tv: v1.tv,
       mapping: v1.mapping,
-      channel: v.value0,
+      channel: "/channels/" + (v.value0 + ".mov"),
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
@@ -3111,8 +3202,8 @@ var tASTtoT = function(v) {
     var v1 = tASTtoT(v.value1);
     return {
       estado: v1.estado,
-      tv: "https://jac307.github.io/TransMit/" + (v.value0 + ".obj"),
-      mapping: "https://jac307.github.io/TransMit/" + (v.value0 + ".mtl"),
+      tv: v.value0 + ".obj",
+      mapping: v.value0 + ".mtl",
       channel: v1.channel,
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
@@ -3256,6 +3347,31 @@ var unsafeClamp = function(x) {
 };
 var floor2 = function($25) {
   return unsafeClamp(floor($25));
+};
+
+// output/Data.Number.Format/foreign.js
+function wrap(method) {
+  return function(d) {
+    return function(num) {
+      return method.apply(num, [d]);
+    };
+  };
+}
+var toPrecisionNative = wrap(Number.prototype.toPrecision);
+var toFixedNative = wrap(Number.prototype.toFixed);
+var toExponentialNative = wrap(Number.prototype.toExponential);
+function toString(num) {
+  return num.toString();
+}
+
+// output/Data.String.Common/foreign.js
+var toLower = function(s) {
+  return s.toLowerCase();
+};
+
+// output/Data.String.Common/index.js
+var $$null = function(s) {
+  return s === "";
 };
 
 // output/Control.Monad.Error.Class/index.js
@@ -4151,16 +4267,6 @@ var stripPrefix = function(v) {
     ;
     return Nothing.value;
   };
-};
-
-// output/Data.String.Common/foreign.js
-var toLower = function(s) {
-  return s.toLowerCase();
-};
-
-// output/Data.String.Common/index.js
-var $$null = function(s) {
-  return s === "";
 };
 
 // output/Data.String.CodePoints/index.js
@@ -26478,7 +26584,7 @@ var makeTokenParser = function(v) {
     ;
     throw new Error("Failed pattern match at Parsing.Token (line 751, column 3 - line 751, column 50): " + [name2.constructor.name]);
   };
-  var reserved2 = function(name2) {
+  var reserved = function(name2) {
     var go = applySecond(applyParserT)(caseString(name2))(withErrorMessage(notFollowedBy(v.identLetter))("end of " + name2));
     return lexeme($$try(go));
   };
@@ -26510,7 +26616,7 @@ var makeTokenParser = function(v) {
     return alt(altParserT)(voidLeft(functorParserT)(escapeGap)(Nothing.value))(alt(altParserT)(voidLeft(functorParserT)(escapeEmpty)(Nothing.value))(map(functorParserT)(Just.create)(escapeCode)));
   });
   var stringChar = alt(altParserT)(map(functorParserT)(Just.create)(stringLetter))(withErrorMessage(stringEscape)("string character"));
-  var stringLiteral2 = function() {
+  var stringLiteral = function() {
     var folder = function(v1) {
       return function(chars) {
         if (v1 instanceof Nothing) {
@@ -26534,11 +26640,11 @@ var makeTokenParser = function(v) {
   };
   return {
     identifier: identifier2,
-    reserved: reserved2,
+    reserved,
     operator,
     reservedOp: reservedOp2,
     charLiteral,
-    stringLiteral: stringLiteral2,
+    stringLiteral,
     natural,
     integer: integer2,
     "float": $$float2,
@@ -26594,7 +26700,7 @@ var tokenParser = /* @__PURE__ */ makeTokenParser(/* @__PURE__ */ function() {
     identLetter: v.identLetter,
     opStart: v.opStart,
     opLetter: v.opLetter,
-    reservedNames: ["turn off", "turns off", "turnof", "apagar", "transmission", "trasmission", "trasmision", "transmision", "transmisssion", "on", "onn", "onnn", "off", "of", "offf", "volume", "volumen", "vol", "subele", "pumpealo", "repet", "repeat", "repitelo", "repeatelo", "scalar", "scale", "escalar", "bigealo", "movet", "muvet", "move it", "muevelo", "muvetelo", "rodar", "rotate", "rotait", "rotaetelo", "fulcober", "fullcober", "fulcover", "fullcover", "translucido", "traslucido", "traslusido", "traslusido", "translucent", "traslucent", "traslusent", "color", "colour", "color it", "colorealo", "colourealo", "emit", "emitir", "emitear", "emitealo", "brillo", "brightness", "braignes", "braigtnes", "briyo", "switch", "suitch", "suich", "monitor", "auto", "automatic", "automatico", "autom\xE1tico"],
+    reservedNames: [],
     reservedOpNames: ["=", '"', '"', "_", ";"],
     caseSensitive: v.caseSensitive
   };
@@ -26602,9 +26708,10 @@ var tokenParser = /* @__PURE__ */ makeTokenParser(/* @__PURE__ */ function() {
 var whiteSpace = /* @__PURE__ */ function() {
   return tokenParser.whiteSpace;
 }();
-var stringLiteral = /* @__PURE__ */ function() {
-  return tokenParser.stringLiteral;
-}();
+var switchFunction = function(n) {
+  var s = toString(n);
+  return pure(applicativeParserT)(Switch.create(s));
+};
 var statementToTransmission = function(v) {
   if (v instanceof EmptyStatement) {
     return Nothing.value;
@@ -26614,7 +26721,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 443, column 1 - line 443, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 384, column 1 - line 384, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -26622,32 +26729,11 @@ var showParseError = function(v) {
 var reservedOp = /* @__PURE__ */ function() {
   return tokenParser.reservedOp;
 }();
-var reserved = /* @__PURE__ */ function() {
-  return tokenParser.reserved;
-}();
-var switchFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("switch"))(alt(altParserT)(reserved("suitch"))(alt(altParserT)(reserved("suich"))(reserved("SWITCH")))))(function() {
-    return bind(bindParserT)(stringLiteral)(function(s) {
-      return pure(applicativeParserT)(Switch.create(s));
-    });
-  });
-});
 var onlySemiColon = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ lookAhead(/* @__PURE__ */ reservedOp(";")))(function() {
   return pure(applicativeParserT)(EmptyStatement.value);
 });
 var onlyEOF = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ lookAhead(eof))(function() {
   return pure(applicativeParserT)(EmptyStatement.value);
-});
-var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("on"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onn"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("onnn"))(/* @__PURE__ */ reserved("ON")))))(true), /* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("of"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("offf"))(/* @__PURE__ */ reserved("OF")))))(false)]));
-var noTranmission = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("turn off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("turns off"))(/* @__PURE__ */ alt(altParserT)(/* @__PURE__ */ reserved("turnof"))(/* @__PURE__ */ reserved("apagar")))))(function() {
-  return pure(applicativeParserT)(EmptyStatement.value);
-});
-var monitorFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("monitor"))(reserved("MONITOR")))(function() {
-    return bind(bindParserT)(stringLiteral)(function(s) {
-      return pure(applicativeParserT)(Monitor.create("monitors/" + s));
-    });
-  });
 });
 var integer = /* @__PURE__ */ function() {
   return tokenParser.integer;
@@ -26655,9 +26741,29 @@ var integer = /* @__PURE__ */ function() {
 var identifier = /* @__PURE__ */ function() {
   return tokenParser.identifier;
 }();
-var functionWithString = function(functionName) {
+var matchKeyword = function(options) {
+  return bind(bindParserT)(identifier)(function(word) {
+    var keyword = toLower(word);
+    var $9 = elem(foldableList)(eqString)(keyword)(fromFoldable(foldableList)(options));
+    if ($9) {
+      return pure(applicativeParserT)(unit);
+    }
+    ;
+    return empty(plusParserT);
+  });
+};
+var noTranmission = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["turn off", "turns off", "turnof", "apagar"])))(function() {
+  return pure(applicativeParserT)(EmptyStatement.value);
+});
+var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["on", "onn", "onnn", "onnnn"])))(true)), /* @__PURE__ */ $$try(/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["off", "of", "offf", "offff"])))(false))]));
+var monitorFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["mon", "monitor", "m\xF3nitor", "monnitor"])))(function() {
+  return bind(bindParserT)(identifier)(function(s) {
+    return pure(applicativeParserT)(Monitor.create("/monitors/" + s));
+  });
+});
+var functionWithStringKeyword = function(keywords) {
   return function(constructor) {
-    return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
+    return $$try(bind(bindParserT)(matchKeyword(keywords))(function() {
       return bind(bindParserT)(identifier)(function(s) {
         return pure(applicativeParserT)(constructor(s));
       });
@@ -26673,22 +26779,25 @@ var negativeNumber = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(appl
   });
 });
 var number = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(negativeNumber), /* @__PURE__ */ $$try($$float), /* @__PURE__ */ map(functorParserT)(toNumber)(integer)]);
-var functionWithNumber = function(functionName) {
+var functionWithNumberKeyword = function(keywords) {
   return function(constructor) {
-    return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
+    return $$try(bind(bindParserT)(matchKeyword(keywords))(function() {
       return bind(bindParserT)(number)(function(n) {
         return pure(applicativeParserT)(constructor(n));
       });
     }));
   };
 };
-var scalarFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("scalar"))(alt(altParserT)(reserved("scale"))(alt(altParserT)(reserved("escalar"))(alt(altParserT)(reserved("bigealo"))(reserved("SCALA"))))))(function() {
-    return bind(bindParserT)(number)(function(n) {
-      return pure(applicativeParserT)(Scalar.create(n));
-    });
+var scalarFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["scalar", "escalar", "scale", "escale", "scail", "escail", "esqueil", "squeil", "biggealo", "bigealo"])))(function() {
+  return bind(bindParserT)(number)(function(n) {
+    return pure(applicativeParserT)(Scalar.create(n));
   });
 });
+var switchFunctionWrapper = /* @__PURE__ */ $$try(/* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["switch", "suitch", "suich", "suish", "swish", "c\xE1mbiale"])))(function() {
+  return bind(bindParserT)(number)(function(n) {
+    return switchFunction(n);
+  });
+}));
 var vec2xy = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return bind(bindParserT)(number)(function(x) {
     return bind(bindParserT)(number)(function(y) {
@@ -26699,35 +26808,15 @@ var vec2xy = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeP
     });
   });
 });
-var functionWithV2 = function(functionName) {
+var functionWithV2Keyword = function(keywords) {
   return function(constructor) {
-    return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
+    return $$try(bind(bindParserT)(matchKeyword(keywords))(function() {
       return bind(bindParserT)(vec2xy)(function(v2) {
         return pure(applicativeParserT)(constructor(v2));
       });
     }));
   };
 };
-var vec3x = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return bind(bindParserT)(number)(function(x) {
-    return pure(applicativeParserT)({
-      x,
-      y: 0,
-      z: 0
-    });
-  });
-});
-var vec3xy = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return bind(bindParserT)(number)(function(x) {
-    return bind(bindParserT)(number)(function(y) {
-      return pure(applicativeParserT)({
-        x,
-        y,
-        z: 0
-      });
-    });
-  });
-});
 var vec3xyz = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return bind(bindParserT)(number)(function(x) {
     return bind(bindParserT)(number)(function(y) {
@@ -26741,35 +26830,10 @@ var vec3xyz = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicative
     });
   });
 });
-var vec3y = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(reservedOp("_"))(function() {
-    return bind(bindParserT)(number)(function(y) {
-      return pure(applicativeParserT)({
-        x: 0,
-        y,
-        z: 0
-      });
-    });
-  });
-});
-var vec3z = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(reservedOp("_"))(function() {
-    return discard(discardUnit)(bindParserT)(reservedOp("_"))(function() {
-      return bind(bindParserT)(number)(function(z) {
-        return pure(applicativeParserT)({
-          x: 0,
-          y: 0,
-          z
-        });
-      });
-    });
-  });
-});
-var vec3Param = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(vec3xyz), /* @__PURE__ */ $$try(vec3xy), /* @__PURE__ */ $$try(vec3z), /* @__PURE__ */ $$try(vec3y), /* @__PURE__ */ $$try(vec3x)]);
-var functionWithV3 = function(functionName) {
+var functionWithV3Keyword = function(keywords) {
   return function(constructor) {
-    return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
-      return bind(bindParserT)(vec3Param)(function(v3) {
+    return $$try(bind(bindParserT)(matchKeyword(keywords))(function() {
+      return bind(bindParserT)(vec3xyz)(function(v3) {
         return pure(applicativeParserT)(constructor(v3));
       });
     }));
@@ -26777,14 +26841,12 @@ var functionWithV3 = function(functionName) {
 };
 var dynNumberRight = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return bind(bindParserT)(number)(function(v) {
-    return pure(applicativeParserT)(new Right(v));
+    return pure(applicativeParserT)(new Right(v * 1e-3));
   });
 });
-var dynNumberLeft = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("auto"))(alt(altParserT)(reserved("automatic"))(alt(altParserT)(reserved("automatico"))(alt(altParserT)(reserved("autom\xE1tico"))(reserved("AUTO"))))))(function() {
-    return bind(bindParserT)(number)(function(v) {
-      return pure(applicativeParserT)(new Left(v));
-    });
+var dynNumberLeft = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["a", "auto", "automatic", "atomatic", "automatico", "autom\xE1tico"])))(function() {
+  return bind(bindParserT)(number)(function(v) {
+    return pure(applicativeParserT)(new Left(v * 1e-3));
   });
 });
 var dynNumber = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(dynNumberLeft), /* @__PURE__ */ $$try(dynNumberRight)]);
@@ -26801,25 +26863,41 @@ var dynVec3xyz = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicat
     });
   });
 });
-var functionWithDynV3 = function(functionName) {
+var functionWithDynV3Keyword = function(keywords) {
   return function(constructor) {
-    return $$try(discard(discardUnit)(bindParserT)(reserved(functionName))(function() {
-      return bind(bindParserT)(dynVec3xyz)(function(dv3) {
-        return pure(applicativeParserT)(constructor(dv3));
+    return $$try(bind(bindParserT)(matchKeyword(keywords))(function() {
+      return bind(bindParserT)(dynVec3xyz)(function(v) {
+        return pure(applicativeParserT)(constructor(v));
       });
     }));
   };
 };
-var transformations = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return choice(foldableArray)([functionWithNumber("volume")(Volume.create), functionWithNumber("volumen")(Volume.create), functionWithNumber("vol")(Volume.create), functionWithNumber("subele")(Volume.create), functionWithNumber("pumpealo")(Volume.create), functionWithNumber("SUBELE")(Volume.create), functionWithV2("repet")(ChannelRepeater.create), functionWithV2("repeat")(ChannelRepeater.create), functionWithV2("repitelo")(ChannelRepeater.create), functionWithV2("repeatelo")(ChannelRepeater.create), functionWithV2("REPET")(ChannelRepeater.create), functionWithV3("movet")(Movet.create), functionWithV3("muvet")(Movet.create), functionWithV3("muvit")(Movet.create), functionWithV3("move it")(Movet.create), functionWithV3("muevelo")(Movet.create), functionWithV3("muvetelo")(Movet.create), functionWithV3("MOVET")(Movet.create), functionWithDynV3("rodar")(Rodar.create), functionWithDynV3("rotate")(Rodar.create), functionWithDynV3("rotait")(Rodar.create), functionWithDynV3("rotaetelo")(Rodar.create), functionWithDynV3("RODALO")(Rodar.create), functionWithString("fulcober")(Fulcober.create), functionWithString("fullcober")(Fulcober.create), functionWithString("fulcover")(Fulcober.create), functionWithString("fullcover")(Fulcober.create), functionWithString("FULCOBER")(Fulcober.create), functionWithNumber("translucido")(Translucidez.create), functionWithNumber("traslucido")(Translucidez.create), functionWithNumber("traslusido")(Translucidez.create), functionWithNumber("translucent")(Translucidez.create), functionWithNumber("traslucent")(Translucidez.create), functionWithNumber("traslusent")(Translucidez.create), functionWithNumber("TRANSLUCIDO")(Translucidez.create), functionWithV3("color")(Colour.create), functionWithV3("colour")(Colour.create), functionWithV3("color it")(Colour.create), functionWithV3("colorealo")(Colour.create), functionWithV3("colourealo")(Colour.create), functionWithV3("COLOR")(Colour.create), functionWithV3("emit")(EmissionColour.create), functionWithV3("emitir")(EmissionColour.create), functionWithV3("emitear")(EmissionColour.create), functionWithV3("emitealo")(EmissionColour.create), functionWithV3("EMITEALO")(EmissionColour.create), functionWithNumber("brillo")(EmissionIntensity.create), functionWithNumber("brightness")(EmissionIntensity.create), functionWithNumber("braignes")(EmissionIntensity.create), functionWithNumber("braigtnes")(EmissionIntensity.create), functionWithNumber("briyo")(EmissionIntensity.create), functionWithNumber("BRIYO")(EmissionIntensity.create), switchFunction, monitorFunction, scalarFunction]);
-});
+var transformations = function(isOn) {
+  return choice(foldableArray)([functionWithNumberKeyword(fromFoldable(foldableArray)(["vol", "volume", "volumen", "vol\xFAmen", "subele", "s\xFAbele", "pumpealo"]))(Volume.create), functionWithV2Keyword(fromFoldable(foldableArray)(["repeat", "repet", "repit", "repitelo", "rep\xEDtelo", "repitealo"]))(ChannelRepeater.create), functionWithV3Keyword(fromFoldable(foldableArray)(["muv", "movet", "muvet", "muvit", "move it", "muevelo", "mu\xE9velo", "muvetelo"]))(Movet.create), functionWithDynV3Keyword(fromFoldable(foldableArray)(["rodar", "rotate", "rotait", "rotaetelo", "rotatelo"]))(Rodar.create), functionWithStringKeyword(fromFoldable(foldableArray)(["fulcober", "fullcober", "fulcover", "fullcover"]))(Fulcober.create), functionWithNumberKeyword(fromFoldable(foldableArray)(["translucido", "traslucido", "translusido", "translucent", "traslucent", "traslusent"]))(Translucidez.create), functionWithV3Keyword(fromFoldable(foldableArray)(["color", "colour", "color it", "colorealo", "colourealo"]))(Colour.create), functionWithV3Keyword(fromFoldable(foldableArray)(["emit", "emitir", "emitear", "emitealo"]))(EmissionColour.create), functionWithNumberKeyword(fromFoldable(foldableArray)(["brillo", "brightness", "braignes", "braigtnes", "briyo"]))(EmissionIntensity.create), function() {
+    if (isOn) {
+      return switchFunctionWrapper;
+    }
+    ;
+    return empty(plusParserT);
+  }(), monitorFunction, scalarFunction]);
+};
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
-  return discard(discardUnit)(bindParserT)(alt(altParserT)(reserved("transmission"))(alt(altParserT)(reserved("trasmission"))(alt(altParserT)(reserved("trasmision"))(alt(altParserT)(reserved("transmision"))(alt(altParserT)(reserved("transmisssion"))(reserved("TRANSMISION")))))))(function() {
-    return bind(bindParserT)(onOrOff)(function(b) {
-      var t = new LiteralTransmissionAST(b);
-      return bind(bindParserT)(many2(transformations))(function(xs) {
-        var xs$prime = foldl(foldableList)(compose(semigroupoidFn))(identity(categoryFn))(xs);
-        return pure(applicativeParserT)(xs$prime(t));
+  return bind(bindParserT)(identifier)(function(word) {
+    var keyword = toLower(word);
+    return discard(discardUnit)(bindParserT)(function() {
+      var $11 = elem(foldableList)(eqString)(keyword)(fromFoldable(foldableArray)(["transmission", "trasmission", "trasmision", "transmicion", "transmision", "transmisssion", "trasmisssion", "trasmicion", "transmissi\xF3n", "trasmissi\xF3n", "trasmisi\xF3n", "transmici\xF3n", "transmisi\xF3n", "transmisssi\xF3n", "trasmisssi\xF3n", "trasmici\xF3n"]));
+      if ($11) {
+        return pure(applicativeParserT)(unit);
+      }
+      ;
+      return empty(plusParserT);
+    }())(function() {
+      return bind(bindParserT)(onOrOff)(function(b) {
+        var t = new LiteralTransmissionAST(b);
+        return bind(bindParserT)(many2(transformations(b)))(function(xs) {
+          var xs$prime = foldl(foldableList)(compose(semigroupoidFn))(identity(categoryFn))(xs);
+          return pure(applicativeParserT)(xs$prime(t));
+        });
       });
     });
   });
@@ -26848,7 +26926,7 @@ var parseAST = function(x) {
     return new Right(v.value0);
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 26, column 14 - line 28, column 27): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 48, column 14 - line 50, column 27): " + [v.constructor.name]);
 };
 var parseProgram = function(x) {
   return bind(bindEither)(parseAST(x))(function(ast1) {

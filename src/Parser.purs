@@ -1,21 +1,43 @@
 module Parser where
 
-import Prelude (Unit, bind, discard, negate, pure, show, identity, ($), ($>), (*), (<$>), (<>), unit, map)
+import Prelude (Unit, bind, discard, negate, pure, show, identity, eq, ($), ($>), (*), (<$>), (<>), (==), (+), unit, map)
 import Control.Semigroupoid ((<<<))
 import Data.Identity (Identity)
-import Data.List (List, catMaybes, foldl)
+import Data.List (List, catMaybes, foldl, fromFoldable, any, elem)
 import Data.List.NonEmpty (NonEmptyList)
 import Data.Either (Either(..))
-import Data.Int (toNumber)
+import Data.Int (toNumber, fromString)
 import Data.Maybe (Maybe(..))
 import Parsing (ParseError(..), ParserT, Position(..), runParser)
 import Parsing.Language (emptyDef)
-import Parsing.Token (GenLanguageDef(..), GenTokenParser, makeTokenParser, unGenLanguageDef)
+import Parsing.Token (GenLanguageDef(..), GenTokenParser, makeTokenParser, unGenLanguageDef, token)
 import Parsing.Combinators (choice, lookAhead, try, (<|>), many, sepBy, option)
 import Parsing.String (eof)
+import Data.Number.Format (toString)
+
+import Data.String.Common (toLower)
+import Control.Alternative (empty)
 
 import AST (AST, Statement(..), TransmissionAST(..), tASTtoT)
 import Transmission (Transmission, Vec3, Vec2, DynVec3)
+
+
+-------
+
+matchFlexibleKeyword :: String -> List String -> Boolean
+matchFlexibleKeyword input options =
+  let keyword = toLower input
+  in keyword `elem` fromFoldable options
+
+matchKeyword :: List String -> P Unit
+matchKeyword options = do
+  word <- identifier
+  let keyword = toLower word
+  if keyword `elem` fromFoldable options
+    then pure unit
+    else empty
+
+-------
 
 parseProgram :: String -> Either String Program
 parseProgram x = do
@@ -62,158 +84,137 @@ onlyEOF = do
 
 noTranmission :: P Statement
 noTranmission = do
-  (reserved "turn off" <|> reserved "turns off" <|> reserved "turnof" <|> reserved "apagar")
+  _ <- matchKeyword (fromFoldable
+    [ "turn off", "turns off", "turnof", "apagar"])
   pure $ EmptyStatement
 
 --- Transmission ---
 --------------------
 
--- transmission on;
--- transmission off;
 transmissionParser :: P TransmissionAST
 transmissionParser = do
   _ <- pure unit
-  (reserved "transmission" <|> reserved "trasmission" <|> reserved "trasmision" <|> reserved "transmision" <|> reserved "transmisssion" <|> reserved "TRANSMISION" )
+  word <- identifier
+  let keyword = toLower word
+  if keyword `elem` fromFoldable
+       [ "transmission", "trasmission", "trasmision", "transmicion"
+       , "transmision", "transmisssion", "trasmisssion", "trasmicion"
+       , "transmissión", "trasmissión", "trasmisión",  "transmición"
+       , "transmisión", "transmisssión", "trasmisssión",  "trasmición"
+       ]
+    then pure unit
+    else empty
   b <- onOrOff
   let t = LiteralTransmissionAST b
-  xs <- many transformations
+  xs <- many (transformations b)  -- pass the value of `b` here
   let xs' = foldl (<<<) identity xs
   pure $ xs' t
 
 onOrOff :: P Boolean
-onOrOff = try $ choice [
-  (reserved "on" <|> reserved "onn" <|> reserved "onnn" <|> reserved "ON")  $> true,
-  (reserved "off" <|> reserved "of" <|> reserved "offf" <|> reserved "OF") $> false
-]
+onOrOff = try $ choice
+  [ try $ matchKeyword (fromFoldable [ "on", "onn", "onnn", "onnnn"]) $> true
+  , try $ matchKeyword (fromFoldable [ "off", "of", "offf", "offff"]) $> false
+  ]
 
 -- Transformations --
 ---------------------
 
-transformations :: P (TransmissionAST -> TransmissionAST)
-transformations = do
-  _ <- pure unit
-  choice [
-  --volume
-  functionWithNumber "volume" Volume,
-  functionWithNumber "volumen" Volume,
-  functionWithNumber "vol" Volume,
-  functionWithNumber "subele" Volume,
-  functionWithNumber "pumpealo" Volume,
-  functionWithNumber "SUBELE" Volume,
-  --repeat
-  functionWithV2 "repet" ChannelRepeater,
-  functionWithV2 "repeat" ChannelRepeater,
-  functionWithV2 "repitelo" ChannelRepeater,
-  functionWithV2 "repeatelo" ChannelRepeater,
-  functionWithV2 "REPET" ChannelRepeater,
-  --move
-  functionWithV3 "movet" Movet,
-  functionWithV3 "muvet" Movet,
-  functionWithV3 "muvit" Movet,
-  functionWithV3 "move it" Movet,
-  functionWithV3 "muevelo" Movet,
-  functionWithV3 "muvetelo" Movet,
-  functionWithV3 "MOVET" Movet,
-  --rotate
-  functionWithDynV3 "rodar" Rodar,
-  functionWithDynV3 "rotate" Rodar,
-  functionWithDynV3 "rotait" Rodar,
-  functionWithDynV3 "rotaetelo" Rodar,
-  functionWithDynV3 "RODALO" Rodar,
-  --
-  functionWithString "fulcober" Fulcober,
-  functionWithString "fullcober" Fulcober,
-  functionWithString "fulcover" Fulcober,
-  functionWithString "fullcover" Fulcober,
-  functionWithString "FULCOBER" Fulcober,
-  --
-  functionWithNumber "translucido" Translucidez,
-  functionWithNumber "traslucido" Translucidez,
-  functionWithNumber "traslusido" Translucidez,
-  functionWithNumber "translucent" Translucidez,
-  functionWithNumber "traslucent" Translucidez,
-  functionWithNumber "traslusent" Translucidez,
-  functionWithNumber "TRANSLUCIDO" Translucidez,
-  --
-  functionWithV3 "color" Colour,
-  functionWithV3 "colour" Colour,
-  functionWithV3 "color it" Colour,
-  functionWithV3 "colorealo" Colour,
-  functionWithV3 "colourealo" Colour,
-  functionWithV3 "COLOR" Colour,
-  --
-  functionWithV3 "emit" EmissionColour,
-  functionWithV3 "emitir" EmissionColour,
-  functionWithV3 "emitear" EmissionColour,
-  functionWithV3 "emitealo" EmissionColour,
-  functionWithV3 "EMITEALO" EmissionColour,
-  --
-  functionWithNumber "brillo" EmissionIntensity,
-  functionWithNumber "brightness" EmissionIntensity,
-  functionWithNumber "braignes" EmissionIntensity,
-  functionWithNumber "braigtnes" EmissionIntensity,
-  functionWithNumber "briyo" EmissionIntensity,
-  functionWithNumber "BRIYO" EmissionIntensity,
-  --
-  switchFunction,
-  monitorFunction,
-  scalarFunction
+transformations :: Boolean -> P (TransmissionAST -> TransmissionAST)
+transformations isOn = choice
+  [
+    -- volume
+    functionWithNumberKeyword (fromFoldable ["vol", "volume", "volumen", "volúmen", "subele", "súbele", "pumpealo"]) Volume,
+
+    -- repeat
+    functionWithV2Keyword (fromFoldable ["repeat", "repet", "repit", "repitelo", "repítelo", "repitealo"]) ChannelRepeater,
+
+    -- move
+    functionWithV3Keyword (fromFoldable ["muv", "movet", "muvet", "muvit", "move it", "muevelo", "muévelo", "muvetelo"]) Movet,
+
+    -- rotate
+    functionWithDynV3Keyword (fromFoldable ["rodar", "rotate", "rotait", "rotaetelo", "rotatelo"]) Rodar,
+
+    -- fullcover
+    functionWithStringKeyword (fromFoldable ["fulcober", "fullcober", "fulcover", "fullcover"]) Fulcober,
+
+    -- translucency
+    functionWithNumberKeyword (fromFoldable ["translucido", "traslucido", "translusido", "translucent", "traslucent", "traslusent"]) Translucidez,
+
+    -- color
+    functionWithV3Keyword (fromFoldable ["color", "colour", "color it", "colorealo", "colourealo"]) Colour,
+
+    -- emission color
+    functionWithV3Keyword (fromFoldable ["emit", "emitir", "emitear", "emitealo"]) EmissionColour,
+
+    -- brightness
+    functionWithNumberKeyword (fromFoldable ["brillo", "brightness", "braignes", "braigtnes", "briyo"]) EmissionIntensity,
+
+    -- other flexible functions
+    if isOn then switchFunctionWrapper else empty,
+    -- switchFunctionWrapper,
+    monitorFunction,
+    scalarFunction
   ]
 
-switchFunction :: P (TransmissionAST -> TransmissionAST)
-switchFunction = do
-  _ <- pure unit
-  (reserved "switch" <|> reserved "suitch" <|> reserved "suich" <|> reserved "SWITCH")
-  s <- stringLiteral
-  pure $ Switch s
-  -- should remove the empty spaces at the beginning of s
-  -- this function can only be use with transmission on
+-------
 
--- get rid of the quotation marks
+switchFunctionWrapper :: P (TransmissionAST -> TransmissionAST)
+switchFunctionWrapper = try $ do
+  _ <- matchKeyword (fromFoldable
+    [ "switch", "suitch", "suich", "suish", "swish", "cámbiale" ])
+  n <- number
+  switchFunction n
+
+switchFunction :: Number -> P (TransmissionAST -> TransmissionAST)
+switchFunction n = do
+  let s = toString n
+  pure $ Switch s
+
 monitorFunction :: P (TransmissionAST -> TransmissionAST)
 monitorFunction = do
-  _ <- pure unit
-  (reserved "monitor" <|> reserved "MONITOR")
-  s <- stringLiteral
-  pure $ Monitor ("monitors/" <> s)
--- check empty spaces
+  _ <- matchKeyword (fromFoldable
+    [ "mon", "monitor", "mónitor", "monnitor"])
+  s <- identifier
+  pure $ Monitor ("/monitors/" <> s)
 
 scalarFunction :: P (TransmissionAST -> TransmissionAST)
 scalarFunction = do
-  _ <- pure unit
-  (reserved "scalar" <|> reserved "scale" <|> reserved "escalar" <|> reserved "bigealo" <|> reserved "SCALA")
+  _ <- matchKeyword (fromFoldable
+    [ "scalar", "escalar", "scale", "escale", "scail", "escail", "esqueil", "squeil", "biggealo", "bigealo"])
   n <- number
   pure $ Scalar n
 
-functionWithString :: String -> (String -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
-functionWithString functionName constructor = try $ do
-  reserved functionName
-  s <- identifier
-  pure $ constructor s
+---------
 
-functionWithDynV3 :: String -> (DynVec3 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
-functionWithDynV3 functionName constructor = try $ do
-  reserved functionName
-  dv3 <- dynVec3xyz
-  pure $ constructor dv3
+functionWithNumberKeyword :: List String -> (Number -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithNumberKeyword keywords constructor = try $ do
+  _ <- matchKeyword keywords
+  n <- number
+  pure $ constructor n
 
-functionWithV3 :: String -> (Vec3 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
-functionWithV3 functionName constructor = try $ do
-  reserved functionName
-  v3 <- vec3Param
-  pure $ constructor v3
-
-functionWithV2 :: String -> (Vec2 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
-functionWithV2 functionName constructor = try $ do
-  reserved functionName
+functionWithV2Keyword :: List String -> (Vec2 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithV2Keyword keywords constructor = try $ do
+  _ <- matchKeyword keywords
   v2 <- vec2xy
   pure $ constructor v2
 
-functionWithNumber :: String -> (Number -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
-functionWithNumber functionName constructor = try $ do
-  reserved functionName
-  n <- number
-  pure $ constructor n
+functionWithV3Keyword :: List String -> (Vec3 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithV3Keyword keywords constructor = try $ do
+  _ <- matchKeyword keywords
+  v3 <- vec3xyz
+  pure $ constructor v3
+
+functionWithDynV3Keyword :: List String -> (DynVec3 -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithDynV3Keyword keywords constructor = try $ do
+  _ <- matchKeyword keywords
+  v <- dynVec3xyz
+  pure $ constructor v
+
+functionWithStringKeyword :: List String -> (String -> (TransmissionAST -> TransmissionAST)) -> P (TransmissionAST -> TransmissionAST)
+functionWithStringKeyword keywords constructor = try $ do
+  _ <- matchKeyword keywords
+  s <- identifier
+  pure $ constructor s
 
 
 ------- PARAMETERS
@@ -221,9 +222,6 @@ functionWithNumber functionName constructor = try $ do
 ----------
 --- Either Number Number
 --
--- rotation auto 0.01 auto 0.01 auto 0.002
--- rotatation 0 auto 0.01 0
--- rotation 0 0 1
 
 dynVec3xyz :: P DynVec3
 dynVec3xyz = do
@@ -238,37 +236,19 @@ dynNumber = choice [ try dynNumberLeft, try dynNumberRight ]
 
 dynNumberLeft :: P (Either Number Number)
 dynNumberLeft = do
-  _ <- pure unit
-  (reserved "auto" <|> reserved "automatic" <|> reserved "automatico" <|> reserved "automático" <|> reserved "AUTO")
+  _ <- matchKeyword (fromFoldable
+    [ "a", "auto", "automatic", "atomatic", "automatico", "automático"])
   v <- number
-  pure $ Left v
+  pure $ Left (v * 0.001) -- Normalize auto-input
 
 dynNumberRight :: P (Either Number Number)
 dynNumberRight = do
   _ <- pure unit
   v <- number
-  pure $ Right v
+  pure $ Right (v * 0.001) -- Normalize manual input
 
 --- Fixed Number Options
---
--- transmission on movet 1 1 1;
--- transmission on movet 1;  -- vec3x not working
--- transmission on movet 1 1;
--- transmission on movet _ 1;
--- transmission on movet _ _ 1;
 
-----
-vec2xy :: P Vec2
-vec2xy = do
-  _ <- pure unit
-  x <- number
-  y <- number
-  pure $ {x,y}
-
-vec3Param :: P Vec3
-vec3Param = choice [ try vec3xyz, try vec3xy, try vec3z, try vec3y, try vec3x ]
-
---Function 1 1 1 --> modifies x,y,z
 vec3xyz :: P Vec3
 vec3xyz = do
   _ <- pure unit
@@ -277,46 +257,12 @@ vec3xyz = do
   z <- number
   pure $ {x,y,z}
 
---Function _ _ 1 --> modifies z    defX / defY=0
-vec3z :: P Vec3
-vec3z = do
-  _ <- pure unit
-  reservedOp "_"
-  reservedOp "_"
-  let x = 0.0
-  let y = 0.0
-  z <- number
-  pure $ {x,y,z}
-
---Function _ 1 --> modifies y    defX / defZ=0
-vec3y :: P Vec3
-vec3y = do
-  _ <- pure unit
-  reservedOp "_"
-  let x = 0.0
-  y <- number
-  let z = 0.0
-  pure $ {x,y,z}
-
---Function 1 1 --> modifies x,y    defZ=0
-vec3xy :: P Vec3
-vec3xy = do
+vec2xy :: P Vec2
+vec2xy = do
   _ <- pure unit
   x <- number
   y <- number
-  let z = 0.0
-  pure $ {x,y,z}
-
---Function 1 --> modifies x    defY / defZ=0
-vec3x :: P Vec3
-vec3x = do
-  _ <- pure unit
-  x <- number
-  let y = 0.0
-  let z = 0.0
-  pure $ {x,y,z}
-
-----------
+  pure $ {x,y}
 
 number :: P Number
 number = choice [
@@ -335,10 +281,9 @@ negativeNumber = do
 
 tokenParser :: GenTokenParser String Identity
 tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
-  reservedNames = ["turn off", "turns off", "turnof", "apagar", "transmission", "trasmission", "trasmision", "transmision", "transmisssion", "on", "onn", "onnn", "off", "of", "offf", "volume", "volumen", "vol", "subele", "pumpealo", "repet", "repeat", "repitelo", "repeatelo", "scalar", "scale", "escalar", "bigealo", "movet", "muvet", "move it", "muevelo", "muvetelo", "rodar", "rotate", "rotait", "rotaetelo", "fulcober", "fullcober", "fulcover", "fullcover", "translucido", "traslucido", "traslusido", "traslusido", "translucent", "traslucent", "traslusent", "color", "colour", "color it", "colorealo", "colourealo", "emit", "emitir", "emitear", "emitealo", "brillo", "brightness", "braignes", "braigtnes", "briyo", "switch", "suitch", "suich", "monitor", "auto", "automatic", "automatico", "automático"],
+  reservedNames = [],
   reservedOpNames = ["=", "\"", "\"", "_", ";"]
   }
-
 
 ---------------------
 
@@ -426,8 +371,7 @@ symbol = tokenParser.symbol
 whiteSpace :: P Unit
 whiteSpace = tokenParser.whiteSpace
 
--- channel 1 "url";
--- transmission on switch 1
+-----
 
 type Program = List Transmission --- This has to change if I add the camera ---- must be Transmission plus operation of the camera (record), plus,.... channel
 
@@ -436,9 +380,6 @@ type Program = List Transmission --- This has to change if I add the camera ----
 
 astToProgram :: AST -> Program
 astToProgram xs = catMaybes $ map statementToTransmission xs
-
--- statementsToTransmissionList :: (List Statement) -> (List Transmission)
--- statementsToTransmissionList xs = statementToTransmission <$> xs
 
 statementToTransmission :: Statement -> Maybe Transmission
 statementToTransmission EmptyStatement = Nothing
