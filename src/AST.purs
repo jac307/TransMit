@@ -1,12 +1,8 @@
 module AST where
 
-import Prelude
-import Data.List (List(..))
-import Effect (Effect)
-import Data.Number
-import Prim.Boolean
-import Data.Map
-import Data.Maybe
+import Prelude (class Show, show, bind, pure, (*), (<>), ($))
+import Data.List (List)
+import Effect
 
 import ThreeJS (FormatID, rgbaFormat)
 

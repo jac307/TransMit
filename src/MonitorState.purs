@@ -4,17 +4,15 @@ Monitor(..),
 defMonitor,
 removeMonitor,
 alignMonitor,
-playVideoElement
+playVideoElement,
+getVideoBaseURL
 ) where
 
-import Prelude (Unit, unit, bind, discard, pure, show, negate, ($), (/), (/=), (==), (<>))
+import Prelude (Unit, unit, bind, discard, pure, ($), (/=), (==))
 import Effect (Effect)
-import Data.Eq (class Eq)
-import Data.Ord (class Ord)
-import Effect.Class.Console (log, error)
 import Effect.Ref (Ref, new, read, write)
 import Data.Maybe
-import Data.Either
+import Data.Either (Either(..))
 import Web.HTML.HTMLCanvasElement as HTML
 import Web.HTML.HTMLMediaElement as HTML2
 import Web.HTML.HTMLMediaElement (HTMLMediaElement)
@@ -305,7 +303,11 @@ stopVideoElement mo = do
   HTML2.pause v
   HTML2.setCurrentTime 0.0 v
 
---                                  url
+--
+
+foreign import setVideoBaseURL :: String -> Effect Unit
+foreign import getVideoBaseURL :: Effect String
+
 updateURLfromVidElem :: Monitor -> String -> Effect Unit
 updateURLfromVidElem mo url = do
   let v = mo.video -- :: HTML2.HTMLMediaElement

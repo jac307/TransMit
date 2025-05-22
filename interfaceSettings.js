@@ -1,15 +1,15 @@
 // interfaceSettings.js
 
-// 1. Load the Help Menu from helpMenu.html
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("helpContainer");
+
+  // 1. Load the Help Menu from helpMenu.html
   if (container) {
     try {
       const response = await fetch("helpMenu.html");
       const html = await response.text();
       container.innerHTML = html;
 
-      // Once loaded, initialize UI logic
       initializeHelpMenu();
       initializeEditorSettings();
     } catch (err) {
@@ -17,8 +17,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // 4. Keyboard shortcut: Shift + Enter to evaluate
-  document.addEventListener('keydown', function (e) {
+  // 2. Keyboard shortcut: Shift + Enter to evaluate
+  document.addEventListener("keydown", function (e) {
     if (e.shiftKey && e.key === "Enter") {
       e.preventDefault();
       window.doEval?.();
@@ -26,7 +26,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
-// 2. Help Menu navigation logic
+
+// 3. Help Menu navigation logic
 function initializeHelpMenu() {
   const helpBtn = document.getElementById('helpButton');
   const helpPopup = document.getElementById('helpPopup');
@@ -51,8 +52,8 @@ function initializeHelpMenu() {
   });
 }
 
-// 3. Editor settings: font, alignment, color
 
+// 4. Editor settings: font, alignment, color, etc.
 function initializeEditorSettings() {
   const root = document.documentElement;
 

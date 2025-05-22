@@ -6,23 +6,20 @@ animate,
 evaluate
 ) where
 
-import Prelude (Unit, bind, discard, pure, unit, ($), (+), (/), (>=), (<$>), (<*>), (==), (>), (-), otherwise, show, map)
-import Data.List (List(..), (:), updateAt, length, snoc, null, foldMap, drop, length, zipWithA, range, take)
-import Data.Maybe (fromMaybe)
+import Prelude (Unit, bind, discard, otherwise, pure, show, unit, ($), (+), (-), (/), (==), (>), (>=))
+import Data.List (List(..), drop, length, range, snoc, take, updateAt, zipWithA)
 import Effect (Effect)
 import Effect.Class.Console (log)
 import Effect.Ref (Ref, new, read, write)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Either (Either(..))
 import Data.Traversable (traverse_)
-import Prim.Boolean
 import Web.HTML.HTMLCanvasElement as HTML
 
 import ThreeJS as TJS
 
 import Parser (Program, parseProgram)
 import MonitorState (Monitor, defMonitor, removeMonitor, alignMonitor, playVideoElement)
-import Transmission (Transmission)
 
 -- python3 -m http.server 8000
 
@@ -68,6 +65,7 @@ evaluate re s = do
       write p re.program
       pure Nothing
     Left err -> pure $ Just err
+
 
 ----------------------------------------
 

@@ -28,3 +28,8 @@ export const dynRotX = o => v => () => o.rotation.x += v;
 export const dynRotY = o => v => () => o.rotation.y += v;
 
 export const dynRotZ = o => v => () => o.rotation.z += v;
+
+// Customize video main url
+let userBaseURL = "https://jac307.github.io/TransMit/channels/";
+export const setVideoBaseURL = url => () => { userBaseURL = url };
+export const getVideoBaseURL = () => userBaseURL;

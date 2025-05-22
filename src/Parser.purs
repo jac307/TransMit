@@ -1,17 +1,18 @@
 module Parser where
 
-import Prelude (Unit, bind, discard, negate, pure, show, identity, eq, ($), ($>), (*), (<$>), (<>), (==), (+), unit, map)
+import Prelude (Unit, bind, discard, identity, map, negate, pure, show, unit, ($), ($>), (*), (<$>), (<>))
+import Effect (Effect)
 import Control.Semigroupoid ((<<<))
 import Data.Identity (Identity)
-import Data.List (List, catMaybes, foldl, fromFoldable, any, elem)
+import Data.List (List, catMaybes, foldl, fromFoldable, elem)
 import Data.List.NonEmpty (NonEmptyList)
 import Data.Either (Either(..))
-import Data.Int (toNumber, fromString)
+import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
 import Parsing (ParseError(..), ParserT, Position(..), runParser)
 import Parsing.Language (emptyDef)
-import Parsing.Token (GenLanguageDef(..), GenTokenParser, makeTokenParser, unGenLanguageDef, token)
-import Parsing.Combinators (choice, lookAhead, try, (<|>), many, sepBy, option)
+import Parsing.Token (GenLanguageDef(..), GenTokenParser, makeTokenParser, unGenLanguageDef)
+import Parsing.Combinators (choice, lookAhead, many, sepBy, try)
 import Parsing.String (eof)
 import Data.Number.Format (toString)
 
@@ -20,7 +21,7 @@ import Control.Alternative (empty)
 
 import AST (AST, Statement(..), TransmissionAST(..), tASTtoT)
 import Transmission (Transmission, Vec3, Vec2, DynVec3)
-
+import MonitorState (getVideoBaseURL)
 
 -------
 
