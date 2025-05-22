@@ -26721,7 +26721,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 384, column 1 - line 384, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 386, column 1 - line 386, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -26841,12 +26841,12 @@ var functionWithV3Keyword = function(keywords) {
 };
 var dynNumberRight = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return bind(bindParserT)(number)(function(v) {
-    return pure(applicativeParserT)(new Right(v * 1e-3));
+    return pure(applicativeParserT)(new Right(v));
   });
 });
 var dynNumberLeft = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["a", "auto", "automatic", "atomatic", "automatico", "autom\xE1tico"])))(function() {
   return bind(bindParserT)(number)(function(v) {
-    return pure(applicativeParserT)(new Left(v * 1e-3));
+    return pure(applicativeParserT)(new Left(v));
   });
 });
 var dynNumber = /* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(dynNumberLeft), /* @__PURE__ */ $$try(dynNumberRight)]);
@@ -26873,7 +26873,7 @@ var functionWithDynV3Keyword = function(keywords) {
   };
 };
 var transformations = function(isOn) {
-  return choice(foldableArray)([functionWithNumberKeyword(fromFoldable(foldableArray)(["vol", "volume", "volumen", "vol\xFAmen", "subele", "s\xFAbele", "pumpealo"]))(Volume.create), functionWithV2Keyword(fromFoldable(foldableArray)(["repeat", "repet", "repit", "repitelo", "rep\xEDtelo", "repitealo"]))(ChannelRepeater.create), functionWithV3Keyword(fromFoldable(foldableArray)(["muv", "movet", "muvet", "muvit", "move it", "muevelo", "mu\xE9velo", "muvetelo"]))(Movet.create), functionWithDynV3Keyword(fromFoldable(foldableArray)(["rodar", "rotate", "rotait", "rotaetelo", "rotatelo"]))(Rodar.create), functionWithStringKeyword(fromFoldable(foldableArray)(["fulcober", "fullcober", "fulcover", "fullcover"]))(Fulcober.create), functionWithNumberKeyword(fromFoldable(foldableArray)(["translucido", "traslucido", "translusido", "translucent", "traslucent", "traslusent"]))(Translucidez.create), functionWithV3Keyword(fromFoldable(foldableArray)(["color", "colour", "color it", "colorealo", "colourealo"]))(Colour.create), functionWithV3Keyword(fromFoldable(foldableArray)(["emit", "emitir", "emitear", "emitealo"]))(EmissionColour.create), functionWithNumberKeyword(fromFoldable(foldableArray)(["brillo", "brightness", "braignes", "braigtnes", "briyo"]))(EmissionIntensity.create), function() {
+  return choice(foldableArray)([functionWithNumberKeyword(fromFoldable(foldableArray)(["vol", "volume", "volumen", "vol\xFAmen", "subele", "s\xFAbele", "pumpealo"]))(Volume.create), functionWithV2Keyword(fromFoldable(foldableArray)(["repeat", "repet", "repit", "repitelo", "rep\xEDtelo", "repitealo"]))(ChannelRepeater.create), functionWithV3Keyword(fromFoldable(foldableArray)(["muv", "movet", "muvet", "muvit", "movit", "move it", "muevelo", "mu\xE9velo", "muvetelo"]))(Movet.create), functionWithDynV3Keyword(fromFoldable(foldableArray)(["rodar", "rotate", "rotait", "rotaetelo", "rotatelo"]))(Rodar.create), functionWithStringKeyword(fromFoldable(foldableArray)(["fulcober", "fullcober", "fulcover", "fullcover"]))(Fulcober.create), functionWithNumberKeyword(fromFoldable(foldableArray)(["translucido", "traslucido", "translusido", "translucent", "traslucent", "traslusent"]))(Translucidez.create), functionWithV3Keyword(fromFoldable(foldableArray)(["color", "colour", "color it", "colorealo", "colourealo"]))(Colour.create), functionWithV3Keyword(fromFoldable(foldableArray)(["emit", "emitir", "emitear", "emitealo"]))(EmissionColour.create), functionWithNumberKeyword(fromFoldable(foldableArray)(["brillo", "brightness", "braignes", "braigtnes", "briyo"]))(EmissionIntensity.create), function() {
     if (isOn) {
       return switchFunctionWrapper;
     }

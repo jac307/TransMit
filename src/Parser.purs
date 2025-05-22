@@ -129,7 +129,7 @@ transformations isOn = choice
     functionWithV2Keyword (fromFoldable ["repeat", "repet", "repit", "repitelo", "repítelo", "repitealo"]) ChannelRepeater,
 
     -- move
-    functionWithV3Keyword (fromFoldable ["muv", "movet", "muvet", "muvit", "move it", "muevelo", "muévelo", "muvetelo"]) Movet,
+    functionWithV3Keyword (fromFoldable ["muv", "movet", "muvet", "muvit", "movit", "move it", "muevelo", "muévelo", "muvetelo"]) Movet,
 
     -- rotate
     functionWithDynV3Keyword (fromFoldable ["rodar", "rotate", "rotait", "rotaetelo", "rotatelo"]) Rodar,
@@ -239,13 +239,15 @@ dynNumberLeft = do
   _ <- matchKeyword (fromFoldable
     [ "a", "auto", "automatic", "atomatic", "automatico", "automático"])
   v <- number
-  pure $ Left (v * 0.001) -- Normalize auto-input
+  pure $ Left v
+  -- pure $ Left (v * 0.001) -- Normalize auto-input
 
 dynNumberRight :: P (Either Number Number)
 dynNumberRight = do
   _ <- pure unit
   v <- number
-  pure $ Right (v * 0.001) -- Normalize manual input
+  pure $ Right v
+  -- pure $ Right (v * 0.001) -- Normalize manual input
 
 --- Fixed Number Options
 
