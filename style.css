@@ -186,13 +186,13 @@ pre {
 }
 
 #helpPopup select {
-  font-size: 1em;       /* Increase font size */
+  font-size: 1.2em;       /* Increase font size */
   padding: 10px 16px;     /* Increase padding */
   border-radius: 6px;     /* Optional: rounded corners */
   width: 100%;            /* Optional: full width for consistency */
   margin-top: 5px;
   margin-bottom: 15px;
-  font-family: var(--editor-font);
+  font-family: monospace;
 }
 
 /* fonts */
