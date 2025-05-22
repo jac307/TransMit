@@ -66,10 +66,10 @@ statements = sepBy statement (reservedOp ";")
 
 statement :: P Statement
 statement = choice [
-  TransmissionAST <$> transmissionParser,
-  onlySemiColon,
-  onlyEOF,
-  noTranmission
+  try $ TransmissionAST <$> transmissionParser,
+  try $ onlySemiColon,
+  try $ onlyEOF,
+  try $ noTranmission
 ]
 
 onlySemiColon :: P Statement
@@ -83,10 +83,13 @@ onlyEOF = do
     pure $ EmptyStatement
 
 noTranmission :: P Statement
-noTranmission = do
-  _ <- matchKeyword (fromFoldable
-    [ "turn off", "turns off", "turnof", "apagar"])
-  pure $ EmptyStatement
+noTranmission = try $ choice
+  [ reserved "turn of"  $> EmptyStatement
+  , reserved "turn off"  $> EmptyStatement
+  , reserved "turns off" $> EmptyStatement
+  , reserved "turnof"    $> EmptyStatement
+  , reserved "apagar"    $> EmptyStatement
+  ]
 
 --- Transmission ---
 --------------------
@@ -175,7 +178,7 @@ monitorFunction = do
   _ <- matchKeyword (fromFoldable
     [ "mon", "monitor", "mónitor", "monnitor"])
   s <- identifier
-  pure $ Monitor ("/monitors/" <> s)
+  pure $ Monitor ("https://jac307.github.io/TransMit/monitors/" <> s)
 
 scalarFunction :: P (TransmissionAST -> TransmissionAST)
 scalarFunction = do

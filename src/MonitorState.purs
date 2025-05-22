@@ -90,6 +90,7 @@ removeMonitor :: TJS.Scene -> Monitor -> Effect Unit
 removeMonitor sc mo = do
   removeObj sc mo
   removeMaterial sc mo
+  stopVideoElement mo
 
 alignMonitor :: TJS.Scene -> Monitor -> Transmission -> Effect Unit
 alignMonitor sc mo t = do
@@ -201,6 +202,7 @@ removeMaterial sc mo = do
       TJS.removeObject3D sc m'
       write Nothing mo.material
 
+
 -------- Transmission --------
 
 makeTransmission :: String -> TJS.Scene -> TJS.OBJ -> TJS.MTL -> TJS.TextureLoader -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Number -> Effect Unit
@@ -296,6 +298,12 @@ playVideoElement :: Monitor -> Effect Unit
 playVideoElement mo = do
   let v = mo.video -- :: HTML2.HTMLMediaElement
   HTML2.play v
+
+stopVideoElement :: Monitor -> Effect Unit
+stopVideoElement mo = do
+  let v = mo.video
+  HTML2.pause v
+  HTML2.setCurrentTime 0.0 v
 
 --                                  url
 updateURLfromVidElem :: Monitor -> String -> Effect Unit

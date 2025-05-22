@@ -55,13 +55,13 @@ instance showTransmissionAST :: Show TransmissionAST where
 tASTtoT :: TransmissionAST -> Transmission
 tASTtoT (LiteralTransmissionAST false) = defTransmission
 tASTtoT (LiteralTransmissionAST true) = defTransmissionOn
-tASTtoT (Volume n t) = (tASTtoT t) {volume = n}
+tASTtoT (Volume n t) = (tASTtoT t) {volume = (n * 0.01)}
 tASTtoT (ChannelRepeater v2 t) = (tASTtoT t) {channelReapeater = v2}
 tASTtoT (Scalar n t) = (tASTtoT t) {size = n}
 tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}
 tASTtoT (Rodar dv3 t) = (tASTtoT t) {rotation = dv3}
 tASTtoT (Fulcober f t) = (tASTtoT t) {fulcober = f}
-tASTtoT (Switch s t) = (tASTtoT t) {channel = ("/channels/" <> s <> ".mov")}
+tASTtoT (Switch s t) = (tASTtoT t) {channel = ("https://jac307.github.io/TransMit/channels/" <> s <> ".mov")}
 tASTtoT (Monitor s t) = (tASTtoT t) {tv = (s <> ".obj"), mapping = (s <> ".mtl")}
 tASTtoT (Translucidez n t) = (tASTtoT t) {translucidez = n}
 tASTtoT (Colour v3 t) = (tASTtoT t) {colour = v3}

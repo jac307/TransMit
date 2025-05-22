@@ -2127,6 +2127,13 @@ function load(media) {
     return media.load();
   };
 }
+function setCurrentTime(currentTime2) {
+  return function(media) {
+    return function() {
+      media.currentTime = currentTime2;
+    };
+  };
+}
 function setLoop(loop2) {
   return function(media) {
     return function() {
@@ -2137,6 +2144,11 @@ function setLoop(loop2) {
 function play(media) {
   return function() {
     media.play();
+  };
+}
+function pause(media) {
+  return function() {
+    media.pause();
   };
 }
 function setVolume(volume2) {
@@ -2367,6 +2379,12 @@ var transformVidTexture = function(vt) {
     };
   };
 };
+var stopVideoElement = function(mo) {
+  return function __do3() {
+    pause(mo.video)();
+    return setCurrentTime(0)(mo.video)();
+  };
+};
 var setRotationZ2 = function(o) {
   return function(v) {
     if (v instanceof Left) {
@@ -2377,7 +2395,7 @@ var setRotationZ2 = function(o) {
       return setRotationZ(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 257, column 1 - line 257, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 259, column 1 - line 259, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationY2 = function(o) {
@@ -2390,7 +2408,7 @@ var setRotationY2 = function(o) {
       return setRotationY(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 253, column 1 - line 253, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 255, column 1 - line 255, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var setRotationX2 = function(o) {
@@ -2403,7 +2421,7 @@ var setRotationX2 = function(o) {
       return setRotationX(o)(v.value0);
     }
     ;
-    throw new Error("Failed pattern match at MonitorState (line 249, column 1 - line 249, column 63): " + [o.constructor.name, v.constructor.name]);
+    throw new Error("Failed pattern match at MonitorState (line 251, column 1 - line 251, column 63): " + [o.constructor.name, v.constructor.name]);
   };
 };
 var transformTransmission$prime = function(g) {
@@ -2430,7 +2448,7 @@ var transformTransmission = function(sc) {
           return transformTransmission$prime(g.value0)(t)();
         }
         ;
-        throw new Error("Failed pattern match at MonitorState (line 236, column 3 - line 238, column 41): " + [g.constructor.name]);
+        throw new Error("Failed pattern match at MonitorState (line 238, column 3 - line 240, column 41): " + [g.constructor.name]);
       };
     };
   };
@@ -2449,7 +2467,7 @@ var removeObj = function(sc) {
         return write(Nothing.value)(mo.obj)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 187, column 3 - line 192, column 27): " + [g.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 188, column 3 - line 193, column 27): " + [g.constructor.name]);
     };
   };
 };
@@ -2467,7 +2485,7 @@ var removeMaterial = function(sc) {
         return write(Nothing.value)(mo.material)();
       }
       ;
-      throw new Error("Failed pattern match at MonitorState (line 197, column 3 - line 202, column 32): " + [m.constructor.name]);
+      throw new Error("Failed pattern match at MonitorState (line 198, column 3 - line 203, column 32): " + [m.constructor.name]);
     };
   };
 };
@@ -2475,7 +2493,8 @@ var removeMonitor = function(sc) {
   return function(mo) {
     return function __do3() {
       removeObj(sc)(mo)();
-      return removeMaterial(sc)(mo)();
+      removeMaterial(sc)(mo)();
+      return stopVideoElement(mo)();
     };
   };
 };
@@ -2546,10 +2565,10 @@ var tryToMakeTransmission = function(sc) {
                           return makeTransmission(currURL)(sc)(g.value0)(m.value0)(mo.vidTexture)(t)(rC)(gC)(bC)(rE)(gE)(bE)(iE)();
                         }
                         ;
-                        throw new Error("Failed pattern match at MonitorState (line 180, column 7 - line 182, column 90): " + [m.constructor.name]);
+                        throw new Error("Failed pattern match at MonitorState (line 181, column 7 - line 183, column 90): " + [m.constructor.name]);
                       }
                       ;
-                      throw new Error("Failed pattern match at MonitorState (line 176, column 3 - line 182, column 90): " + [g.constructor.name]);
+                      throw new Error("Failed pattern match at MonitorState (line 177, column 3 - line 183, column 90): " + [g.constructor.name]);
                     };
                   };
                 };
@@ -2812,10 +2831,10 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "/monitors/oldi0.obj",
-    mapping: "/monitors/oldi0.mtl",
-    volume: 0,
-    channel: "https://jac307.github.io/TransMit/channels/defaultOff.mp4",
+    tv: "https://jac307.github.io/TransMit/monitors/oldi0.obj",
+    mapping: "https://jac307.github.io/TransMit/monitors/oldi0.mtl",
+    volume: 0.03,
+    channel: "https://jac307.github.io/TransMit/channels/static.mp4",
     channelReapeater: {
       x: 1,
       y: 1
@@ -2851,7 +2870,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     estado: true,
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
-    channel: "/channels/00.mp4",
+    channel: "https://jac307.github.io/TransMit/channels/00.mp4",
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
@@ -3065,7 +3084,7 @@ var tASTtoT = function(v) {
       tv: v1.tv,
       mapping: v1.mapping,
       channel: v1.channel,
-      volume: v.value0,
+      volume: v.value0 * 0.01,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
       translucidez: v1.translucidez,
@@ -3184,7 +3203,7 @@ var tASTtoT = function(v) {
       estado: v1.estado,
       tv: v1.tv,
       mapping: v1.mapping,
-      channel: "/channels/" + (v.value0 + ".mov"),
+      channel: "https://jac307.github.io/TransMit/channels/" + (v.value0 + ".mov"),
       volume: v1.volume,
       channelReapeater: v1.channelReapeater,
       fulcober: v1.fulcober,
@@ -26584,7 +26603,7 @@ var makeTokenParser = function(v) {
     ;
     throw new Error("Failed pattern match at Parsing.Token (line 751, column 3 - line 751, column 50): " + [name2.constructor.name]);
   };
-  var reserved = function(name2) {
+  var reserved2 = function(name2) {
     var go = applySecond(applyParserT)(caseString(name2))(withErrorMessage(notFollowedBy(v.identLetter))("end of " + name2));
     return lexeme($$try(go));
   };
@@ -26640,7 +26659,7 @@ var makeTokenParser = function(v) {
   };
   return {
     identifier: identifier2,
-    reserved,
+    reserved: reserved2,
     operator,
     reservedOp: reservedOp2,
     charLiteral,
@@ -26721,7 +26740,7 @@ var statementToTransmission = function(v) {
     return new Just(tASTtoT(v.value0));
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 386, column 1 - line 386, column 59): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 389, column 1 - line 389, column 59): " + [v.constructor.name]);
 };
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
@@ -26729,12 +26748,18 @@ var showParseError = function(v) {
 var reservedOp = /* @__PURE__ */ function() {
   return tokenParser.reservedOp;
 }();
+var reserved = /* @__PURE__ */ function() {
+  return tokenParser.reserved;
+}();
 var onlySemiColon = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ lookAhead(/* @__PURE__ */ reservedOp(";")))(function() {
   return pure(applicativeParserT)(EmptyStatement.value);
 });
 var onlyEOF = /* @__PURE__ */ discard(discardUnit)(bindParserT)(/* @__PURE__ */ lookAhead(eof))(function() {
   return pure(applicativeParserT)(EmptyStatement.value);
 });
+var noTranmission = /* @__PURE__ */ function() {
+  return $$try(choice(foldableArray)([voidLeft(functorParserT)(reserved("turn of"))(EmptyStatement.value), voidLeft(functorParserT)(reserved("turn off"))(EmptyStatement.value), voidLeft(functorParserT)(reserved("turns off"))(EmptyStatement.value), voidLeft(functorParserT)(reserved("turnof"))(EmptyStatement.value), voidLeft(functorParserT)(reserved("apagar"))(EmptyStatement.value)]));
+}();
 var integer = /* @__PURE__ */ function() {
   return tokenParser.integer;
 }();
@@ -26752,13 +26777,10 @@ var matchKeyword = function(options) {
     return empty(plusParserT);
   });
 };
-var noTranmission = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["turn off", "turns off", "turnof", "apagar"])))(function() {
-  return pure(applicativeParserT)(EmptyStatement.value);
-});
 var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["on", "onn", "onnn", "onnnn"])))(true)), /* @__PURE__ */ $$try(/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["off", "of", "offf", "offff"])))(false))]));
 var monitorFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["mon", "monitor", "m\xF3nitor", "monnitor"])))(function() {
   return bind(bindParserT)(identifier)(function(s) {
-    return pure(applicativeParserT)(Monitor.create("/monitors/" + s));
+    return pure(applicativeParserT)(Monitor.create("https://jac307.github.io/TransMit/monitors/" + s));
   });
 });
 var functionWithStringKeyword = function(keywords) {
@@ -26903,7 +26925,7 @@ var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(
   });
 });
 var statement = /* @__PURE__ */ function() {
-  return choice(foldableArray)([map(functorParserT)(TransmissionAST.create)(transmissionParser), onlySemiColon, onlyEOF, noTranmission]);
+  return choice(foldableArray)([$$try(map(functorParserT)(TransmissionAST.create)(transmissionParser)), $$try(onlySemiColon), $$try(onlyEOF), $$try(noTranmission)]);
 }();
 var statements = /* @__PURE__ */ sepBy(statement)(/* @__PURE__ */ reservedOp(";"));
 var astToProgram = function(xs) {
