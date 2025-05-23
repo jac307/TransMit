@@ -6,7 +6,7 @@ animate,
 evaluate
 ) where
 
-import Prelude (Unit, bind, discard, otherwise, pure, show, unit, ($), (+), (-), (/), (==), (>), (>=))
+import Prelude (Unit, bind, discard, otherwise, pure, unit, ($), (+), (-), (/), (==), (>), (>=), (<>))
 import Data.List (List(..), drop, length, range, snoc, take, updateAt, zipWithA)
 import Effect (Effect)
 import Effect.Class.Console (log)
@@ -18,8 +18,8 @@ import Web.HTML.HTMLCanvasElement as HTML
 
 import ThreeJS as TJS
 
-import Parser (Program, parseProgram)
 import MonitorState (Monitor, defMonitor, removeMonitor, alignMonitor, playVideoElement)
+import Parser (Program, parseProgram)
 
 -- python3 -m http.server 8000
 
@@ -28,7 +28,7 @@ type RenderEngine =
   scene :: TJS.Scene,
   camera :: TJS.PerspectiveCamera,
   renderer :: TJS.Renderer,
-  program :: Ref Program, -- :: List Statement
+  program :: Ref Program,
   monitors :: Ref (List Monitor)
   }
 
@@ -46,7 +46,7 @@ launch cvs = do
   TJS.setSize renderer iHeight iWidth false
   lights <- TJS.newHemisphereLight 0xffffff 0xffffff 3.0
   TJS.addAnythingToScene scene lights
-  program <- new Nil
+  program <- new { transmissions: Nil, baseURL: "https://jac307.github.io/TransMit/channels/" }
   monitors <- new Nil
   let re = {scene, camera, renderer, program, monitors}
   pure re
@@ -57,14 +57,14 @@ animate re = do
   runProgram re p
   TJS.render re.renderer re.scene re.camera
 
-evaluate :: RenderEngine -> String -> Effect (Maybe String)
+evaluate :: RenderEngine -> String -> Effect { error :: Maybe String }
 evaluate re s = do
   case parseProgram s of
-    Right p -> do
-      log (show p)
-      write p re.program
-      pure Nothing
-    Left err -> pure $ Just err
+    Right program -> do
+      log $ "Parsed baseURL: " <> program.baseURL
+      write program re.program
+      pure { error: Nothing }
+    Left err -> pure { error: Just err }
 
 
 ----------------------------------------
@@ -74,30 +74,32 @@ runProgram re p = do
   alignMonitors re p
   playVideoElementsInMonitors re
 
-alignMonitors :: RenderEngine -> Program ->  Effect Unit
-alignMonitors re p = do
-  let tLen = length p -- :: Int
-  ms <- read re.monitors -- :: List Monitor
-  let mLen = length ms -- :: Int
-  -- stage 1: align the number of monitors
+-- new
+alignMonitors :: RenderEngine -> Program -> Effect Unit
+alignMonitors re program = do
+  let transmissions = program.transmissions
+  let tLen = length transmissions
+  ms <- read re.monitors
+  let mLen = length ms
+
+  -- Stage 1: Align the number of monitors
   case mLen == tLen of
-    true -> pure unit -- if same length, do nothing
-    false -> do -- if different length, then:
+    true -> pure unit
+    false ->
       case mLen > tLen of
-        -- if mLen is longer than tLen, then remove excess monitors
         true -> do
-          let keptMonitors = take tLen ms -- monitors we keep
-          let droppedMonitors = drop tLen ms -- monitors we drop
+          let keptMonitors = take tLen ms
+          let droppedMonitors = drop tLen ms
           traverse_ (removeMonitor re.scene) droppedMonitors
           write keptMonitors re.monitors
-        -- if mLen is shorter than tLen, then add new monitors
         false -> do
-          let howManyMonitorsAreMissing = tLen - mLen -- :: Int
-          let indicesOfNewMonitors = range (mLen + 1) (mLen + howManyMonitorsAreMissing)
-          traverse_ (newMonitor re) indicesOfNewMonitors
-  -- stage 2: align each monitor with each tranmissions
+          let howMany = tLen - mLen
+          let indices = range (mLen + 1) (mLen + howMany)
+          traverse_ (newMonitor re) indices
+
+  -- Stage 2: Align each monitor with each transmission
   ms' <- read re.monitors
-  _ <- zipWithA (alignMonitor re.scene) ms' p
+  _ <- zipWithA (alignMonitor re.scene) ms' transmissions
   pure unit
 
 --
@@ -118,8 +120,3 @@ playVideoElementsInMonitors :: RenderEngine -> Effect Unit
 playVideoElementsInMonitors re = do
   ms <- read re.monitors
   traverse_ playVideoElement ms -- :: Effect Unit
-
-
---- errores
---- primera linea> lo que le doy
---- segunda linea> lo que le debo dar

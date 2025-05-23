@@ -12,11 +12,13 @@ type AST = List Statement
 
 data Statement =
   EmptyStatement |
-  TransmissionAST TransmissionAST
+  TransmissionAST TransmissionAST |
+  Broadcaster String --new
 
 instance showStatement :: Show Statement where
   show (TransmissionAST s) = "TransmissionAST " <> show s
   show (EmptyStatement) = "EmptyStatement"
+  show (Broadcaster s) = "Broadcaster " <> s --new
 
 data TransmissionAST =
   LiteralTransmissionAST Boolean |
@@ -48,18 +50,18 @@ instance showTransmissionAST :: Show TransmissionAST where
   show (EmissionColour v3 t) = "Emission-color" <> show v3 <> show t
   show (EmissionIntensity n t) = "Emission-intensity" <> show n <> show t
 
-tASTtoT :: TransmissionAST -> Transmission
-tASTtoT (LiteralTransmissionAST false) = defTransmission
-tASTtoT (LiteralTransmissionAST true) = defTransmissionOn
-tASTtoT (Volume n t) = (tASTtoT t) {volume = (n * 0.01)}
-tASTtoT (ChannelRepeater v2 t) = (tASTtoT t) {channelReapeater = v2}
-tASTtoT (Scalar n t) = (tASTtoT t) {size = n}
-tASTtoT (Movet v3 t) = (tASTtoT t) {position = v3}
-tASTtoT (Rodar dv3 t) = (tASTtoT t) {rotation = dv3}
-tASTtoT (Fulcober f t) = (tASTtoT t) {fulcober = f}
-tASTtoT (Switch s t) = (tASTtoT t) {channel = ("https://jac307.github.io/TransMit/channels/" <> s <> ".mov")}
-tASTtoT (Monitor s t) = (tASTtoT t) {tv = (s <> ".obj"), mapping = (s <> ".mtl")}
-tASTtoT (Translucidez n t) = (tASTtoT t) {translucidez = n}
-tASTtoT (Colour v3 t) = (tASTtoT t) {colour = v3}
-tASTtoT (EmissionColour v3 t) = (tASTtoT t) {emissionColour = v3}
-tASTtoT (EmissionIntensity n t) = (tASTtoT t) {emissionIntensity = n}
+tASTtoTWithBase :: String -> TransmissionAST -> Transmission
+tASTtoTWithBase base (LiteralTransmissionAST false) = defTransmission
+tASTtoTWithBase base (LiteralTransmissionAST true) = defTransmissionOn
+tASTtoTWithBase base (Volume n t) = (tASTtoTWithBase base t) { volume = n * 0.01 }
+tASTtoTWithBase base (ChannelRepeater v2 t) = (tASTtoTWithBase base t) { channelReapeater = v2 }
+tASTtoTWithBase base (Scalar n t) = (tASTtoTWithBase base t) { size = n }
+tASTtoTWithBase base (Movet v3 t) = (tASTtoTWithBase base t) { position = v3 }
+tASTtoTWithBase base (Rodar dv3 t) = (tASTtoTWithBase base t) { rotation = dv3 }
+tASTtoTWithBase base (Fulcober f t) = (tASTtoTWithBase base t) { fulcober = f }
+tASTtoTWithBase base (Switch s t) = (tASTtoTWithBase base t) { channel = base <> s <> ".mov" }
+tASTtoTWithBase base (Monitor s t) = (tASTtoTWithBase base t) { tv = s <> ".obj", mapping = s <> ".mtl" }
+tASTtoTWithBase base (Translucidez n t) = (tASTtoTWithBase base t) { translucidez = n }
+tASTtoTWithBase base (Colour v3 t) = (tASTtoTWithBase base t) { colour = v3 }
+tASTtoTWithBase base (EmissionColour v3 t) = (tASTtoTWithBase base t) { emissionColour = v3 }
+tASTtoTWithBase base (EmissionIntensity n t) = (tASTtoTWithBase base t) { emissionIntensity = n }

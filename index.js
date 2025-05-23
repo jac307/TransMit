@@ -85,11 +85,6 @@ var functorArray = {
 };
 
 // output/Data.Semigroup/foreign.js
-var concatString = function(s1) {
-  return function(s2) {
-    return s1 + s2;
-  };
-};
 var concatArray = function(xs) {
   return function(ys) {
     if (xs.length === 0)
@@ -113,9 +108,6 @@ var unsafeGet = function(label) {
 };
 
 // output/Data.Semigroup/index.js
-var semigroupString = {
-  append: concatString
-};
 var semigroupArray = {
   append: concatArray
 };
@@ -402,10 +394,6 @@ var bottom = function(dict) {
 var showIntImpl = function(n) {
   return n.toString();
 };
-var showNumberImpl = function(n) {
-  var str = n.toString();
-  return isNaN(str + ".0") ? str : str + ".0";
-};
 var showCharImpl = function(c) {
   var code = c.charCodeAt(0);
   if (code < 32 || code === 127) {
@@ -465,49 +453,10 @@ var showArrayImpl = function(f) {
     return "[" + ss.join(",") + "]";
   };
 };
-var cons = function(head4) {
-  return function(tail2) {
-    return [head4].concat(tail2);
-  };
-};
-var intercalate = function(separator) {
-  return function(xs) {
-    return xs.join(separator);
-  };
-};
 
 // output/Data.Show/index.js
 var showString = {
   show: showStringImpl
-};
-var showRecordFieldsNil = {
-  showRecordFields: function(v) {
-    return function(v1) {
-      return [];
-    };
-  }
-};
-var showRecordFields = function(dict) {
-  return dict.showRecordFields;
-};
-var showRecord = function() {
-  return function() {
-    return function(dictShowRecordFields) {
-      return {
-        show: function(record) {
-          var v = showRecordFields(dictShowRecordFields)($$Proxy.value)(record);
-          if (v.length === 0) {
-            return "{}";
-          }
-          ;
-          return intercalate(" ")(["{", intercalate(", ")(v), "}"]);
-        }
-      };
-    };
-  };
-};
-var showNumber = {
-  show: showNumberImpl
 };
 var showInt = {
   show: showIntImpl
@@ -515,41 +464,12 @@ var showInt = {
 var showChar = {
   show: showCharImpl
 };
-var showBoolean = {
-  show: function(v) {
-    if (v) {
-      return "true";
-    }
-    ;
-    if (!v) {
-      return "false";
-    }
-    ;
-    throw new Error("Failed pattern match at Data.Show (line 23, column 1 - line 25, column 23): " + [v.constructor.name]);
-  }
-};
 var show = function(dict) {
   return dict.show;
 };
 var showArray = function(dictShow) {
   return {
     show: showArrayImpl(show(dictShow))
-  };
-};
-var showRecordFieldsCons = function(dictIsSymbol) {
-  return function(dictShowRecordFields) {
-    return function(dictShow) {
-      return {
-        showRecordFields: function(v) {
-          return function(record) {
-            var tail2 = showRecordFields(dictShowRecordFields)($$Proxy.value)(record);
-            var key = reflectSymbol(dictIsSymbol)($$Proxy.value);
-            var focus = unsafeGet(key)(record);
-            return cons(intercalate(": ")([key, show(dictShow)(focus)]))(tail2);
-          };
-        }
-      };
-    };
   };
 };
 
@@ -677,23 +597,6 @@ var Right = /* @__PURE__ */ function() {
   };
   return Right2;
 }();
-var showEither = function(dictShow) {
-  return function(dictShow1) {
-    return {
-      show: function(v) {
-        if (v instanceof Left) {
-          return "(Left " + (show(dictShow)(v.value0) + ")");
-        }
-        ;
-        if (v instanceof Right) {
-          return "(Right " + (show(dictShow1)(v.value0) + ")");
-        }
-        ;
-        throw new Error("Failed pattern match at Data.Either (line 173, column 1 - line 175, column 46): " + [v.constructor.name]);
-      }
-    };
-  };
-};
 var functorEither = {
   map: function(f) {
     return function(m) {
@@ -924,12 +827,6 @@ var div = function(dict) {
 };
 
 // output/Data.Monoid/index.js
-var monoidString = {
-  mempty: "",
-  Semigroup0: function() {
-    return semigroupString;
-  }
-};
 var mempty = function(dict) {
   return dict.mempty;
 };
@@ -1024,33 +921,6 @@ var traverse_ = function(dictApplicative) {
 };
 var foldl = function(dict) {
   return dict.foldl;
-};
-var intercalate2 = function(dictFoldable) {
-  return function(dictMonoid) {
-    return function(sep) {
-      return function(xs) {
-        var go = function(v) {
-          return function(x) {
-            if (v.init) {
-              return {
-                init: false,
-                acc: x
-              };
-            }
-            ;
-            return {
-              init: false,
-              acc: append(dictMonoid.Semigroup0())(v.acc)(append(dictMonoid.Semigroup0())(sep)(x))
-            };
-          };
-        };
-        return foldl(dictFoldable)(go)({
-          init: true,
-          acc: mempty(dictMonoid)
-        })(xs).acc;
-      };
-    };
-  };
 };
 var foldMapDefaultR = function(dictFoldable) {
   return function(dictMonoid) {
@@ -1619,17 +1489,6 @@ var foldableList = {
     };
   }
 };
-var showList = function(dictShow) {
-  return {
-    show: function(v) {
-      if (v instanceof Nil) {
-        return "Nil";
-      }
-      ;
-      return "(" + (intercalate2(foldableList)(monoidString)(" : ")(map(functorList)(show(dictShow))(v)) + " : Nil)");
-    }
-  };
-};
 var traversableList = {
   traverse: function(dictApplicative) {
     return function(f) {
@@ -1879,47 +1738,6 @@ var range2 = function(start) {
     throw new Error("Failed pattern match at Data.List (line 144, column 1 - line 144, column 32): " + [start.constructor.name, end.constructor.name]);
   };
 };
-var mapMaybe = function(f) {
-  var go = function($copy_acc) {
-    return function($copy_v) {
-      var $tco_var_acc = $copy_acc;
-      var $tco_done = false;
-      var $tco_result;
-      function $tco_loop(acc, v) {
-        if (v instanceof Nil) {
-          $tco_done = true;
-          return reverse(acc);
-        }
-        ;
-        if (v instanceof Cons) {
-          var v1 = f(v.value0);
-          if (v1 instanceof Nothing) {
-            $tco_var_acc = acc;
-            $copy_v = v.value1;
-            return;
-          }
-          ;
-          if (v1 instanceof Just) {
-            $tco_var_acc = new Cons(v1.value0, acc);
-            $copy_v = v.value1;
-            return;
-          }
-          ;
-          throw new Error("Failed pattern match at Data.List (line 419, column 5 - line 421, column 32): " + [v1.constructor.name]);
-        }
-        ;
-        throw new Error("Failed pattern match at Data.List (line 417, column 3 - line 417, column 27): " + [acc.constructor.name, v.constructor.name]);
-      }
-      ;
-      while (!$tco_done) {
-        $tco_result = $tco_loop($tco_var_acc, $copy_v);
-      }
-      ;
-      return $tco_result;
-    };
-  };
-  return go(Nil.value);
-};
 var manyRec = function(dictMonadRec) {
   return function(dictAlternative) {
     return function(p) {
@@ -1992,7 +1810,6 @@ var drop = function($copy_v) {
     return $tco_result;
   };
 };
-var catMaybes = /* @__PURE__ */ mapMaybe(/* @__PURE__ */ identity(categoryFn));
 
 // output/Effect.Class/index.js
 var monadEffectEffect = {
@@ -3068,256 +2885,268 @@ var TransmissionAST = /* @__PURE__ */ function() {
   };
   return TransmissionAST2;
 }();
-var tASTtoT = function(v) {
-  if (v instanceof LiteralTransmissionAST && !v.value0) {
-    return defTransmission;
+var Broadcaster = /* @__PURE__ */ function() {
+  function Broadcaster2(value0) {
+    this.value0 = value0;
   }
   ;
-  if (v instanceof LiteralTransmissionAST && v.value0) {
-    return defTransmissionOn;
-  }
-  ;
-  if (v instanceof Volume) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v.value0 * 0.01,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof ChannelRepeater) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v.value0,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof Scalar) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v.value0,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof Movet) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v.value0,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof Rodar) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v1.position,
-      rotation: v.value0
-    };
-  }
-  ;
-  if (v instanceof Fulcober) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v.value0,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof Switch) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: "https://jac307.github.io/TransMit/channels/" + (v.value0 + ".mov"),
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof Monitor) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v.value0 + ".obj",
-      mapping: v.value0 + ".mtl",
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof Translucidez) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v.value0,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof Colour) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v.value0,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof EmissionColour) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v.value0,
-      emissionIntensity: v1.emissionIntensity,
-      size: v1.size,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  if (v instanceof EmissionIntensity) {
-    var v1 = tASTtoT(v.value1);
-    return {
-      estado: v1.estado,
-      tv: v1.tv,
-      mapping: v1.mapping,
-      channel: v1.channel,
-      volume: v1.volume,
-      channelReapeater: v1.channelReapeater,
-      fulcober: v1.fulcober,
-      translucidez: v1.translucidez,
-      colour: v1.colour,
-      emissionColour: v1.emissionColour,
-      emissionIntensity: v.value0,
-      size: v1.size,
-      position: v1.position,
-      rotation: v1.rotation
-    };
-  }
-  ;
-  throw new Error("Failed pattern match at AST (line 51, column 1 - line 51, column 43): " + [v.constructor.name]);
+  Broadcaster2.create = function(value0) {
+    return new Broadcaster2(value0);
+  };
+  return Broadcaster2;
+}();
+var tASTtoTWithBase = function(base) {
+  return function(v) {
+    if (v instanceof LiteralTransmissionAST && !v.value0) {
+      return defTransmission;
+    }
+    ;
+    if (v instanceof LiteralTransmissionAST && v.value0) {
+      return defTransmissionOn;
+    }
+    ;
+    if (v instanceof Volume) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v.value0 * 0.01,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof ChannelRepeater) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v.value0,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof Scalar) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v.value0,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof Movet) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v.value0,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof Rodar) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v1.position,
+        rotation: v.value0
+      };
+    }
+    ;
+    if (v instanceof Fulcober) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v.value0,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof Switch) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: base + (v.value0 + ".mov"),
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof Monitor) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v.value0 + ".obj",
+        mapping: v.value0 + ".mtl",
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof Translucidez) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v.value0,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof Colour) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v.value0,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof EmissionColour) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v.value0,
+        emissionIntensity: v1.emissionIntensity,
+        size: v1.size,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    if (v instanceof EmissionIntensity) {
+      var v1 = tASTtoTWithBase(base)(v.value1);
+      return {
+        estado: v1.estado,
+        tv: v1.tv,
+        mapping: v1.mapping,
+        channel: v1.channel,
+        volume: v1.volume,
+        channelReapeater: v1.channelReapeater,
+        fulcober: v1.fulcober,
+        translucidez: v1.translucidez,
+        colour: v1.colour,
+        emissionColour: v1.emissionColour,
+        emissionIntensity: v.value0,
+        size: v1.size,
+        position: v1.position,
+        rotation: v1.rotation
+      };
+    }
+    ;
+    throw new Error("Failed pattern match at AST (line 53, column 1 - line 53, column 61): " + [base.constructor.name, v.constructor.name]);
+  };
 };
 
 // output/Data.Int/foreign.js
@@ -26635,7 +26464,7 @@ var makeTokenParser = function(v) {
     return alt(altParserT)(voidLeft(functorParserT)(escapeGap)(Nothing.value))(alt(altParserT)(voidLeft(functorParserT)(escapeEmpty)(Nothing.value))(map(functorParserT)(Just.create)(escapeCode)));
   });
   var stringChar = alt(altParserT)(map(functorParserT)(Just.create)(stringLetter))(withErrorMessage(stringEscape)("string character"));
-  var stringLiteral = function() {
+  var stringLiteral2 = function() {
     var folder = function(v1) {
       return function(chars) {
         if (v1 instanceof Nothing) {
@@ -26663,7 +26492,7 @@ var makeTokenParser = function(v) {
     operator,
     reservedOp: reservedOp2,
     charLiteral,
-    stringLiteral,
+    stringLiteral: stringLiteral2,
     natural,
     integer: integer2,
     "float": $$float2,
@@ -26731,17 +26560,9 @@ var switchFunction = function(n) {
   var s = toString(n);
   return pure(applicativeParserT)(Switch.create(s));
 };
-var statementToTransmission = function(v) {
-  if (v instanceof EmptyStatement) {
-    return Nothing.value;
-  }
-  ;
-  if (v instanceof TransmissionAST) {
-    return new Just(tASTtoT(v.value0));
-  }
-  ;
-  throw new Error("Failed pattern match at Parser (line 390, column 1 - line 390, column 59): " + [v.constructor.name]);
-};
+var stringLiteral = /* @__PURE__ */ function() {
+  return tokenParser.stringLiteral;
+}();
 var showParseError = function(v) {
   return show(showInt)(v.value1.line) + (":" + (show(showInt)(v.value1.column) + (" " + v.value0)));
 };
@@ -26924,12 +26745,70 @@ var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(
     });
   });
 });
+var broadcaster = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["broadcaster", "baseurl", "url"])))(function() {
+  return bind(bindParserT)(alt(altParserT)(identifier)(stringLiteral))(function(s) {
+    return pure(applicativeParserT)(new Broadcaster(s));
+  });
+});
 var statement = /* @__PURE__ */ function() {
-  return choice(foldableArray)([$$try(map(functorParserT)(TransmissionAST.create)(transmissionParser)), $$try(onlySemiColon), $$try(onlyEOF), $$try(noTranmission)]);
+  return choice(foldableArray)([$$try(map(functorParserT)(TransmissionAST.create)(transmissionParser)), $$try(broadcaster), $$try(onlySemiColon), $$try(onlyEOF), $$try(noTranmission)]);
 }();
-var statements = /* @__PURE__ */ sepBy(statement)(/* @__PURE__ */ reservedOp(";"));
+var statements = /* @__PURE__ */ map(functorParserT)(/* @__PURE__ */ fromFoldable(foldableList))(/* @__PURE__ */ sepBy(statement)(/* @__PURE__ */ reservedOp(";")));
 var astToProgram = function(xs) {
-  return catMaybes(map(functorList)(statementToTransmission)(xs));
+  var go = function($copy_v) {
+    return function($copy_acc) {
+      return function($copy_v1) {
+        var $tco_var_v = $copy_v;
+        var $tco_var_acc = $copy_acc;
+        var $tco_done = false;
+        var $tco_result;
+        function $tco_loop(v2, acc, v1) {
+          if (v1 instanceof Nil) {
+            $tco_done = true;
+            return {
+              baseURL: v2,
+              transmissions: acc
+            };
+          }
+          ;
+          if (v1 instanceof Cons && v1.value0 instanceof Broadcaster) {
+            $tco_var_v = v1.value0.value0;
+            $tco_var_acc = acc;
+            $copy_v1 = v1.value1;
+            return;
+          }
+          ;
+          if (v1 instanceof Cons && v1.value0 instanceof TransmissionAST) {
+            var tr = tASTtoTWithBase(v2)(v1.value0.value0);
+            $tco_var_v = v2;
+            $tco_var_acc = new Cons(tr, acc);
+            $copy_v1 = v1.value1;
+            return;
+          }
+          ;
+          if (v1 instanceof Cons) {
+            $tco_var_v = v2;
+            $tco_var_acc = acc;
+            $copy_v1 = v1.value1;
+            return;
+          }
+          ;
+          throw new Error("Failed pattern match at Parser (line 69, column 5 - line 69, column 60): " + [v2.constructor.name, acc.constructor.name, v1.constructor.name]);
+        }
+        ;
+        while (!$tco_done) {
+          $tco_result = $tco_loop($tco_var_v, $tco_var_acc, $copy_v1);
+        }
+        ;
+        return $tco_result;
+      };
+    };
+  };
+  var v = go("https://jac307.github.io/TransMit/channels/")(Nil.value)(xs);
+  return {
+    transmissions: reverse(v.transmissions),
+    baseURL: v.baseURL
+  };
 };
 var ast = /* @__PURE__ */ discard(discardUnit)(bindParserT)(whiteSpace)(function() {
   return bind(bindParserT)(statements)(function(x) {
@@ -26948,7 +26827,7 @@ var parseAST = function(x) {
     return new Right(v.value0);
   }
   ;
-  throw new Error("Failed pattern match at Parser (line 49, column 14 - line 51, column 27): " + [v.constructor.name]);
+  throw new Error("Failed pattern match at Parser (line 46, column 14 - line 48, column 27): " + [v.constructor.name]);
 };
 var parseProgram = function(x) {
   return bind(bindEither)(parseAST(x))(function(ast1) {
@@ -26968,7 +26847,7 @@ var replaceAt = function(i) {
         return fromMaybe(a)(updateAt(i)(v)(a));
       }
       ;
-      throw new Error("Failed pattern match at RenderEngine (line 112, column 1 - line 112, column 52): " + [i.constructor.name, v.constructor.name, a.constructor.name]);
+      throw new Error("Failed pattern match at RenderEngine (line 114, column 1 - line 114, column 52): " + [i.constructor.name, v.constructor.name, a.constructor.name]);
     };
   };
 };
@@ -27003,7 +26882,10 @@ var launch = function(cvs) {
     setSize(renderer)(iHeight)(iWidth)(false)();
     var lights = newHemisphereLight(16777215)(16777215)(3)();
     addAnythingToScene(scene)(lights)();
-    var program = $$new(Nil.value)();
+    var program = $$new({
+      transmissions: Nil.value,
+      baseURL: "https://jac307.github.io/TransMit/channels/"
+    })();
     var monitors = $$new(Nil.value)();
     var re = {
       scene,
@@ -27020,134 +26902,26 @@ var evaluate = function(re) {
     var v = parseProgram(s);
     if (v instanceof Right) {
       return function __do3() {
-        log2(monadEffectEffect)(show(showList(showRecord()()(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "channel";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "channelReapeater";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "colour";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "emissionColour";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "emissionIntensity";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "estado";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "fulcober";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "mapping";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "position";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "rotation";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "size";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "translucidez";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "tv";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "volume";
-          }
-        })(showRecordFieldsNil)(showNumber))(showString))(showNumber))(showNumber))(showRecord()()(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "x";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "y";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "z";
-          }
-        })(showRecordFieldsNil)(showEither(showNumber)(showNumber)))(showEither(showNumber)(showNumber)))(showEither(showNumber)(showNumber)))))(showRecord()()(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "x";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "y";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "z";
-          }
-        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showString))(showString))(showBoolean))(showNumber))(showRecord()()(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "x";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "y";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "z";
-          }
-        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showRecord()()(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "x";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "y";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "z";
-          }
-        })(showRecordFieldsNil)(showNumber))(showNumber))(showNumber))))(showRecord()()(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "x";
-          }
-        })(showRecordFieldsCons({
-          reflectSymbol: function() {
-            return "y";
-          }
-        })(showRecordFieldsNil)(showNumber))(showNumber))))(showString))))(v.value0))();
+        log2(monadEffectEffect)("Parsed baseURL: " + v.value0.baseURL)();
         write(v.value0)(re.program)();
-        return Nothing.value;
+        return {
+          error: Nothing.value
+        };
       };
     }
     ;
     if (v instanceof Left) {
-      return pure(applicativeEffect)(new Just(v.value0));
+      return pure(applicativeEffect)({
+        error: new Just(v.value0)
+      });
     }
     ;
-    throw new Error("Failed pattern match at RenderEngine (line 62, column 3 - line 67, column 32): " + [v.constructor.name]);
+    throw new Error("Failed pattern match at RenderEngine (line 62, column 3 - line 67, column 41): " + [v.constructor.name]);
   };
 };
 var alignMonitors = function(re) {
-  return function(p) {
-    var tLen = length(p);
+  return function(program) {
+    var tLen = length(program.transmissions);
     return function __do3() {
       var ms = read(re.monitors)();
       var mLen = length(ms);
@@ -27167,18 +26941,18 @@ var alignMonitors = function(re) {
           }
           ;
           if (!v1) {
-            var howManyMonitorsAreMissing = tLen - mLen | 0;
-            var indicesOfNewMonitors = range2(mLen + 1 | 0)(mLen + howManyMonitorsAreMissing | 0);
-            return traverse_(applicativeEffect)(foldableList)(newMonitor(re))(indicesOfNewMonitors)();
+            var howMany = tLen - mLen | 0;
+            var indices = range2(mLen + 1 | 0)(mLen + howMany | 0);
+            return traverse_(applicativeEffect)(foldableList)(newMonitor(re))(indices)();
           }
           ;
-          throw new Error("Failed pattern match at RenderEngine (line 86, column 7 - line 97, column 57): " + [v1.constructor.name]);
+          throw new Error("Failed pattern match at RenderEngine (line 89, column 7 - line 98, column 44): " + [v1.constructor.name]);
         }
         ;
-        throw new Error("Failed pattern match at RenderEngine (line 83, column 3 - line 97, column 57): " + [v.constructor.name]);
+        throw new Error("Failed pattern match at RenderEngine (line 86, column 3 - line 98, column 44): " + [v.constructor.name]);
       })();
       var ms$prime = read(re.monitors)();
-      zipWithA(applicativeEffect)(alignMonitor(re.scene))(ms$prime)(p)();
+      zipWithA(applicativeEffect)(alignMonitor(re.scene))(ms$prime)(program.transmissions)();
       return unit;
     };
   };
@@ -27204,22 +26978,22 @@ var launch2 = launch;
 var evaluate2 = function(re) {
   return function(s) {
     return function __do3() {
-      var p = evaluate(re)(s)();
-      if (p instanceof Just) {
+      var result = evaluate(re)(s)();
+      if (result.error instanceof Just) {
         return {
           success: false,
-          error: p.value0
+          error: result.error.value0
         };
       }
       ;
-      if (p instanceof Nothing) {
+      if (result.error instanceof Nothing) {
         return {
           success: true,
           error: ""
         };
       }
       ;
-      throw new Error("Failed pattern match at Main (line 16, column 3 - line 18, column 51): " + [p.constructor.name]);
+      throw new Error("Failed pattern match at Main (line 16, column 3 - line 18, column 50): " + [result.error.constructor.name]);
     };
   };
 };

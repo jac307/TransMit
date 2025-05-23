@@ -1,14 +1,19 @@
-module Parser where
+module Parser
+(
+Program,
+astToProgram,
+parseProgram
+) where
 
-import Prelude (Unit, bind, discard, identity, map, negate, pure, show, unit, ($), ($>), (*), (<$>), (<>))
-import Effect (Effect)
+import Prelude (Unit, bind, discard, identity, negate, pure, show, unit, ($), ($>), (*), (<$>), (<>))
+import Control.Alt ((<|>))
 import Control.Semigroupoid ((<<<))
 import Data.Identity (Identity)
-import Data.List (List, catMaybes, foldl, fromFoldable, elem)
+import Data.List (List(..), elem, foldl, fromFoldable, (:))
+import Data.List as List
 import Data.List.NonEmpty (NonEmptyList)
 import Data.Either (Either(..))
 import Data.Int (toNumber)
-import Data.Maybe (Maybe(..))
 import Parsing (ParseError(..), ParserT, Position(..), runParser)
 import Parsing.Language (emptyDef)
 import Parsing.Token (GenLanguageDef(..), GenTokenParser, makeTokenParser, unGenLanguageDef)
@@ -19,26 +24,18 @@ import Data.Number.Format (toString)
 import Data.String.Common (toLower)
 import Control.Alternative (empty)
 
-import AST (AST, Statement(..), TransmissionAST(..), tASTtoT)
+import AST (AST, Statement(..), TransmissionAST(..), tASTtoTWithBase)
 import Transmission (Transmission, Vec3, Vec2, DynVec3)
-import MonitorState (getVideoBaseURL)
 
 -------
 
-matchFlexibleKeyword :: String -> List String -> Boolean
-matchFlexibleKeyword input options =
-  let keyword = toLower input
-  in keyword `elem` fromFoldable options
+type Program =
+  {
+  transmissions :: List Transmission,
+  baseURL :: String
+  }
 
-matchKeyword :: List String -> P Unit
-matchKeyword options = do
-  word <- identifier
-  let keyword = toLower word
-  if keyword `elem` fromFoldable options
-    then pure unit
-    else empty
-
--------
+type P a = ParserT String Identity a
 
 parseProgram :: String -> Either String Program
 parseProgram x = do
@@ -46,14 +43,12 @@ parseProgram x = do
   pure $ astToProgram ast
 
 parseAST :: String -> Either String (List Statement)
-parseAST x = case (runParser x ast) of
+parseAST x = case runParser x ast of
   Left err -> Left $ showParseError err
   Right prog -> Right prog
 
 showParseError :: ParseError -> String
 showParseError (ParseError e (Position p)) = show p.line <> ":" <> show p.column <> " " <> e
-
-type P a = ParserT String Identity a
 
 ast :: P AST
 ast = do
@@ -63,15 +58,38 @@ ast = do
   pure x
 
 statements :: P (List Statement)
-statements = sepBy statement (reservedOp ";")
+statements = List.fromFoldable <$> sepBy statement (reservedOp ";")
+
+astToProgram :: AST -> Program
+astToProgram xs =
+  let base = "https://jac307.github.io/TransMit/channels/"
+   in case go base Nil xs of
+        { baseURL: b, transmissions: ts } -> { transmissions: List.reverse ts, baseURL: b }
+  where
+    go base acc Nil = { baseURL: base, transmissions: acc }
+    go _ acc (Broadcaster url : rest) = go url acc rest
+    go base acc (TransmissionAST t : rest) =
+      let tr = tASTtoTWithBase base t
+       in go base (tr : acc) rest
+    go base acc (_ : rest) = go base acc rest
+
+-------
+-------
 
 statement :: P Statement
-statement = choice [
-  try $ TransmissionAST <$> transmissionParser,
-  try $ onlySemiColon,
-  try $ onlyEOF,
-  try $ noTranmission
-]
+statement = choice
+  [ try $ TransmissionAST <$> transmissionParser
+  , try $ broadcaster  -- new
+  , try $ onlySemiColon
+  , try $ onlyEOF
+  , try $ noTranmission
+  ]
+
+broadcaster :: P Statement
+broadcaster = do
+  _ <- matchKeyword (fromFoldable ["broadcaster", "baseurl", "url"])
+  s <- identifier <|> stringLiteral
+  pure $ Broadcaster s
 
 onlySemiColon :: P Statement
 onlySemiColon = do
@@ -110,7 +128,7 @@ transmissionParser = do
     else empty
   b <- onOrOff
   let t = LiteralTransmissionAST b
-  xs <- many (transformations b)  -- pass the value of `b` here
+  xs <- many (transformations b)
   let xs' = foldl (<<<) identity xs
   pure $ xs' t
 
@@ -220,12 +238,25 @@ functionWithStringKeyword keywords constructor = try $ do
   s <- identifier
   pure $ constructor s
 
+-------
+matchFlexibleKeyword :: String -> List String -> Boolean
+matchFlexibleKeyword input options =
+  let keyword = toLower input
+  in keyword `elem` fromFoldable options
+
+matchKeyword :: List String -> P Unit
+matchKeyword options = do
+  word <- identifier
+  let keyword = toLower word
+  if keyword `elem` fromFoldable options
+    then pure unit
+    else empty
+-------
 
 ------- PARAMETERS
 
 ----------
---- Either Number Number
---
+---Either Number Number --
 
 dynVec3xyz :: P DynVec3
 dynVec3xyz = do
@@ -378,15 +409,3 @@ whiteSpace :: P Unit
 whiteSpace = tokenParser.whiteSpace
 
 -----
-
-type Program = List Transmission --- This has to change if I add the camera ---- must be Transmission plus operation of the camera (record), plus,.... channel
-
--- we want a list that gives all the Just
--- catMaybes :: forall a. List (Maybe a) -> List a
-
-astToProgram :: AST -> Program
-astToProgram xs = catMaybes $ map statementToTransmission xs
-
-statementToTransmission :: Statement -> Maybe Transmission
-statementToTransmission EmptyStatement = Nothing
-statementToTransmission (TransmissionAST tAST) = Just (tASTtoT tAST)
