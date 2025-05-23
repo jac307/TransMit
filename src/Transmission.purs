@@ -40,7 +40,7 @@ defTransmission = {
 
 
 defTransmissionOn :: Transmission
-defTransmissionOn = defTransmission {estado = true, channel = "https://jac307.github.io/TransMit/channels/00.mp4"}
+defTransmissionOn = defTransmission {estado = true, channel = "https://jac307.github.io/MultimediaSamples/Video/main/1.mp4"}
 
 ----
 

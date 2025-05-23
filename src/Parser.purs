@@ -62,7 +62,7 @@ statements = List.fromFoldable <$> sepBy statement (reservedOp ";")
 
 astToProgram :: AST -> Program
 astToProgram xs =
-  let base = "https://jac307.github.io/TransMit/channels/"
+  let base = "https://jac307.github.io/MultimediaSamples/Video/main/"
    in case go base Nil xs of
         { baseURL: b, transmissions: ts } -> { transmissions: List.reverse ts, baseURL: b }
   where

@@ -59,7 +59,7 @@ tASTtoTWithBase base (Scalar n t) = (tASTtoTWithBase base t) { size = n }
 tASTtoTWithBase base (Movet v3 t) = (tASTtoTWithBase base t) { position = v3 }
 tASTtoTWithBase base (Rodar dv3 t) = (tASTtoTWithBase base t) { rotation = dv3 }
 tASTtoTWithBase base (Fulcober f t) = (tASTtoTWithBase base t) { fulcober = f }
-tASTtoTWithBase base (Switch s t) = (tASTtoTWithBase base t) { channel = base <> s <> ".mov" }
+tASTtoTWithBase base (Switch s t) = (tASTtoTWithBase base t) { channel = base <> s <> ".mp4" }
 tASTtoTWithBase base (Monitor s t) = (tASTtoTWithBase base t) { tv = s <> ".obj", mapping = s <> ".mtl" }
 tASTtoTWithBase base (Translucidez n t) = (tASTtoTWithBase base t) { translucidez = n }
 tASTtoTWithBase base (Colour v3 t) = (tASTtoTWithBase base t) { colour = v3 }

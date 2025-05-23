@@ -2687,7 +2687,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     estado: true,
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
-    channel: "https://jac307.github.io/TransMit/channels/00.mp4",
+    channel: "https://jac307.github.io/MultimediaSamples/Video/main/1.mp4",
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
@@ -3031,7 +3031,7 @@ var tASTtoTWithBase = function(base) {
         estado: v1.estado,
         tv: v1.tv,
         mapping: v1.mapping,
-        channel: base + (v.value0 + ".mov"),
+        channel: base + (v.value0 + ".mp4"),
         volume: v1.volume,
         channelReapeater: v1.channelReapeater,
         fulcober: v1.fulcober,
@@ -26804,7 +26804,7 @@ var astToProgram = function(xs) {
       };
     };
   };
-  var v = go("https://jac307.github.io/TransMit/channels/")(Nil.value)(xs);
+  var v = go("https://jac307.github.io/MultimediaSamples/Video/main/")(Nil.value)(xs);
   return {
     transmissions: reverse(v.transmissions),
     baseURL: v.baseURL
