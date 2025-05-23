@@ -197,7 +197,7 @@ monitorFunction = do
   _ <- matchKeyword (fromFoldable
     [ "mon", "monitor", "mónitor", "monnitor"])
   s <- identifier
-  pure $ Monitor ("https://jac307.github.io/TransMit/monitors/" <> s)
+  pure $ Monitor ("https://www.transmits.link/monitors/" <> s)
 
 scalarFunction :: P (TransmissionAST -> TransmissionAST)
 scalarFunction = do

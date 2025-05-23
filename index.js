@@ -26601,7 +26601,7 @@ var matchKeyword = function(options) {
 var onOrOff = /* @__PURE__ */ $$try(/* @__PURE__ */ choice(foldableArray)([/* @__PURE__ */ $$try(/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["on", "onn", "onnn", "onnnn"])))(true)), /* @__PURE__ */ $$try(/* @__PURE__ */ voidLeft(functorParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["off", "of", "offf", "offff"])))(false))]));
 var monitorFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["mon", "monitor", "m\xF3nitor", "monnitor"])))(function() {
   return bind(bindParserT)(identifier)(function(s) {
-    return pure(applicativeParserT)(Monitor.create("https://jac307.github.io/TransMit/monitors/" + s));
+    return pure(applicativeParserT)(Monitor.create("https://www.transmits.link/monitors/" + s));
   });
 });
 var functionWithStringKeyword = function(keywords) {
