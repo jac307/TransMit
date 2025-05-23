@@ -26722,7 +26722,7 @@ var transformations = function(isOn) {
     }
     ;
     return empty(plusParserT);
-  }(), monitorFunction, scalarFunction]);
+  }(), $$try(monitorFunction), $$try(scalarFunction)]);
 };
 var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(applicativeParserT)(unit))(function() {
   return bind(bindParserT)(identifier)(function(word) {

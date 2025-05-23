@@ -174,8 +174,8 @@ transformations isOn = choice
     -- other flexible functions
     if isOn then switchFunctionWrapper else empty,
     -- switchFunctionWrapper,
-    monitorFunction,
-    scalarFunction
+    try $ monitorFunction,
+    try $ scalarFunction
   ]
 
 -------
