@@ -119,7 +119,7 @@ transmissionParser = do
   word <- identifier
   let keyword = toLower word
   if keyword `elem` fromFoldable
-       [ "transmission", "trasmission", "trasmision", "transmicion"
+       [ "trans", "transmission", "trasmission", "trasmision", "transmicion"
        , "transmision", "transmisssion", "trasmisssion", "trasmicion"
        , "transmissión", "trasmissión", "trasmisión",  "transmición"
        , "transmisión", "transmisssión", "trasmisssión",  "trasmición"

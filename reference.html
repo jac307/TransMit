@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TransMit Parser – Reference</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; padding: 2em; max-width: 80%; margin: auto; }
+    h1 { font-size: 2em; }
+    h2 { margin-top: 2em; font-size: 2em; }
+    p { font-size: 1.3em; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; font-size: 1.3em; }
+    th, td { border: 1px solid #ccc; padding: 0.6em; text-align: left; vertical-align: top; }
+    th { background-color: #f5f5f5; }
+    code { background-color: #f0f0f0; padding: 0.1em 0.3em; border-radius: 4px; font-size: 1.3em; }
+    em { color: #555; }
+  </style>
+</head>
+<body>
+
+  <h1>📘 TransMit – Reference(ia)</h1>
+
+  <hr>
+
+  <h2>🚀 Statements</h2>
+  <p>
+    <em>You can include multiple statements by separating each one with a <code>;</code>.</em><br>
+   <em>Puede incluir múltiples instrucciones separándolas con un <code>;</code>.</em>
+  </p>
+
+
+  <table>
+    <thead>
+      <tr>
+        <th>Statement</th>
+        <th>Keywords</th>
+        <th>Parameter(ro)s</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>Activate Transmission</strong>
+          <br> <em>Plays a transmission either in <code>on</code> (with videos) or <code>off</code> (only static).</em>
+          <br><br> <strong>Activar Transmisión</strong>
+          <br><em>Reproduce una tranmisión ya sea <code>on</code>-encendida (con video) o en <code>off</code>-apagada (con estática únicamente).</em>
+        </td>
+        <td><code>
+          transmission<br>
+          transmision<br>
+          transmisssion<br>
+          trasmission<br>
+          trasmision<br>
+          trasmisssion<br>
+          trasmisión<br>
+          transmisión<br>
+          trasmición<br>
+          transmición<br>
+          trans
+        </code></td>
+        <td>
+          <strong>On:</strong> <code>on</code>, <code>onn</code>, <code>onnn</code>, <code>ON</code>, <code>ONN</code>, <code>ONNN</code><br>
+          <strong>Off:</strong> <code>off</code>, <code>of</code>, <code>offf</code>, <code>OFF</code>, <code>OF</code>, <code>OFFF</code>
+          <br><br>
+          (e.g. <code>transmission on</code> or <br> <code>transmission off</code>)
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Turn off transmissions</strong>
+          <br><em>Erase all transmissions</em>
+          <br><br> <strong>Apagar transmisión.</strong>
+          <br><em>Borrar todas las transmissiones.</em>
+        </td>
+        <td><code>
+          turn off<br>
+          turns off<br>
+          turn of<br>
+          turnof<br>
+          apagar
+        </code></td>
+        <td>–</td>
+      </tr>
+      <tr>
+        <td>
+            <strong>Broadcaster</strong>
+            <br><em>Should appear at the top, before any <code>transmission on</code> statements.
+            <br>Accepts a URL pointing to a published video archive — it must be the root URL only.
+            <br>Videos in the archive should be in MP4 format.</em>
+            <br><br><strong>Locutora</strong>
+            <br><em>Debe estar al inicio, antes de cualquier instrucción de <code>transmission on</code>.
+            <br>Acepta una URL de un archivo público de videos — debe ser solo la URL raíz.
+            <br>Los videos deben estar en formato MP4.</em>
+        </td>
+        <td><code>
+          broadcaster<br>
+          baseurl<br>
+          url
+        </code></td>
+        <td><code>"url"</code> <br><br>
+          (e.g. <code>"https://jac307.github.io</code><br><code>/MultimediaSamples/Video/main/"</code>)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>✨ Special Transformations</h2>
+  <p>
+    <em>These only work <strong>after</strong> <code>transmission <strong>on</strong></code>.</em><br>
+    <em>Únicamente funcionan si van <strong>después</strong> de <code>transmission <strong>on</strong></code>.</em><br>
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Transformation(es)</th>
+        <th>Keywords</th>
+        <th>Parameter(ro)s</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>Monitor</strong>
+          <em>
+          <br><br>Changes the monitor — the 3D object onto which the video is mapped. A list of preset monitors is available — see the <strong>Monitors</strong> section below.
+          <br><br>Cambia el monitor — el objeto 3D sobre el cual se proyecta el video. Hay una lista de monitores predefinidos. Consulta la sección <strong>Monitors</strong> más abajo
+        </em>
+        </td>
+        <td><code>
+          mon<br>
+          monitor<br>
+          mónitor<br>
+          monnitor</code>
+        </td>
+        <td><code>monitor-name</code><br><br>
+        (e.g. <code>monitor oldie1</code>)</td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Switch*</strong>
+          <em>
+          <br><br>Changes the channel (video). A list of preset channels is available — see the <strong>Channels</strong> section below.
+          <br><br>Cambia el canal (video). Hay una lista de canales predefinidos. Consulta la sección <strong>Channels</strong> más abajo
+        </em>
+        </td>
+        <td><code>
+          switch<br>
+          suitch<br>
+          suich<br>
+          suish<br>
+          swish<br>
+          cámbiale</code></td>
+        <td>
+          <code>name</code>
+          <br><br>options: <code>1</code>...<code>72</code>
+          <br>(e.g.<code>switch 26</code>)
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Rotate</strong>
+          <em>
+          <br><br>This function allows animated values in one or all of its parameters.
+          <br>Use one of the following keywords to indicate animation:
+          <code>a</code>, <code>auto</code>, <code>automatic</code>, <code>atomatic</code>, <code>automatico</code>, <code>automático</code>.
+          <br>Each animated keyword must be followed by a <code>number</code>.
+          <br><br>Esta función permite valores animados en uno o en todos sus parámetros.
+          <br>Usa una de las siguientes palabras clave para indicar animación:
+          <code>a</code>, <code>auto</code>, <code>automatic</code>, <code>atomatic</code>, <code>automatico</code>, <code>automático</code>.
+          <br>Cada palabra clave animada debe ir seguida de un <code>número</code>.
+        </em>
+        </td>
+        <td><code>
+          rotate<br>
+          rodar<br>
+          rotait<br>
+          rotaetelo<br>
+          rotatelo</code></td>
+        <td><code>DynVec3</code>
+          <br><br>(e.g.
+          <br><code>rotate 0 1 2</code>
+          <br><code>rotate auto 1 2 0</code>
+          <br><code>rotate auto 1 auto 1 0</code>
+          )
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    <strong>*Broadcaster + Switch</strong><br>
+    By default, channels are loaded from the base URL:
+    <code>https://jac307.github.io/MultimediaSamples/Video/main/</code><br>
+    You can use your own videos by setting a custom base URL using the <strong>broadcaster</strong> statement.
+    For example:
+    <br><code>broadcaster "https://jac307.github.io/MultimediaSamples/Video/mariposas/";</code>
+    <br><code>transmission on switch 24</code>
+    <br>
+    In this case, <code>24</code> refers to the name of your video file (e.g. <code>24.mp4</code>) located in the custom folder.
+    You must use the exact filenames you assigned, and all videos must be in <strong>.mp4</strong> format.
+  </p>
+  <p>
+    <strong>*Broadcaster + Switch</strong><br>
+    Por defecto, los canales se cargan desde la URL base:
+    <code>https://jac307.github.io/MultimediaSamples/Video/main/</code><br>
+    Puedes usar tus propios videos configurando una URL base personalizada usando la función <strong>broadcaster</strong>.
+    Por ejemplo:
+    <br><code>broadcaster "https://jac307.github.io/MultimediaSamples/Video/mariposas/";</code>
+    <br><code>transmission on switch 24</code>
+    <br>
+    En este caso, <code>24</code> se refiere al nombre de tu archivo de video (por ejemplo, <code>24.mp4</code>) ubicado en la carpeta personalizada.
+    Debes usar los nombres exactos de tus archivos, y todos los videos deben estar en formato <strong>.mp4</strong>.
+  </p>
+
+  <hr>
+
+  <h2>🧩 Other Transformation</h2>
+  <p>
+    <em>These only work <strong>after</strong> <code>transmission <strong>on</strong></code>.</em><br>
+    <em>Únicamente funcionan si van <strong>después</strong> de <code>transmission <strong>on</strong></code>.</em><br>
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Transformation(es)</th>
+        <th>Keywords</th>
+        <th>Parameter(ro)s</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Volume</strong>
+          <br><em>(0=no value; 0↑up =sound/sonido)</em>
+        </td>
+        <td><code>
+          vol<br>
+          volume<br>
+          volumen<br>
+          volúmen<br>
+          subele<br>
+          súbele<br>
+          pumpealo
+        </code></td>
+        <td><code>Number</code> <br><br>(e.g. <code>vol 2</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Scale</strong>
+          <br><em>Proportional scale in both width and height.
+          <br>Afecta proporcionalmente al ancho y alto.
+        </td>
+        <td><code>
+          scalar<br>
+          escalar<br>
+          scale<br>
+          escale<br>
+          scail<br>
+          escail<br>
+          esqueil<br>
+          squeil<br>
+          biggealo<br>
+          bigealo
+        </code></td>
+        <td><code>Number</code> <br><br>(e.g. <code>scale 1.5</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Move</strong>
+          <br><em>Moves the monitor in three dimensions.
+          <br>Mueve el monitor en las tres dimensiones.
+          <br>(move x y z)</em>
+        </td>
+        <td><code>
+          muv<br>
+          movet<br>
+          muvet<br>
+          muvit<br>
+          movit<br>
+          move it<br>
+          muevelo<br>
+          muévelo<br>
+          muvetelo
+        </code></td>
+        <td><code>Vec3</code> <br><br>(e.g. <code>move -1 1 0</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Repeat</strong>
+          <br><em>It duplicates the video mapped in the monitor on each axis.
+          <br>Duplica el video mapeado en el monitor en cada eje.
+          <br>(repeat x y)</em>
+        </td>
+        <td><code>
+          repeat<br>
+          repet<br>
+          repit<br>
+          repitelo<br>
+          repítelo<br>
+          repitealo
+        </code></td>
+        <td><code>Vec2</code> <br><br>(e.g. <code>repeat 2 0</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Translucency</strong>
+          <br><em>It changes the opacity of the monitor.
+          <br>Cambia la opacidad del monitor
+          <br>(0=no visible; 1= ful-ly visible)
+        </em>
+        </td>
+        <td><code>
+          translucent<br>
+          translucido<br>
+          traslucido<br>
+          translusido<br>
+          traslucent<br>
+          traslusent
+        </code></td>
+        <td><code>Number</code> <br><br>(e.g. <code>translucent 0.5</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Color</strong>
+          <br><em>Affects the r g b video channels.
+          <br>Afecta los canales r g b del video.</em>
+        </td>
+        <td><code>
+          color<br>
+          colour<br>
+          color it<br>
+          colorealo<br>
+          colourealo
+        </code></td>
+        <td><code>Vec3</code> <br><br>(e.g. <code>color 1 0 1</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Emission Color</strong>
+          <br><em>Affects the h s l of the monitor's color emision.
+          <br>Afecta el h s l de la emisión del monitor.</em>
+        </td>
+        <td><code>
+          emit<br>
+          emitir<br>
+          emitear<br>
+          emitealo
+        </code></td>
+        <td><code>Vec3</code> <br><br>(e.g. <code>emit 0 0 1</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Brightness</strong>
+          <br><em>(1↓down = less/menos; 1↑up = more/más)</em>
+        </td>
+        <td><code>
+          brillo<br>
+          brightness<br>
+          braignes<br>
+          braigtnes<br>
+          briyo
+        </code></td>
+        <td><code>Number</code> <br><br>(e.g. <code>brillo 2</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Fullcover</strong>
+          <br><em>Affects the video color with a preset.
+          <br>Afecta el color del video con un preset.</em>
+        </td>
+        <td><code>
+          fullcover<br>
+          fulcover<br>
+          fulcober<br>
+          fullcober
+        </code></td>
+        <td>
+          <code>rgb</code>, <code>rgba</code>, <code>erregebe</code>, <code>alcolor</code>
+          <br> <code>r</code>, <code>red</code>, <code>rojo</code>
+          <br> <code>rg</code>, <code>errege</code>, <code>redgreen</code>, <code>verdirojo</code>
+          <br> <code>b&w</code>, <code>blackandwhite</code>, <code>negriblanco</code>
+          <br><br>(e.g. <code>fullcover blackandwhite</code>)
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>🖥️ Monitors</h2>
+  <p>
+    Below is a list of available monitors (e.g. <code>transmission on monitor oldi1</code>).
+    <br>
+    A continuación se muestra una lista de monitores disponibles (e.g. <code>transmission on monitor oldi1</code>).
+  </p>
+
+  <div style="text-align: center;">
+    <img src="imgs/monitors-1.png" alt="Description" width="80%">
+  </div>
+
+  <div style="text-align: center;">
+    <img src="imgs/monitors-2.png" alt="Description" width="80%">
+  </div>
+
+  <div style="text-align: center;">
+    <img src="imgs/monitors-3.png" alt="Description" width="80%">
+  </div>
+
+  <hr>
+
+  <h2>🛰️ Channels</h2>
+  <p>
+    By default, channels are loaded from the following base URL:<br>
+    <code>https://jac307.github.io/MultimediaSamples/Video/main/</code>
+    <br>
+    Below is a list of available channels. Each number corresponds to a video file name (e.g., <code>24.mp4</code>).
+    <br>
+    Videos with an "s" have sound.
+    <br><br>
+
+    Por defecto, los canales se cargan desde la siguiente URL base:<br>
+    <code>https://jac307.github.io/MultimediaSamples/Video/main/</code>
+    <br>
+    A continuación se muestra una lista de canales disponibles. Cada número corresponde al nombre de un archivo de video (por ejemplo, <code>24.mp4</code>).
+    <br>
+    Los videos con una "s" tienen sonido
+  </p>
+
+  <div style="text-align: center;">
+    <img src="imgs/channels-1.png" alt="Description" width="80%">
+  </div>
+
+  <div style="text-align: center;">
+    <img src="imgs/channels-2.png" alt="Description" width="80%">
+  </div>
+
+  <hr>
+
+</body>
+</html>

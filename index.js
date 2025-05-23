@@ -26728,7 +26728,7 @@ var transmissionParser = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ pure(
   return bind(bindParserT)(identifier)(function(word) {
     var keyword = toLower(word);
     return discard(discardUnit)(bindParserT)(function() {
-      var $11 = elem(foldableList)(eqString)(keyword)(fromFoldable(foldableArray)(["transmission", "trasmission", "trasmision", "transmicion", "transmision", "transmisssion", "trasmisssion", "trasmicion", "transmissi\xF3n", "trasmissi\xF3n", "trasmisi\xF3n", "transmici\xF3n", "transmisi\xF3n", "transmisssi\xF3n", "trasmisssi\xF3n", "trasmici\xF3n"]));
+      var $11 = elem(foldableList)(eqString)(keyword)(fromFoldable(foldableArray)(["trans", "transmission", "trasmission", "trasmision", "transmicion", "transmision", "transmisssion", "trasmisssion", "trasmicion", "transmissi\xF3n", "trasmissi\xF3n", "trasmisi\xF3n", "transmici\xF3n", "transmisi\xF3n", "transmisssi\xF3n", "trasmisssi\xF3n", "trasmici\xF3n"]));
       if ($11) {
         return pure(applicativeParserT)(unit);
       }
