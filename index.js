@@ -2648,10 +2648,10 @@ var alignMonitor = function(sc) {
 var defTransmission = /* @__PURE__ */ function() {
   return {
     estado: false,
-    tv: "https://jac307.github.io/TransMit/monitors/oldi0.obj",
-    mapping: "https://jac307.github.io/TransMit/monitors/oldi0.mtl",
+    tv: "https://www.transmits.link/monitors/oldi0.obj",
+    mapping: "https://www.transmits.link/monitors/oldi0.mtl",
     volume: 0.03,
-    channel: "https://jac307.github.io/TransMit/channels/static.mp4",
+    channel: "https://www.transmits.link/channels/static.mp4",
     channelReapeater: {
       x: 1,
       y: 1
