@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TransMit – Quick Reference</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      padding: 2em;
+      max-width: 90%;
+      margin: auto;
+    }
+    h1, h2 {
+      font-size: 2em;
+      margin-top: 2em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+      font-size: 1.05em;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.6em;
+      text-align: left;
+      vertical-align: top;
+      width: 25%;
+    }
+    th {
+      background-color: #f5f5f5;
+    }
+    code {
+      background-color: #f0f0f0;
+      padding: 0.1em 0.3em;
+      border-radius: 4px;
+      display: inline-block;
+      margin: 2px 2px 2px 0;
+    }
+    img {
+      width: 100%;
+      display: block;
+      margin: 1em auto;
+    }
+
+    /* Print button styles */
+    .print-button-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 2em;
+    }
+
+    .print-button {
+      background: #007bff;
+      color: white;
+      padding: 0.5em 1em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .print-button:hover {
+      background: #0056b3;
+    }
+
+    /* Print Styles */
+    @media print {
+  @page {
+    size: Letter landscape;
+    margin: 0.5in;
+  }
+
+  body {
+    font-size: 9pt;
+    color: #000;
+    background: #fff;
+  }
+
+  h1, h2 {
+    color: #000;
+    font-size: 11pt;
+    page-break-after: avoid;
+  }
+
+  table {
+    width: 100%;
+    font-size: 8.5pt;
+    table-layout: fixed;
+    page-break-inside: avoid;
+    overflow: hidden;
+  }
+
+  th, td {
+    padding: 0.2em;
+    word-wrap: break-word;
+  }
+
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+
+<div class="print-button-wrapper no-print">
+  <button class="print-button" onclick="window.print()">🖨️ Print this page</button>
+</div>
+
+<h1>📘 TransMit – Quick Reference</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Keywords</th>
+      <th>Parameters</th>
+      <th>Keywords</th>
+      <th>Parameters</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>transmission, transmision, transmisssion, trasmission, trasmision, trasmisssion, trasmisión, transmisión, trasmición, transmición, trans</code></td>
+      <td><code>on, onn, ON, off, of, OFF</code></td>
+      <td><code>turn off, turns off, turn of, turnof, apagar</code></td>
+      <td>–</td>
+    </tr>
+    <tr>
+      <td><code>broadcaster, baseurl, url</code></td>
+      <td><code>"url"</code></td>
+      <td><code>monitor, mon, mónitor, monnitor</code></td>
+      <td><code>monitor-name</code></td>
+    </tr>
+    <tr>
+      <td><code>switch, suitch, suich, suish, swish, cámbiale</code></td>
+      <td><code>1–72</code></td>
+      <td><code>rotate, rodar, rotait, rotaetelo, rotatelo</code></td>
+      <td><code>DynVec3</code></td>
+    </tr>
+    <tr>
+      <td><code>vol, volume, volumen, volúmen, subele, súbele, pumpealo</code></td>
+      <td><code>Number</code></td>
+      <td><code>scale, scalar, escalar, escale, scail, escail, esqueil, squeil, biggealo, bigealo</code></td>
+      <td><code>Number</code></td>
+    </tr>
+    <tr>
+      <td><code>move, muv, movet, muvet, muvit, movit, move it, muevelo, muévelo, muvetelo</code></td>
+      <td><code>Vec3</code></td>
+      <td><code>repeat, repet, repit, repitelo, repítelo, repitealo</code></td>
+      <td><code>Vec2</code></td>
+    </tr>
+    <tr>
+      <td><code>translucent, translucido, traslucido, translusido, traslucent, traslusent</code></td>
+      <td><code>Number</code></td>
+      <td><code>color, colour, color it, colorealo, colourealo</code></td>
+      <td><code>Vec3</code></td>
+    </tr>
+    <tr>
+      <td><code>emit, emitir, emitear, emitealo</code></td>
+      <td><code>Vec3</code></td>
+      <td><code>brillo, brightness, braignes, braigtnes, briyo</code></td>
+      <td><code>Number</code></td>
+    </tr>
+    <tr>
+      <td><code>fullcover, fulcover, fulcober, fullcober</code></td>
+      <td>
+        <code>rgb, rgba, erregebe, alcolor, r, red, rojo, rg, errege, redgreen, verdirojo, b&amp;w, blackandwhite, negriblanco</code>
+      </td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>🖥️ Monitors</h2>
+<img src="imgs/monitors-all.png" alt="Monitors" style="width: 100%;">
+
+<h2>🛰️ Channels</h2>
+<img src="imgs/channels-all.png" alt="Channels" style="width: 100%;">
+
+</body>
+</html>
