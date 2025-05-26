@@ -62,7 +62,7 @@ statements = List.fromFoldable <$> sepBy statement (reservedOp ";")
 
 astToProgram :: AST -> Program
 astToProgram xs =
-  let base = "https://jac307.github.io/MultimediaSamples/Video/main/"
+  let base = "channels/"
    in case go base Nil xs of
         { baseURL: b, transmissions: ts } -> { transmissions: List.reverse ts, baseURL: b }
   where
@@ -183,7 +183,7 @@ transformations isOn = choice
 switchFunctionWrapper :: P (TransmissionAST -> TransmissionAST)
 switchFunctionWrapper = try $ do
   _ <- matchKeyword (fromFoldable
-    [ "switch", "suitch", "suich", "suish", "swish", "cámbiale" ])
+    [ "sitch", "switch", "suitch", "suich", "suish", "swish", "cámbiale" ])
   n <- number
   switchFunction n
 

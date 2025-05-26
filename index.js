@@ -2650,8 +2650,8 @@ var defTransmission = /* @__PURE__ */ function() {
     estado: false,
     tv: "https://www.transmits.link/monitors/oldi0.obj",
     mapping: "https://www.transmits.link/monitors/oldi0.mtl",
-    volume: 0.03,
-    channel: "https://www.transmits.link/channels/static.mp4",
+    volume: 1,
+    channel: "channels/static.mp4",
     channelReapeater: {
       x: 1,
       y: 1
@@ -2687,7 +2687,7 @@ var defTransmissionOn = /* @__PURE__ */ function() {
     estado: true,
     tv: defTransmission.tv,
     mapping: defTransmission.mapping,
-    channel: "https://jac307.github.io/MultimediaSamples/Video/main/1.mp4",
+    channel: "channels/14.mp4",
     volume: defTransmission.volume,
     channelReapeater: defTransmission.channelReapeater,
     fulcober: defTransmission.fulcober,
@@ -26636,7 +26636,7 @@ var scalarFunction = /* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyw
     return pure(applicativeParserT)(Scalar.create(n));
   });
 });
-var switchFunctionWrapper = /* @__PURE__ */ $$try(/* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["switch", "suitch", "suich", "suish", "swish", "c\xE1mbiale"])))(function() {
+var switchFunctionWrapper = /* @__PURE__ */ $$try(/* @__PURE__ */ bind(bindParserT)(/* @__PURE__ */ matchKeyword(/* @__PURE__ */ fromFoldable(foldableArray)(["sitch", "switch", "suitch", "suich", "suish", "swish", "c\xE1mbiale"])))(function() {
   return bind(bindParserT)(number)(function(n) {
     return switchFunction(n);
   });
@@ -26804,7 +26804,7 @@ var astToProgram = function(xs) {
       };
     };
   };
-  var v = go("https://jac307.github.io/MultimediaSamples/Video/main/")(Nil.value)(xs);
+  var v = go("channels/")(Nil.value)(xs);
   return {
     transmissions: reverse(v.transmissions),
     baseURL: v.baseURL

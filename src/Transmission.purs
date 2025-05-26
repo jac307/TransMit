@@ -25,8 +25,8 @@ defTransmission = {
   estado:             false,
   tv:                 "https://www.transmits.link/monitors/oldi0.obj",
   mapping:            "https://www.transmits.link/monitors/oldi0.mtl",
-  volume:             0.03,
-  channel:            "https://www.transmits.link/channels/static.mp4",
+  volume:             1.0,
+  channel:            "channels/static.mp4",
   channelReapeater:   {x: 1.0, y: 1.0},
   fulcober:           "rgbaFormat",
   translucidez:       1.0,
@@ -40,7 +40,7 @@ defTransmission = {
 
 
 defTransmissionOn :: Transmission
-defTransmissionOn = defTransmission {estado = true, channel = "https://jac307.github.io/MultimediaSamples/Video/main/1.mp4"}
+defTransmissionOn = defTransmission {estado = true, channel = "channels/14.mp4"}
 
 ----
 
