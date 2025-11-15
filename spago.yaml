@@ -1,0 +1,16 @@
+workspace:
+  packageSet:
+    registry: 41.2.0
+
+package:
+  name: transmit
+  dependencies:
+    - console
+    - effect
+    - lists
+    - maybe
+    - numbers
+    - parsing
+    - prelude
+    - strings
+    - web-html

@@ -21,8 +21,6 @@ import ThreeJS as TJS
 import MonitorState (Monitor, defMonitor, removeMonitor, alignMonitor, playVideoElement)
 import Parser (Program, parseProgram)
 
--- python3 -m http.server 8000
-
 type RenderEngine =
   {
   scene :: TJS.Scene,

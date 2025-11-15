@@ -269,7 +269,7 @@ transformVidTexture vt t = do
   TJS.setRepeatOfAnything vt (v2ToX t.channelReapeater) (v2ToY t.channelReapeater)
   TJS.format vt (stringToFormatID t.fulcober)
 
-stringToFormatID :: String -> TJS.FormatID
+stringToFormatID :: String -> Effect TJS.FormatID
 stringToFormatID "rgb" = TJS.rgbaFormat
 stringToFormatID "rgba" = TJS.rgbaFormat
 stringToFormatID "erregebe" = TJS.rgbaFormat

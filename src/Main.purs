@@ -19,3 +19,7 @@ evaluate re s = do
 
 animate :: RE.RenderEngine -> Effect Unit
 animate = RE.animate
+
+-- spago build
+-- spago bundle --bundle-type module --platform browser --outfile exolang.js
+-- python3 -m http.server 8000
